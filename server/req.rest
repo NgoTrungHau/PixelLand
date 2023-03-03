@@ -1,0 +1,10 @@
+POST http://localhost:3000/api/arts
+Content-Type: application/json
+
+{
+    "author": "admin",
+    "art": "https://art.pixilart.com/sizes/sr26fbcad91fe8d_400.png?v=1.2",
+    "liked": 943,
+    "comments": 123,
+    "description": "afternoon"
+}
