@@ -1,0 +1,92 @@
+.wrapper {
+  position: relative;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  color: var(--dark);
+  background-color: var(--white);
+  box-shadow: 0 5px 10px 0 rgb(0 0 0 / 5%);
+  user-select: none;
+  + .wrapper {
+    margin-left: 10px;
+  }
+}
+
+// Button types
+.btn-login {
+  padding: 10px 20px;
+  line-height: normal;
+  height: auto;
+  border-radius: 50px;
+  font-size: 16px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  background: linear-gradient(
+    44deg,
+    #ff096e,
+    #ff575f,
+    #ff7e4e,
+    #fd9f36
+  ) !important;
+  color: #fff !important;
+}
+
+.btn-signup {
+  border: none;
+  padding: 10px 20px;
+  line-height: normal;
+  height: auto;
+  border-radius: 50px;
+  font-size: 16px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #2d9bea, #8d2ee4) !important;
+  color: #fff !important;
+}
+
+.up:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 14px rgb(50 50 93 / 10%), 0 3px 6px rgb(0 0 0 / 8%);
+  filter: brightness(130%);
+}
+
+.primary {
+  color: var(--white);
+  background-color: var(--primary);
+  border-color: #005eff;
+}
+.white {
+  font-size: 16px;
+  padding: 6px 15px;
+  line-height: normal;
+  height: auto;
+  position: relative;
+  top: -1px;
+  color: var(--dark);
+  background-color: var(--white);
+
+  &:hover {
+    color: #212529;
+    background-color: #eee;
+    text-decoration: none;
+  }
+}
+
+.btn-follow {
+  font-size: 16px;
+  padding: 6px 15px;
+  line-height: normal;
+  height: auto;
+  border-radius: 25px;
+  position: relative;
+  top: -1px;
+  &:hover {
+    color: #fff;
+    background-color: #0050d9;
+    border-color: #004bcc;
+  }
+}

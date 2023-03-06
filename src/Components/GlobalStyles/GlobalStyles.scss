@@ -3,10 +3,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
 
 :root {
-  --primary: #ff096e;
+  --blue: #005eff;
+  --indigo: #6574cd;
+  --purple: #9561e2;
+  --pink: #f66d9b;
+  --red: #ff315a;
+  --orange: #ff5722;
+  --yellow: #ffc107;
+  --green: #38c172;
+  --teal: #4dc0b5;
+  --cyan: #6cb2eb;
+  --white: #fff;
+  --gray: #6c757d;
+  --gray-dark: #343a40;
+  --primary: #005eff;
+  --secondary: #6c757d;
+  --success: #38c172;
+  --info: #6cb2eb;
+  --warning: #ffc107;
+  --danger: #ff315a;
+  --light: #eff1f2;
+  --dark: #343a40;
+  --text-color: #333;
 
   //Default layout
   --default-layout-header-height: 60px;
+  --default-layout-width: 1440px;
 }
 
 * {
@@ -24,6 +46,22 @@ body {
   font-size: 1.6rem;
   line-height: 1.5;
   text-rendering: optimizeSpeed;
+  color: var(--text-color);
+}
+
+button,
+input [tabindex] {
+  border: none;
+  outline: none;
+}
+
+a[href] {
+  color: var(--text-color);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--text-color);
+  }
 }
 
 .my-masonry-grid {
