@@ -12,12 +12,15 @@ function Button({
   type,
   up = false,
   children,
+  className,
+  image,
   leftIcon,
+  rightIcon,
   onClick,
   passProps,
 }) {
   let CompBut = 'button';
-  let classN = cx('wrapper', { primary }, { white });
+  let classN = cx('wrapper', { [className]: className, primary, white, up });
   const props = {
     onClick,
     ...passProps,
@@ -31,14 +34,22 @@ function Button({
     CompBut = 'a';
   }
   if (type) {
-    classN = cx('wrapper', type, { primary }, { white }, { up });
+    classN = cx('wrapper', type, {
+      [className]: className,
+      primary,
+      white,
+      up,
+    });
   }
   const classes = classN;
 
   return (
     <CompBut className={classes} {...props}>
       {leftIcon && <span className={cx('icon')}>{leftIcon}</span>}
-      <span>{children}</span>
+      {image && <img className={cx('image')} src={image} alt="" />}
+
+      <span className={cx('title')}>{children}</span>
+      {rightIcon && <span className={cx('icon')}>{rightIcon}</span>}
     </CompBut>
   );
 }

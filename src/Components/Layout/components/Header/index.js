@@ -8,6 +8,9 @@ import {
   faMagnifyingGlass,
   faSignIn,
   faUser,
+  faImage,
+  faCamera,
+  faGear,
 } from '@fortawesome/free-solid-svg-icons';
 import Tippy from '@tippyjs/react/headless';
 
@@ -15,8 +18,31 @@ import Button from '~/Components/Button';
 import { Wrapper as PopperWrapper } from '~/Components/Popper';
 import styles from './Header.module.scss';
 import UserItem from '~/Components/UserItem';
+import Menu from '~/Components/Popper/Menu';
 
 const cx = classNames.bind(styles);
+
+const Menu_Profile = [
+  {
+    image:
+      'https://cdn.pixilart.com/images/user/profile/large/1b3b80606abab6f.webp?v=1677879129',
+    title: 'Profile',
+    to: '/profile',
+  },
+  {
+    icon: <FontAwesomeIcon icon={faImage}></FontAwesomeIcon>,
+    title: 'My Gallery',
+    to: '/gallery',
+  },
+  {
+    icon: <FontAwesomeIcon icon={faCamera}></FontAwesomeIcon>,
+    title: 'My Photos',
+  },
+  {
+    icon: <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>,
+    title: 'Settings',
+  },
+];
 
 function Header() {
   const [searchResult, setSearchResult] = useState([]);
@@ -25,7 +51,6 @@ function Header() {
 
   return (
     <>
-      {/* fixed="top" */}
       {/* <Navbar className="d-block p-0" bg="light" expand="md"> */}
       <div className={cx('navbar-custom', 'nav-left-fixed')}>
         <div className={cx('inner', 'max')}>
@@ -115,9 +140,9 @@ function Header() {
               >
                 Login
               </Button>
-              <Button primary type="btn-follow">
-                dasdasd
-              </Button>
+              <Menu items={Menu_Profile}>
+                <FontAwesomeIcon icon={faUser} />
+              </Menu>
             </div>
           </div>
         </div>
