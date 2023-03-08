@@ -1,3 +1,4 @@
+// import { forwardRef } from 'react';
 import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
 import styles from './Button.module.scss';
@@ -9,8 +10,9 @@ function Button({
   href,
   primary = false,
   white = false,
-  type,
   up = false,
+  rounded = false,
+  type,
   children,
   className,
   image,
@@ -20,7 +22,13 @@ function Button({
   passProps,
 }) {
   let CompBut = 'button';
-  let classN = cx('wrapper', { [className]: className, primary, white, up });
+  let classN = cx('wrapper', {
+    [className]: className,
+    primary,
+    white,
+    rounded,
+    up,
+  });
   const props = {
     onClick,
     ...passProps,
@@ -38,18 +46,17 @@ function Button({
       [className]: className,
       primary,
       white,
+      rounded,
       up,
     });
   }
   const classes = classN;
-
   return (
     <CompBut className={classes} {...props}>
-      {leftIcon && <span className={cx('icon')}>{leftIcon}</span>}
+      {leftIcon && <i className={cx('icon')}>{leftIcon}</i>}
       {image && <img className={cx('image')} src={image} alt="" />}
-
-      <span className={cx('title')}>{children}</span>
-      {rightIcon && <span className={cx('icon')}>{rightIcon}</span>}
+      {children && <span className={cx('title')}>{children}</span>}
+      {rightIcon && <i className={cx('icon')}>{rightIcon}</i>}
     </CompBut>
   );
 }
