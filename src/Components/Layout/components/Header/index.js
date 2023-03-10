@@ -1,29 +1,27 @@
-// import { useEffect, useState, forwardRef } from 'react';
-import classNames from 'classnames/bind';
-import { Nav } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCircleXmark,
-  faSpinner,
-  faMagnifyingGlass,
-  faSignIn,
-  faUser,
+  faBell,
+  faImage,
+  faMessage,
+} from '@fortawesome/free-regular-svg-icons';
+import {
+  faArrowRightFromBracket,
+  faArrowUpFromBracket,
   faCamera,
   faGear,
-  faArrowUpFromBracket,
-  faArrowRightFromBracket,
+  faSignIn,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
-import { faImage } from '@fortawesome/free-regular-svg-icons';
-import { faBell, faMessage } from '@fortawesome/free-regular-svg-icons';
-import Tippy from '@tippyjs/react/headless';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Tippy from '@tippyjs/react';
+import classNames from 'classnames/bind';
+import { Nav } from 'react-bootstrap';
 import 'tippy.js/dist/tippy.css';
-
+import images from '~/assets/images';
 import Button from '~/Components/Button';
-import { Wrapper as PopperWrapper } from '~/Components/Popper';
-import styles from './Header.module.scss';
-import UserItem from '~/Components/UserItem';
+import Image from '~/Components/Image';
 import Menu from '~/Components/Popper/Menu';
-import 'tippy.js/dist/tippy.css';
+import Search from '../Search';
+import styles from './Header.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -56,15 +54,7 @@ const Menu_Profile = [
 ];
 
 function Header() {
-  // const [searchResult, setSearchResult] = useState([]);
-
-  // useEffect(() => {});
-
   const currentUser = true;
-
-  // const ButtonTooltip = forwardRef((props, ref) => {
-  //   return <Button ref={ref}></Button>;
-  // });
 
   return (
     <>
@@ -73,63 +63,17 @@ function Header() {
         <div className={cx('inner', 'max')}>
           <div className={cx('left-header')}>
             <div className={cx('logo')}>
-              <img
+              <Image
                 alt=""
-                src="https://www.pixilart.com/images/public/logo-plain-lg.png?v=1.1"
+                src={images.logo}
                 width="35"
                 height="30"
                 className="d-inline-block align-top"
               />
               <div className="">Pixel Land</div>
             </div>
-            {/* visible={searchResult.length > 0} */}
-            <Tippy
-              delay={[0, 700]}
-              offset={[40, 10]}
-              interactive
-              render={(attrs) => (
-                <div className={cx('search-result')} tabIndex="-1" {...attrs}>
-                  <PopperWrapper>
-                    <h4 className={cx('search-title')}> Users</h4>
-                    <div className={cx('search-overflow')}>
-                      <ul className={cx('list-group', 'ofh')}>
-                        <li className={cx('list-group-item')}>
-                          <UserItem />
-                        </li>
-                        <li className={cx('list-group-item')}>
-                          <UserItem />
-                        </li>
-                        <li className={cx('list-group-item')}>
-                          <UserItem />
-                        </li>
-                        <li className={cx('list-group-item')}>
-                          <UserItem />
-                        </li>
-                        <li className={cx('list-group-item')}>
-                          <UserItem />
-                        </li>
-                      </ul>
-                    </div>
-                  </PopperWrapper>
-                </div>
-              )}
-            >
-              <div className={cx('search')}>
-                <input placeholder="search pixel" spellCheck={false} />
-                <button id="search-clear" className={cx('clear')}>
-                  <FontAwesomeIcon icon={faCircleXmark} />
-                </button>
-                <FontAwesomeIcon className={cx('loading')} icon={faSpinner} />
 
-                <button
-                  type="submit"
-                  id="search-button"
-                  className={cx('search-btn')}
-                >
-                  <FontAwesomeIcon icon={faMagnifyingGlass} />
-                </button>
-              </div>
-            </Tippy>
+            <Search />
           </div>
           <div className={cx('center-header')}>
             {/* <Navbar.Collapse id="basic-navbar-nav"> */}
@@ -146,34 +90,32 @@ function Header() {
             <div className={cx('actions')}>
               {currentUser ? (
                 <>
-                  {/* <Tippy
+                  <Tippy
                     interactive
                     content="Upload pixel art"
                     placement="bottom"
                   >
-                    <ButtonTooltip
-                      id="uploadBtn"
+                    <Button
                       type="btn-upload"
                       up
                       leftIcon={<FontAwesomeIcon icon={faArrowUpFromBracket} />}
-                    ></ButtonTooltip>
-                  </Tippy> */}
-                  <Button
-                    id="uploadBtn"
-                    type="btn-upload"
-                    up
-                    leftIcon={<FontAwesomeIcon icon={faArrowUpFromBracket} />}
-                  ></Button>
-                  <Button
-                    white
-                    leftIcon={<FontAwesomeIcon icon={faMessage} />}
-                  ></Button>
-                  <Button
-                    white
-                    leftIcon={<FontAwesomeIcon icon={faBell} />}
-                  ></Button>
+                    ></Button>
+                  </Tippy>
+                  <Tippy interactive content="Message" placement="bottom">
+                    <Button
+                      white
+                      leftIcon={<FontAwesomeIcon icon={faMessage} />}
+                    ></Button>
+                  </Tippy>
+                  <Tippy interactive content="Notification" placement="bottom">
+                    <Button
+                      white
+                      leftIcon={<FontAwesomeIcon icon={faBell} />}
+                    ></Button>
+                  </Tippy>
+
                   <Menu items={Menu_Profile}>
-                    <img
+                    <Image
                       src="https://cdn.pixilart.com/images/user/profile/large/1b3b80606abab6f.webp?v=1677879129"
                       className={cx('user-avatar')}
                       alt="user"

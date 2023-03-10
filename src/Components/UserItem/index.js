@@ -1,28 +1,34 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import classNames from 'classnames/bind';
+import Image from '~/Components/Image';
 import styles from './UserItem.module.scss';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-function UserItem() {
+function UserItem({ className, data }) {
   return (
-    <div className={cx('wrapper')}>
-      <div className={cx('user')}>
-        <img
-          className={cx('avatar')}
-          src="https://cdn.pixilart.com/images/user/profile/large/1b3b80606abab6f.webp?v=1677879129"
-          alt="anasabdin"
-        />
-        <div className={cx('info')}>
-          <a href="#">
-            <span>
-              <span className={cx('name')}>anasabdin</span>
-              <span className={cx('username')}>@anasabdin</span>
-            </span>
-          </a>
+    <li className={classNames(className)}>
+      <div className={cx('wrapper')}>
+        <div className={cx('user')}>
+          <Link to={`/${data.nickname}`}>
+            <Image
+              className={cx('avatar')}
+              src={data.avatar}
+              alt={data.full_name}
+            />
+          </Link>
+          <div className={cx('info')}>
+            <Link to={`/${data.nickname}`}>
+              <span>
+                <span className={cx('name')}>{data.full_name}</span>
+                <span className={cx('username')}>{data.nickname}</span>
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </li>
   );
 }
 

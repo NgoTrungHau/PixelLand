@@ -1,14 +1,14 @@
 .wrapper {
   display: flex;
   align-items: center;
+  width: 100%;
+  color: #000;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
 
-  &:hover {
-    background: rgba(22, 24, 35, 0.03);
-  }
-
-  a[href]:hover {
-    text-decoration: underline;
-  }
+  // &:hover {
+  //   background: rgba(22, 24, 35, 0.03);
+  // }
 }
 
 .user {
@@ -30,16 +30,19 @@
 .info {
   flex: 1;
   display: flex;
+  width: 100%;
   align-items: center;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .name {
-  font-size: 1.4rem;
-  font-weight: 600;
+  white-space: nowrap;
   margin-right: 4px !important;
+  font-weight: 600;
 }
 .username {
-  font-size: 1.4rem;
   font-weight: 200;
   color: var(--gray);
 }

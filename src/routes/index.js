@@ -16,7 +16,7 @@ const publicRoutes = [
   { path: '/gallery', component: Gallery, layout: HeaderOnly },
   { path: '/search', component: Search },
   { path: '/contact', component: Contact },
-  { path: '/profile', component: Profile },
+  { path: '/:nickname', component: Profile },
   { path: '/following', component: Following },
   { path: '/mygallery', component: MyGallery },
 ];
