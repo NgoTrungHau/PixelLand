@@ -8,18 +8,22 @@ import {
   faArrowUpFromBracket,
   faCamera,
   faGear,
+  faHouse,
+  faImages,
   faSignIn,
   faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Tippy from '@tippyjs/react';
 import classNames from 'classnames/bind';
-import { Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import 'tippy.js/dist/tippy.css';
+
 import images from '~/assets/images';
 import Button from '~/Components/Button';
 import Image from '~/Components/Image';
 import Menu from '~/Components/Popper/Menu';
+import routesConfig from '~/config/routes';
 import Search from '../Search';
 import styles from './Header.module.scss';
 
@@ -58,11 +62,10 @@ function Header() {
 
   return (
     <>
-      {/* <Navbar className="d-block p-0" bg="light" expand="md"> */}
       <div className={cx('navbar-custom', 'nav-left-fixed')}>
         <div className={cx('inner', 'max')}>
           <div className={cx('left-header')}>
-            <div className={cx('logo')}>
+            <Link to={routesConfig.home} className={cx('logo')}>
               <Image
                 alt=""
                 src={images.logo}
@@ -71,19 +74,31 @@ function Header() {
                 className="d-inline-block align-top"
               />
               <div className="">Pixel Land</div>
-            </div>
+            </Link>
 
             <Search />
           </div>
           <div className={cx('center-header')}>
-            {/* <Navbar.Collapse id="basic-navbar-nav"> */}
-            <Nav>
-              <Nav.Link href="/">Home</Nav.Link>
-              <Nav.Link href="/gallery">Gallery</Nav.Link>
-              <Nav.Link href="/contact">Contact</Nav.Link>
-              <Nav.Link href="/profile">Profile</Nav.Link>
-            </Nav>
-            {/* </Navbar.Collapse> */}
+            <Button
+              white
+              to={routesConfig.home}
+              leftIcon={<FontAwesomeIcon icon={faHouse} />}
+            >
+              Home
+            </Button>
+            <Button
+              white
+              to={routesConfig.gallery}
+              leftIcon={<FontAwesomeIcon icon={faImages} />}
+            >
+              Gallery
+            </Button>
+            <Button white to={routesConfig.following}>
+              Following
+            </Button>
+            <Button white to={routesConfig.profile}>
+              Profile
+            </Button>
           </div>
 
           <div className={cx('right-header')}>
@@ -92,6 +107,7 @@ function Header() {
                 <>
                   <Tippy
                     interactive
+                    appendTo={() => document.body}
                     content="Upload pixel art"
                     placement="bottom"
                   >
@@ -101,13 +117,23 @@ function Header() {
                       leftIcon={<FontAwesomeIcon icon={faArrowUpFromBracket} />}
                     ></Button>
                   </Tippy>
-                  <Tippy interactive content="Message" placement="bottom">
+                  <Tippy
+                    interactive
+                    appendTo={() => document.body}
+                    content="Message"
+                    placement="bottom"
+                  >
                     <Button
                       white
                       leftIcon={<FontAwesomeIcon icon={faMessage} />}
                     ></Button>
                   </Tippy>
-                  <Tippy interactive content="Notification" placement="bottom">
+                  <Tippy
+                    interactive
+                    appendTo={() => document.body}
+                    content="Notification"
+                    placement="bottom"
+                  >
                     <Button
                       white
                       leftIcon={<FontAwesomeIcon icon={faBell} />}
@@ -145,7 +171,6 @@ function Header() {
           </div>
         </div>
       </div>
-      {/* </Navbar> */}
     </>
   );
 }

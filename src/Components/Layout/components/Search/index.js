@@ -54,59 +54,76 @@ function Search() {
     setShowResult(false);
   };
 
+  const handleChange = (e) => {
+    const searchValue = e.target.value;
+    if (!searchValue.startsWith(' ')) {
+      setSearchValue(searchValue);
+    }
+  };
   return (
-    <HeadlessTippy
-      visible={showResult && searchResult.length > 0}
-      delay={[0, 700]}
-      offset={[65, 10]}
-      interactive
-      render={(attrs) => (
-        <div className={cx('search-result')} tabIndex="-1" {...attrs}>
-          <PopperWrapper>
-            <h4 className={cx('search-title')}> Users</h4>
-            <div className={cx('search-overflow')}>
-              <ul className={cx('list-group', 'ofh')}>
-                {searchResult.map((result) => (
-                  <UserItem
-                    className={cx('list-group-item')}
-                    key={result.id}
-                    data={result}
-                  />
-                ))}
-              </ul>
-            </div>
-          </PopperWrapper>
-        </div>
-      )}
-      onClickOutside={handleHideResult}
-    >
-      <div className={cx('search')}>
-        <input
-          ref={inputRef}
-          value={searchValue}
-          placeholder="Search pixel"
-          spellCheck={false}
-          onChange={(e) => setSearchValue(e.target.value)}
-          onFocus={() => setShowResult(true)}
-        />
-        {!!searchValue && !loading && (
-          <button
-            id="search-clear"
-            className={cx('clear')}
-            onClick={handleClear}
-          >
-            <FontAwesomeIcon icon={faCircleXmark} />
-          </button>
+    // Using a wrapper <div> tag around the reference element solves
+    // this by creating a new parentNode context.
+    <div>
+      <HeadlessTippy
+        interactive
+        visible={showResult && searchResult.length > 0}
+        delay={[0, 700]}
+        offset={[65, 10]}
+        render={(attrs) => (
+          <div className={cx('search-result')} tabIndex="-1" {...attrs}>
+            <PopperWrapper>
+              <h4 className={cx('search-title')}> Users</h4>
+              <div className={cx('search-overflow')}>
+                <ul className={cx('list-group', 'ofh')}>
+                  {searchResult.map((result) => (
+                    <UserItem
+                      className={cx('list-group-item')}
+                      key={result.id}
+                      data={result}
+                    />
+                  ))}
+                </ul>
+              </div>
+            </PopperWrapper>
+          </div>
         )}
-        {loading && (
-          <FontAwesomeIcon className={cx('loading')} icon={faSpinner} />
-        )}
+        onClickOutside={handleHideResult}
+      >
+        <div className={cx('search')}>
+          <input
+            ref={inputRef}
+            value={searchValue}
+            placeholder="Search pixel"
+            spellCheck={false}
+            onChange={handleChange}
+            onFocus={() => setShowResult(true)}
+          />
+          {!!searchValue && !loading && (
+            <button
+              id="search-clear"
+              className={cx('clear')}
+              onClick={handleClear}
+            >
+              <FontAwesomeIcon icon={faCircleXmark} />
+            </button>
+          )}
+          {loading && (
+            <FontAwesomeIcon className={cx('loading')} icon={faSpinner} />
+          )}
 
-        <button type="submit" id="search-button" className={cx('search-btn')}>
-          <FontAwesomeIcon icon={faMagnifyingGlass} />
-        </button>
-      </div>
-    </HeadlessTippy>
+          <button
+            type="submit"
+            id="search-button"
+            className={cx('search-btn')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <FontAwesomeIcon icon={faMagnifyingGlass} />
+          </button>
+        </div>
+      </HeadlessTippy>
+    </div>
   );
 }
 
