@@ -6,12 +6,14 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import HeadlessTippy from '@tippyjs/react/headless';
 import classNames from 'classnames/bind';
-import { useEffect, useState, useRef } from 'react';
+
+import * as searchServices from '~/apiServices/searchService';
+import { useEffect, useRef, useState } from 'react';
 import { Wrapper as PopperWrapper } from '~/Components/Popper';
 import UserItem from '~/Components/UserItem';
 import { useDebounce } from '~/hooks';
+
 import styles from './Search.module.scss';
-// import axios from 'axios';
 
 const cx = classNames.bind(styles);
 
@@ -31,30 +33,16 @@ function Search() {
       return;
     }
 
-    setLoading(true);
+    const fetchApi = async () => {
+      setLoading(true);
 
-    fetch(
-      `https://tiktok.fullstack.edu.vn/api/users/search?q=${encodeURIComponent(
-        debounded,
-      )}&type=less`,
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        setSearchResult(res.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
+      const result = await searchServices.search(debounded);
+      setSearchResult(result);
 
-    //   const fecthData = async () => {
-    //     await axios.get("http://localhost:3000/api/users?q=${searchValue}&type=less")
-    //         .then(res => {
-    //           setSearchResult(res.data);
-    //             console.log(searchResult);
-    //         });
-    // };
-    // fecthData();
+      setLoading(false);
+    };
+
+    fetchApi();
   }, [debounded]);
 
   const handleClear = () => {
