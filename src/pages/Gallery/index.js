@@ -1,4 +1,4 @@
-import ArtList from '~/components/ArtList';
+import ArtList from '~/components/ArtList/ArtList';
 function Gallery() {
   return (
     <div>

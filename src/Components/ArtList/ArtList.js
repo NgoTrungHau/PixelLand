@@ -35,8 +35,8 @@ function ArtList() {
       className="my-masonry-grid"
       columnClassName="my-masonry-grid_column"
     >
-      {arts.map((art, index) => {
-        return <Art key={art._id} props={art}></Art>;
+      {arts.map((art) => {
+        return <Art key={art._id} art={art}></Art>;
       })}
     </Masonry>
   );

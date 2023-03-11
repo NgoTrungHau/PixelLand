@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import Button from '~/components/Button';
 import styles from './Menu.module.scss';
@@ -35,5 +36,9 @@ function MenuItem({ data }) {
     </Button>
   );
 }
+
+MenuItem.propTypes = {
+  data: PropTypes.object,
+};
 
 export default MenuItem;

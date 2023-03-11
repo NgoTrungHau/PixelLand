@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import Image from '~/components/Image';
 import styles from './UserItem.module.scss';
@@ -31,5 +32,9 @@ function UserItem({ className, data }) {
     </li>
   );
 }
+
+UserItem.propTypes = {
+  data: PropTypes.object,
+};
 
 export default UserItem;
