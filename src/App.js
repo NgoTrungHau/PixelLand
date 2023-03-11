@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { publicRoutes } from '~/routes';
-import { DefaultLayout } from '~/Components/Layout';
+import DefaultLayout from '~/layouts';
 
 function App() {
   return (

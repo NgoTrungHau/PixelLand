@@ -7,10 +7,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import HeadlessTippy from '@tippyjs/react/headless';
 import classNames from 'classnames/bind';
 
-import * as searchServices from '~/apiServices/searchService';
+import * as searchServices from '~/Services/searchService';
 import { useEffect, useRef, useState } from 'react';
-import { Wrapper as PopperWrapper } from '~/Components/Popper';
-import UserItem from '~/Components/UserItem';
+import { Wrapper as PopperWrapper } from '~/components/Popper';
+import UserItem from '~/components/UserItem';
 import { useDebounce } from '~/hooks';
 
 import styles from './Search.module.scss';

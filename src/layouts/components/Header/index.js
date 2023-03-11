@@ -20,10 +20,10 @@ import { Link } from 'react-router-dom';
 import 'tippy.js/dist/tippy.css';
 
 import images from '~/assets/images';
-import Button from '~/Components/Button';
-import Image from '~/Components/Image';
-import Menu from '~/Components/Popper/Menu';
-import routesConfig from '~/config/routes';
+import Button from '~/components/Button';
+import Image from '~/components/Image';
+import Menu from '~/components/Popper/Menu';
+import config from '~/config';
 import Search from '../Search';
 import styles from './Header.module.scss';
 
@@ -65,7 +65,7 @@ function Header() {
       <div className={cx('navbar-custom', 'nav-left-fixed')}>
         <div className={cx('inner', 'max')}>
           <div className={cx('left-header')}>
-            <Link to={routesConfig.home} className={cx('logo')}>
+            <Link to={config.routes.home} className={cx('logo')}>
               <Image
                 alt=""
                 src={images.logo}
@@ -81,22 +81,22 @@ function Header() {
           <div className={cx('center-header')}>
             <Button
               white
-              to={routesConfig.home}
+              to={config.routes.home}
               leftIcon={<FontAwesomeIcon icon={faHouse} />}
             >
               Home
             </Button>
             <Button
               white
-              to={routesConfig.gallery}
+              to={config.routes.gallery}
               leftIcon={<FontAwesomeIcon icon={faImages} />}
             >
               Gallery
             </Button>
-            <Button white to={routesConfig.following}>
+            <Button white to={config.routes.following}>
               Following
             </Button>
-            <Button white to={routesConfig.profile}>
+            <Button white to={config.routes.profile}>
               Profile
             </Button>
           </div>

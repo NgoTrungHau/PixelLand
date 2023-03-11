@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
-import Header from '~/Components/Layout/components/Header';
-import styles from '~/Components/Layout/DefaultLayout/DefaultLayout.module.scss';
+import Header from '~/layouts/components/Header';
+import styles from '~/layouts/DefaultLayout/DefaultLayout.module.scss';
 
 const cx = classNames.bind(styles);
 
