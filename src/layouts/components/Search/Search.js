@@ -20,15 +20,15 @@ const cx = classNames.bind(styles);
 function Search() {
   const [searchValue, setSearchValue] = useState('');
   const [searchResult, setSearchResult] = useState([]);
-  const [showResult, setShowResult] = useState(true);
+  const [showResult, setShowResult] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const debounded = useDebounce(searchValue, 500);
+  const deboundedValue = useDebounce(searchValue, 500);
 
   const inputRef = useRef();
 
   useEffect(() => {
-    if (!debounded.trim()) {
+    if (!deboundedValue.trim()) {
       setSearchResult([]);
       return;
     }
@@ -36,17 +36,18 @@ function Search() {
     const fetchApi = async () => {
       setLoading(true);
 
-      const result = await searchServices.search(debounded);
+      const result = await searchServices.search(deboundedValue);
       setSearchResult(result);
 
       setLoading(false);
     };
 
     fetchApi();
-  }, [debounded]);
+  }, [deboundedValue]);
 
   const handleClear = () => {
     setSearchValue('');
+    setSearchResult([]);
     inputRef.current.focus();
   };
 
@@ -60,6 +61,26 @@ function Search() {
       setSearchValue(searchValue);
     }
   };
+
+  const renderSearchResult = (attrs) => (
+    <div className={cx('search-result')} tabIndex="-1" {...attrs}>
+      <PopperWrapper>
+        <h4 className={cx('search-title')}> Users</h4>
+        <div className={cx('search-overflow')}>
+          <ul className={cx('list-group', 'ofh')}>
+            {searchResult.map((result) => (
+              <UserItem
+                className={cx('list-group-item')}
+                key={result.id}
+                data={result}
+              />
+            ))}
+          </ul>
+        </div>
+      </PopperWrapper>
+    </div>
+  );
+
   return (
     // Using a wrapper <div> tag around the reference element solves
     // this by creating a new parentNode context.
@@ -69,24 +90,7 @@ function Search() {
         visible={showResult && searchResult.length > 0}
         delay={[0, 700]}
         offset={[65, 10]}
-        render={(attrs) => (
-          <div className={cx('search-result')} tabIndex="-1" {...attrs}>
-            <PopperWrapper>
-              <h4 className={cx('search-title')}> Users</h4>
-              <div className={cx('search-overflow')}>
-                <ul className={cx('list-group', 'ofh')}>
-                  {searchResult.map((result) => (
-                    <UserItem
-                      className={cx('list-group-item')}
-                      key={result.id}
-                      data={result}
-                    />
-                  ))}
-                </ul>
-              </div>
-            </PopperWrapper>
-          </div>
-        )}
+        render={renderSearchResult}
         onClickOutside={handleHideResult}
       >
         <div className={cx('search')}>
