@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 import classNames from 'classnames/bind';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import styles from './Button.module.scss';
 
 const cx = classNames.bind(styles);
@@ -11,11 +11,15 @@ const Button = forwardRef(
     {
       to,
       href,
+      type,
+      navlink = false,
       primary = false,
       white = false,
+      login = false,
+      signup = false,
+      upload = false,
       up = false,
       rounded = false,
-      type,
       children,
       className,
       image,
@@ -31,6 +35,9 @@ const Button = forwardRef(
       [className]: className,
       primary,
       white,
+      login,
+      signup,
+      upload,
       rounded,
       up,
     });
@@ -40,20 +47,24 @@ const Button = forwardRef(
     };
 
     if (to) {
+      if(navlink) {
+        CompBut = NavLink;
+        classN = (nav)=> cx('wrapper', {
+          [className]: className,
+          primary,
+          white,
+          rounded,
+          up,
+          active: nav.isActive
+        });
+      } else{
+        CompBut = Link;
+      }
+      
       props.to = to;
-      CompBut = Link;
     } else if (href) {
       props.href = href;
       CompBut = 'a';
-    }
-    if (type) {
-      classN = cx('wrapper', type, {
-        [className]: className,
-        primary,
-        white,
-        rounded,
-        up,
-      });
     }
     const classes = classN;
     return (
@@ -70,8 +81,12 @@ const Button = forwardRef(
 Button.propTypes = {
   to: PropTypes.string,
   href: PropTypes.string,
+  navlink: PropTypes.bool,
   primary: PropTypes.bool,
   white: PropTypes.bool,
+  login:PropTypes.bool,
+  signup:PropTypes.bool,
+  upload:PropTypes.bool,
   up: PropTypes.bool,
   rounded: PropTypes.bool,
   type: PropTypes.string,
