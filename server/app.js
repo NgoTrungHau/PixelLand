@@ -1,21 +1,25 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const ApiError = require('./app/api-error');
 
 const app = express();
 
-const artsRouter = require('./app/routes/art.route');
-const usersRouter = require('./app/routes/user.route');
+const userRouter = require('./app/routes/user.route');
+const postRouter = require('./app/routes/post.route');
+const artRouter = require('./app/routes/art.route');
 
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to PixelLand application.' });
 });
 
-app.use('/api/arts', artsRouter);
-app.use('/api/users', usersRouter);
+app.use('/api/users', userRouter);
+app.use('/api/posts', postRouter);
+app.use('/api/arts', artRouter);
 
 // handle 404 response
 app.use((req, res, next) => {
