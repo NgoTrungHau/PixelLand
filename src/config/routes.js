@@ -1,6 +1,7 @@
 const routes = {
   home: '/',
   gallery: '/gallery',
+  digital: '/digitalart',
   search: '/search',
   profile: '/:nickname',
   following: '/following',

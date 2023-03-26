@@ -10,8 +10,6 @@ import {
   faGear,
   faHouse,
   faImages,
-  faSignIn,
-  faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Tippy from '@tippyjs/react';
@@ -22,6 +20,8 @@ import 'tippy.js/dist/tippy.css';
 import images from '~/assets/images';
 import Button from '~/components/Button';
 import Image from '~/components/Image';
+import { ModalLogin } from '~/components/Modals/Login';
+import { ModalSignUp } from '~/components/Modals/SignUp';
 import Menu from '~/components/Popper/Menu';
 import config from '~/config';
 import Search from '../Search';
@@ -58,7 +58,7 @@ const Menu_Profile = [
 ];
 
 function Header() {
-  const currentUser = true;
+  const currentUser = false;
 
   return (
     <>
@@ -81,6 +81,7 @@ function Header() {
           <div className={cx('center-header')}>
             <Button
               white
+              navlink
               to={config.routes.home}
               leftIcon={<FontAwesomeIcon icon={faHouse} />}
             >
@@ -88,15 +89,16 @@ function Header() {
             </Button>
             <Button
               white
+              navlink
               to={config.routes.gallery}
               leftIcon={<FontAwesomeIcon icon={faImages} />}
             >
               Gallery
             </Button>
-            <Button white to={config.routes.following}>
+            <Button white navlink to={config.routes.following}>
               Following
             </Button>
-            <Button white to={config.routes.profile}>
+            <Button white navlink to={config.routes.profile}>
               Profile
             </Button>
           </div>
@@ -150,21 +152,8 @@ function Header() {
                 </>
               ) : (
                 <>
-                  <Button
-                    type="btn-signup"
-                    up
-                    leftIcon={<FontAwesomeIcon icon={faUser} />}
-                  >
-                    Sign Up
-                  </Button>
-                  <Button
-                    type="btn-login"
-                    up
-                    leftIcon={<FontAwesomeIcon icon={faSignIn} />}
-                    onClick={() => alert('Login')}
-                  >
-                    Login
-                  </Button>
+                  <ModalSignUp/>
+                  <ModalLogin/>
                 </>
               )}
             </div>
