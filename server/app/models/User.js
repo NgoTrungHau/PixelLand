@@ -3,8 +3,15 @@ const Schema = mongoose.Schema;
 
 const User = new Schema(
   {
-    nickname: { type: String, default: 'Admin' },
-    username: { type: String, default: '@admin' },
+    username: { type: String, required: [true, 'Please add a name'] },
+    email: {
+      type: String,
+      required: [true, 'Please add an email'],
+      unique: [true, 'Email already in use'],
+    },
+    password: { type: String, required: [true, 'Please add a password'] },
+    nickname: { type: String, default: '@username' },
+    role: { type: String, default: 'user' },
     bio: { type: String, maxLength: 600 },
     avatar: {
       type: String,
@@ -15,10 +22,9 @@ const User = new Schema(
     followings: { type: Number, default: 0 },
     followers: { type: Number, default: 0 },
     liked: { type: Number, default: 0 },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
   },
   {
+    timestamps: true,
     versionKey: false, // You should be aware of the outcome after set to false
   },
 );

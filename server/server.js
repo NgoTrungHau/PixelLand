@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const app = require('./app');
 const config = require('./app/config');
 const db = require('./app/utils/mongodb.util');
