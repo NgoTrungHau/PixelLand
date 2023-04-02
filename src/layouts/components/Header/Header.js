@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Tippy from '@tippyjs/react';
 import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import 'tippy.js/dist/tippy.css';
 
 import images from '~/assets/images';
@@ -29,36 +30,36 @@ import styles from './Header.module.scss';
 
 const cx = classNames.bind(styles);
 
-const Menu_Profile = [
-  {
-    image:
-      'https://cdn.pixilart.com/images/user/profile/large/1b3b80606abab6f.webp?v=1677879129',
-    title: 'Profile',
-    to: '/profile',
-  },
-  {
-    icon: <FontAwesomeIcon icon={faImage}></FontAwesomeIcon>,
-    title: 'My Gallery',
-    to: '/gallery',
-    divider: true,
-  },
-  {
-    icon: <FontAwesomeIcon icon={faCamera}></FontAwesomeIcon>,
-    title: 'My Photos',
-  },
-  {
-    icon: <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>,
-    title: 'Settings',
-  },
-  {
-    icon: <FontAwesomeIcon icon={faArrowRightFromBracket}></FontAwesomeIcon>,
-    title: 'Logout',
-    divider: true,
-  },
-];
-
 function Header() {
-  const currentUser = false;
+  const { user } = useSelector((state) => state.auth);
+
+  const Menu_Profile = [
+    {
+      image:
+        'https://cdn.pixilart.com/images/user/profile/large/1b3b80606abab6f.webp?v=1677879129',
+      title: 'Profile',
+      to: '/profile',
+    },
+    {
+      icon: <FontAwesomeIcon icon={faImage}></FontAwesomeIcon>,
+      title: 'My Gallery',
+      to: '/gallery',
+      divider: true,
+    },
+    {
+      icon: <FontAwesomeIcon icon={faCamera}></FontAwesomeIcon>,
+      title: 'My Photos',
+    },
+    {
+      icon: <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>,
+      title: 'Settings',
+    },
+    {
+      icon: <FontAwesomeIcon icon={faArrowRightFromBracket}></FontAwesomeIcon>,
+      title: 'Logout',
+      divider: true,
+    },
+  ];
 
   return (
     <>
@@ -105,7 +106,7 @@ function Header() {
 
           <div className={cx('right-header')}>
             <div className={cx('actions')}>
-              {currentUser ? (
+              {user ? (
                 <>
                   <Tippy
                     interactive
@@ -114,7 +115,7 @@ function Header() {
                     placement="bottom"
                   >
                     <Button
-                      type="btn-upload"
+                      upload
                       up
                       leftIcon={<FontAwesomeIcon icon={faArrowUpFromBracket} />}
                     ></Button>
@@ -144,7 +145,7 @@ function Header() {
 
                   <Menu items={Menu_Profile}>
                     <Image
-                      src="https://cdn.pixilart.com/images/user/profile/large/1b3b80606abab6f.webp?v=1677879129"
+                      src={user.avatar}
                       className={cx('user-avatar')}
                       alt="user"
                     />
@@ -152,8 +153,8 @@ function Header() {
                 </>
               ) : (
                 <>
-                  <ModalSignUp/>
-                  <ModalLogin/>
+                  <ModalSignUp />
+                  <ModalLogin />
                 </>
               )}
             </div>

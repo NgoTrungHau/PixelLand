@@ -5,7 +5,7 @@ import styles from './Menu.module.scss';
 
 const cx = classNames.bind(styles);
 
-function MenuItem({ data }) {
+function MenuItem({ data, onClick }) {
   const classes = cx('menu-item');
 
   if (data.divider) {
@@ -18,6 +18,7 @@ function MenuItem({ data }) {
           image={data.image}
           rightIcon={data.icon}
           to={data.to}
+          onClick={onClick}
         >
           {data.title}
         </Button>
@@ -31,6 +32,7 @@ function MenuItem({ data }) {
       image={data.image}
       rightIcon={data.icon}
       to={data.to}
+      onClick={onClick}
     >
       {data.title}
     </Button>
@@ -39,6 +41,7 @@ function MenuItem({ data }) {
 
 MenuItem.propTypes = {
   data: PropTypes.object,
+  onClick: PropTypes.func,
 };
 
 export default MenuItem;

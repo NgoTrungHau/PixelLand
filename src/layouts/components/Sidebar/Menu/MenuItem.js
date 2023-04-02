@@ -11,7 +11,7 @@ function MenuItem({ title, to, icon, image, divider = false }) {
   if (divider) {
     return (
       <>
-        <div className={cx('divider')}></div>
+        <div className={cx('divider-gray')}></div>
         <NavLink
           className={(nav) => cx('menu-item', { active: nav.isActive })}
           to={to}

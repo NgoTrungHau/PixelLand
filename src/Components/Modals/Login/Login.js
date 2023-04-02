@@ -1,25 +1,22 @@
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
-import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import {
+  faSpinner,
+  faArrowRightToBracket,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from '../Modal.module.scss';
 import Button from '~/components/Button';
-import * as loginServices from '~/Services/loginService';
+import { login, reset } from '~/features/auth/authSlice';
 
 const cx = classNames.bind(styles);
 
 function ModalLogin() {
   const [modal, setModal] = useState(false);
-
-  const [formData, setFormData] = useState({
-    userName: '',
-    email: '',
-    password: '',
-    password2: '',
-  });
-
-  const { email, password } = formData;
 
   const toggleModal = () => {
     setModal(!modal);
@@ -33,6 +30,32 @@ function ModalLogin() {
     }
   }, [modal]);
 
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
+  const { email, password } = formData;
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth,
+  );
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess || user) {
+      navigate('/');
+    }
+
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
+
   const handleFormData = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -40,18 +63,20 @@ function ModalLogin() {
     }));
   };
 
-  const loginUser = async (e) => {
+  const loginSubmit = async (e) => {
     e.preventDefault();
 
-    const result = await loginServices.login(email, password);
+    const userData = {
+      email,
+      password,
+    };
 
-    if (result) {
-      alert('login successful');
-      window.location.href = '/';
-    } else {
-      alert('pls check ur email and password');
-    }
+    dispatch(login(userData));
   };
+
+  if (isLoading) {
+    return <FontAwesomeIcon icon={faSpinner} />;
+  }
 
   return (
     <div className={cx('wrapper')}>
@@ -71,7 +96,7 @@ function ModalLogin() {
               <h2>Log in</h2>
               <p>Welcome back!</p>
             </div>
-            <form onSubmit={loginUser}>
+            <form onSubmit={loginSubmit}>
               <div className="form-group">
                 <label
                   className="d-flex justify-content-left"
@@ -80,9 +105,11 @@ function ModalLogin() {
                   Email:
                 </label>
                 <input
-                  value={email}
                   type="email"
                   className="form-control"
+                  id="email"
+                  name="email"
+                  value={email}
                   placeholder="Email"
                   onChange={handleFormData}
                 ></input>
@@ -95,9 +122,11 @@ function ModalLogin() {
                   Password:
                 </label>
                 <input
-                  value={password}
                   type="password"
                   className="form-control"
+                  id="password"
+                  name="password"
+                  value={password}
                   placeholder="Password"
                   onChange={handleFormData}
                 ></input>

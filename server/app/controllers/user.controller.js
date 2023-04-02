@@ -30,7 +30,13 @@ exports.register = async (req, res, next) => {
 
   try {
     const createUser = await user.save();
-    res.json(createUser);
+    res.json({
+      _id: createUser.id,
+      username: createUser.username,
+      email: createUser.email,
+      avatar: createUser.avatar,
+      token: generateToken(createUser._id),
+    });
   } catch (error) {
     return next(new ApiError(400, 'Invalid user data'));
   }
@@ -58,6 +64,7 @@ exports.login = async (req, res, next) => {
         _id: user.id,
         name: user.username,
         email: user.email,
+        avatar: user.avatar,
         token: generateToken(user._id),
       });
     }
