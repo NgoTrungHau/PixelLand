@@ -4,11 +4,9 @@ const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router
-  .route('/')
-  .get(posts.findAll)
-  .post(protect, posts.create)
-  .delete(protect, posts.deleteAll);
+router.route('/').get(posts.findAll);
+router.route('/create').post(protect, posts.create);
+router.route('/delete').delete(protect, posts.deleteAll);
 
 router
   .route('/:id')

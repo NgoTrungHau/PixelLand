@@ -12,15 +12,15 @@ function Art({ props }) {
 }
 
 function ArtList() {
-  const [arts, setArt] = useState([]);
-  useEffect(() => {
-    getArts();
-  }, []);
+  // const [arts, setArt] = useState([]);
+  // useEffect(() => {
+  //   getArts();
+  // }, []);
 
-  const getArts = async () => {
-    const document = await axios.get('http://localhost:3000/api/arts');
-    setArt(document.data);
-  };
+  // const getArts = async () => {
+  //   const document = await axios.get('http://localhost:3000/api/arts');
+  //   setArt(document.data);
+  // };
 
   const breakpoint = {
     default: 4,
@@ -30,15 +30,16 @@ function ArtList() {
   };
 
   return (
-    <Masonry
-      breakpointCols={breakpoint}
-      className="my-masonry-grid"
-      columnClassName="my-masonry-grid_column"
-    >
-      {arts.map((art) => {
-        return <Art key={art._id} art={art}></Art>;
-      })}
-    </Masonry>
+    <div>something</div>
+    // <Masonry
+    //   breakpointCols={breakpoint}
+    //   className="my-masonry-grid"
+    //   columnClassName="my-masonry-grid_column"
+    // >
+    //   {arts.map((art) => {
+    //     return <Art key={art._id} art={art}></Art>;
+    //   })}
+    // </Masonry>
   );
 }
 

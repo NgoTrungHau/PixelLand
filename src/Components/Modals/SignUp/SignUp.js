@@ -1,25 +1,19 @@
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { faSpinner, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Button from '~/components/Button';
 import styles from '../Modal.module.scss';
-import * as registerServices from '~/Services/registerService';
+import { register, reset } from '~/features/auth/authSlice';
 
 const cx = classNames.bind(styles);
 
 function ModalSignUp() {
   const [modal, setModal] = useState(false);
-
-  const [formData, setFormData] = useState({
-    userName: '',
-    email: '',
-    password: '',
-    password2: '',
-  });
-
-  const { userName, email, password, password2 } = formData;
 
   const toggleModal = () => {
     setModal(!modal);
@@ -27,11 +21,39 @@ function ModalSignUp() {
 
   useEffect(() => {
     if (modal) {
-      document.body.classList.add('active-modal');
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.classList.remove('active-modal');
+      document.body.style.overflow = 'scroll';
     }
   }, [modal]);
+
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    password2: '',
+  });
+
+  const { username, email, password, password2 } = formData;
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth,
+  );
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess || user) {
+      navigate('/');
+    }
+
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const handleFormData = (e) => {
     setFormData((prevState) => ({
@@ -40,12 +62,45 @@ function ModalSignUp() {
     }));
   };
 
-  const registerUser = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    const result = await registerServices.register(userName, email, password);
-    console.log(result);
+    if (password !== password2) {
+      toast.error('Passwords do not match');
+    } else {
+      const userData = {
+        username,
+        email,
+        password,
+      };
+
+      dispatch(register(userData));
+    }
   };
+
+  if (isLoading) {
+    return <FontAwesomeIcon icon={faSpinner} />;
+    // return (
+    //   <div className={cx('wrapper')}>
+    //     <Button
+    //       signup
+    //       up
+    //       leftIcon={<FontAwesomeIcon icon={faUser} />}
+    //       onClick={toggleModal}
+    //     >
+    //       Sign Up
+    //     </Button>
+    //     {modal && (
+    //       <div className={cx('modal')}>
+    //         <div onClick={toggleModal} className={cx('overlay')}></div>
+    //         <div className={cx('modal-content')}>
+    //           <FontAwesomeIcon icon={faSpinner} />
+    //         </div>
+    //       </div>
+    //     )}
+    //   </div>
+    // );
+  }
 
   return (
     <div className={cx('wrapper')}>
@@ -65,7 +120,7 @@ function ModalSignUp() {
               <h2>Create an account</h2>
               <p>Become part of pixel art community</p>
             </div>
-            <form onSubmit={registerUser}>
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label
                   className="d-flex justify-content-left"
@@ -74,9 +129,11 @@ function ModalSignUp() {
                   Username:
                 </label>
                 <input
-                  value={userName}
                   type="text"
                   className="form-control"
+                  value={username}
+                  id="username"
+                  name="username"
                   placeholder="Username"
                   onChange={handleFormData}
                 ></input>
@@ -89,9 +146,11 @@ function ModalSignUp() {
                   Email:
                 </label>
                 <input
-                  value={email}
                   type="email"
                   className="form-control"
+                  id="email"
+                  name="email"
+                  value={email}
                   placeholder="Email"
                   onChange={handleFormData}
                 ></input>
@@ -104,9 +163,11 @@ function ModalSignUp() {
                   Password:
                 </label>
                 <input
-                  value={password}
                   type="password"
                   className="form-control"
+                  id="password"
+                  name="password"
+                  value={password}
                   placeholder="Password"
                   onChange={handleFormData}
                 ></input>
@@ -119,15 +180,17 @@ function ModalSignUp() {
                   Comfirm password:
                 </label>
                 <input
-                  value={password2}
                   type="password"
                   className="form-control"
+                  id="password2"
+                  name="password2"
+                  value={password2}
                   placeholder="Comfirm"
                   onChange={handleFormData}
                 ></input>
               </div>
 
-              <div className="form-group ">
+              <div className="form-group">
                 <Button primary type="submit">
                   Create account
                 </Button>
