@@ -1,5 +1,6 @@
 import classNames from 'classnames/bind';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,6 +13,7 @@ import { getPosts, reset } from '~/features/posts/postSlice';
 const cx = classNames.bind(styles);
 
 function Home() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
@@ -19,15 +21,13 @@ function Home() {
     (state) => state.posts,
   );
 
-  const [isLogin, setIsLogin] = useState(false);
-
   useEffect(() => {
     if (isError) {
       console.log(message);
     }
 
     if (!user) {
-      setIsLogin(true);
+      navigate('/');
     }
 
     dispatch(getPosts());
@@ -35,42 +35,35 @@ function Home() {
     return () => {
       dispatch(reset());
     };
-  }, [user, isError, message, dispatch]);
-
-  if (isLoading) {
-    return (
-      <div className={cx('wrapper')}>
-        <FontAwesomeIcon icon={faSpinner} />
-      </div>
-    );
-  }
+  }, [user, navigate, isError, message, dispatch]);
 
   return (
     <div className={cx('wrapper')}>
-      {isLogin ? (
+      {!user ? (
         <>
           <h3>Please log in</h3>
         </>
       ) : (
         <>
-          <section className="heading">
-            <h1>Welcome {user && user.name}</h1>
-            <p>Posts Dashboard</p>
-          </section>
-
           <PostForm />
 
-          <section className="content">
-            {posts.length > 0 ? (
-              <div className="posts">
-                {posts.map((post) => (
-                  <PostItem key={post._id} post={post} />
-                ))}
-              </div>
-            ) : (
-              <h3>You have not set any posts</h3>
-            )}
-          </section>
+          {isLoading ? (
+            <div className={cx('SpinIcon')}>
+              <FontAwesomeIcon className={cx('loading')} icon={faSpinner} />
+            </div>
+          ) : (
+            <section className={cx('content')}>
+              {posts.length > 0 ? (
+                <div className={cx('posts')}>
+                  {posts.map((post) => (
+                    <PostItem key={post._id} post={post} />
+                  ))}
+                </div>
+              ) : (
+                <h3>There are no posts</h3>
+              )}
+            </section>
+          )}
         </>
       )}
     </div>

@@ -107,7 +107,15 @@ exports.findOne = async (req, res, next) => {
     if (!user) {
       return next(new ApiError(404, 'User not found'));
     }
-    return res.json(user);
+    return res.json({
+      _id: user.id,
+      name: user.username,
+      email: user.email,
+      avatar: user.avatar,
+      bio: user.bio,
+      followings: user.followings,
+      followers: user.followers,
+    });
   } catch (error) {
     return next(
       new ApiError(500, `Error retrieving user with id=${req.params.id}`),

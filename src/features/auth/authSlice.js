@@ -43,8 +43,23 @@ export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
   }
 });
 
+// Logout user
 export const logout = createAsyncThunk('auth/logout', async () => {
   await authService.logout();
+});
+
+// Get my info
+export const getMe = createAsyncThunk('posts/getMe', async (_, thunkAPI) => {
+  try {
+    const token = thunkAPI.getState().auth.user.token;
+    return await authService.getMe(token);
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
 });
 
 export const authSlice = createSlice({

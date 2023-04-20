@@ -30,7 +30,7 @@ const deletePost = async (postId, token) => {
     },
   };
 
-  const response = await httpRequest.deleteOne(API_URL + postId, config);
+  const response = await httpRequest.deleteReq(API_URL + postId, config);
 
   return response;
 };

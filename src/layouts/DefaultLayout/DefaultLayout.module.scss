@@ -10,5 +10,8 @@
 }
 
 .content {
+  display: flex;
   flex: 1;
+  padding: 24px 250px 0;
+  justify-content: center;
 }

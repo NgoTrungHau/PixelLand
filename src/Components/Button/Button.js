@@ -15,6 +15,7 @@ const Button = forwardRef(
       navlink = false,
       primary = false,
       white = false,
+      gray = false,
       login = false,
       signup = false,
       upload = false,
@@ -35,6 +36,7 @@ const Button = forwardRef(
       [className]: className,
       primary,
       white,
+      gray,
       login,
       signup,
       upload,
@@ -47,20 +49,22 @@ const Button = forwardRef(
     };
 
     if (to) {
-      if(navlink) {
+      if (navlink) {
         CompBut = NavLink;
-        classN = (nav)=> cx('wrapper', {
-          [className]: className,
-          primary,
-          white,
-          rounded,
-          up,
-          active: nav.isActive
-        });
-      } else{
+        classN = (nav) =>
+          cx('wrapper', {
+            [className]: className,
+            primary,
+            white,
+            gray,
+            rounded,
+            up,
+            active: nav.isActive,
+          });
+      } else {
         CompBut = Link;
       }
-      
+
       props.to = to;
     } else if (href) {
       props.href = href;
@@ -84,9 +88,10 @@ Button.propTypes = {
   navlink: PropTypes.bool,
   primary: PropTypes.bool,
   white: PropTypes.bool,
-  login:PropTypes.bool,
-  signup:PropTypes.bool,
-  upload:PropTypes.bool,
+  gray: PropTypes.bool,
+  login: PropTypes.bool,
+  signup: PropTypes.bool,
+  upload: PropTypes.bool,
   up: PropTypes.bool,
   rounded: PropTypes.bool,
   type: PropTypes.string,
