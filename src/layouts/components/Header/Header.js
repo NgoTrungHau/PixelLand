@@ -96,12 +96,12 @@ function Header() {
             >
               Gallery
             </Button>
-            <Button white navlink to={config.routes.following}>
+            {/* <Button white navlink to={config.routes.following}>
               Following
             </Button>
             <Button white navlink to={config.routes.profile}>
               Profile
-            </Button>
+            </Button> */}
           </div>
 
           <div className={cx('right-header')}>

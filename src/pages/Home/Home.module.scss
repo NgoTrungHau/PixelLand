@@ -1,4 +1,16 @@
 .wrapper {
-  padding: 24px 10px;
-  text-align: center;
+  width: 800px;
+  display: block;
+  justify-content: center;
+
+  .SpinIcon {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.posts {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 5px;
 }

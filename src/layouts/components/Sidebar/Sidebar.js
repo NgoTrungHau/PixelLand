@@ -1,4 +1,6 @@
 import classNames from 'classnames/bind';
+import { useSelector } from 'react-redux';
+
 import { faHouse, faImages, faImage } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -8,7 +10,9 @@ import config from '~/config';
 
 const cx = classNames.bind(styles);
 
-function Sidebar({ data }) {
+function Sidebar() {
+  const { user } = useSelector((state) => state.auth);
+
   return (
     <aside className={cx('wrapper')}>
       <Menu>
@@ -18,9 +22,9 @@ function Sidebar({ data }) {
           icon={<FontAwesomeIcon icon={faHouse}></FontAwesomeIcon>}
         />
         <MenuItem
-          title="anasabdin"
+          title={user.name}
           to={config.routes.profile}
-          image="https://cdn.pixilart.com/images/user/profile/large/1b3b80606abab6f.webp?v=1677879129"
+          image={user.avatar}
         />
         <MenuItem
           divider

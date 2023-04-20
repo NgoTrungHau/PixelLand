@@ -14,8 +14,8 @@ export const post = async (path, options = {}, config = {}) => {
   return response.data;
 };
 
-export const deleteOne = async (path, options = {}, config = {}) => {
-  const response = await httpRequest.delete(path, options, config);
+export const deleteReq = async (path, config = {}) => {
+  const response = await httpRequest.delete(path, config);
   return response.data;
 };
 

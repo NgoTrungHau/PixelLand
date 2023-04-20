@@ -13,14 +13,22 @@ exports.create = async (req, res, next) => {
 
   try {
     const createPost = await post.save();
-    res.json(createPost);
+
+    res.json({
+      ...createPost._doc,
+      user: {
+        _id: req.user._id,
+        username: req.user.username,
+        avatar: req.user.avatar,
+      },
+    });
   } catch (error) {
     return next(new ApiError(500, 'An error occurred while creating the post'));
   }
 };
 exports.findAll = async (req, res, next) => {
   try {
-    const posts = await Post.find({});
+    const posts = await Post.find({}).populate('user', 'username avatar');
     res.json(posts);
   } catch (error) {
     return next(new ApiError(500, 'An error occurred while retrieving post'));
@@ -28,7 +36,10 @@ exports.findAll = async (req, res, next) => {
 };
 exports.findOne = async (req, res, next) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id).populate(
+      'user',
+      'username avatar',
+    );
     if (!post) {
       return next(new ApiError(404, 'Post not found'));
     }

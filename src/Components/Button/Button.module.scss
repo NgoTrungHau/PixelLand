@@ -60,8 +60,30 @@
   justify-content: center;
   color: var(--white);
   background-color: var(--primary);
-  border-color: #005eff;
   box-shadow: 0 5px 10px 0 rgb(0 0 0 / 5%);
+}
+.gray {
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  background-color: var(--gray);
+  box-shadow: 0 5px 10px 0 rgb(0 0 0 / 5%);
+}
+.white {
+  font-size: 16px;
+  padding: 6px 15px;
+  line-height: normal;
+  min-width: 30px;
+  height: auto;
+  position: relative;
+  top: -1px;
+  color: var(--dark);
+  background-color: var(--white);
+  &:hover {
+    color: #212529;
+    background-color: #eee;
+    text-decoration: none;
+  }
 }
 .white {
   font-size: 16px;

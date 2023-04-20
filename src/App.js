@@ -3,21 +3,13 @@ import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
 
 import { publicRoutes } from '~/routes';
 import Gallery from '~/pages/Gallery';
 import DefaultLayout, { HeaderOnly } from '~/layouts';
 
 function App() {
-  const [isLogin, setIsLogin] = useState(false);
   const { user } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    if (user) {
-      setIsLogin(true);
-    }
-  }, [user]);
 
   return (
     <div className="App">
@@ -33,7 +25,7 @@ function App() {
             Layout = Fragment;
           }
 
-          if (!isLogin) {
+          if (!user) {
             Layout = HeaderOnly;
             Page = Gallery;
           }
