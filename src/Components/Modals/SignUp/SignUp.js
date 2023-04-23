@@ -136,7 +136,7 @@ function ModalSignUp() {
                   name="username"
                   placeholder="Username"
                   onChange={handleFormData}
-                ></input>
+                />
               </div>
               <div className="form-group">
                 <label
@@ -153,7 +153,7 @@ function ModalSignUp() {
                   value={email}
                   placeholder="Email"
                   onChange={handleFormData}
-                ></input>
+                />
               </div>
               <div className="form-group">
                 <label
@@ -170,7 +170,7 @@ function ModalSignUp() {
                   value={password}
                   placeholder="Password"
                   onChange={handleFormData}
-                ></input>
+                />
               </div>
               <div className="form-group">
                 <label
@@ -187,7 +187,7 @@ function ModalSignUp() {
                   value={password2}
                   placeholder="Comfirm"
                   onChange={handleFormData}
-                ></input>
+                />
               </div>
 
               <div className="form-group">

@@ -22,7 +22,7 @@ function Sidebar() {
           icon={<FontAwesomeIcon icon={faHouse}></FontAwesomeIcon>}
         />
         <MenuItem
-          title={user.name}
+          title={user.username}
           to={config.routes.profile}
           image={user.avatar}
         />

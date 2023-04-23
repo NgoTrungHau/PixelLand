@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import Image from '~/components/Image';
+import Avatar from '~/components/Avatar';
 import styles from './UserItem.module.scss';
 import { Link } from 'react-router-dom';
 
@@ -12,18 +12,14 @@ function UserItem({ className, data }) {
     <li className={classNames(className)}>
       <div className={cx('wrapper')}>
         <div className={cx('user')}>
-          <Link to={`/${data.nickname}`}>
-            <Image
-              className={cx('avatar')}
-              src={data.avatar}
-              alt={data.full_name}
-            />
+          <Link to={`/${data.username}`}>
+            <Avatar avatar={data.avatar} small />
           </Link>
           <div className={cx('info')}>
-            <Link to={`/${data.nickname}`}>
+            <Link to={`/${data.username}`}>
               <span>
-                <span className={cx('name')}>{data.full_name}</span>
-                <span className={cx('username')}>{data.nickname}</span>
+                <span className={cx('name')}>{data.username}</span>
+                <span className={cx('username')}>{'@' + data.username}</span>
               </span>
             </Link>
           </div>

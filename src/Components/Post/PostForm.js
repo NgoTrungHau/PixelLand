@@ -4,13 +4,13 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { createPost } from '~/features/posts/postSlice';
 import Button from '~/components/Button';
-import Image from '~/components/Image';
+import Avatar from '~/components/Avatar';
 import styles from './Post.module.scss';
 
 const cx = classNames.bind(styles);
 
 function PostForm() {
-  const [text, setText] = useState('');
+  const [content, setContent] = useState('');
 
   const { user } = useSelector((state) => state.auth);
 
@@ -19,30 +19,30 @@ function PostForm() {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    dispatch(createPost({ text }));
-    setText('');
+    dispatch(createPost({ content }));
+    setContent('');
   };
 
   const handleReset = () => {
-    setText('');
+    setContent('');
   };
 
   return (
     <div className={cx('post')}>
       <form onSubmit={onSubmit}>
         <div className={cx('form-group')}>
-          <Image src={user.avatar} className={cx('user-avatar')} alt="user" />
+          <Avatar avatar={user.avatar} medium />
           <input
             type="text"
             className={cx('form-control')}
             name="text"
             id="text"
-            value={text}
+            value={content}
             placeholder="What are you thinking?"
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => setContent(e.target.value)}
           />
         </div>
-        {text ? (
+        {content ? (
           <div className={cx('form-group')}>
             <div className={cx('btn-post')}>
               <Button gray onClick={handleReset}>
