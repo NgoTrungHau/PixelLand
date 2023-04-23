@@ -3,12 +3,12 @@ const Post = require('../models/Post');
 const User = require('../models/User');
 
 exports.create = async (req, res, next) => {
-  if (!req.body?.text) {
+  if (!req.body?.content) {
     return next(new ApiError(400, 'Text can not be empty'));
   }
   const post = new Post({
     user: req.user.id,
-    text: req.body.text,
+    content: req.body.content,
   });
 
   try {

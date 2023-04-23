@@ -37,7 +37,7 @@ function Search() {
       setLoading(true);
 
       const result = await searchServices.search(deboundedValue);
-      setSearchResult(result);
+      setSearchResult(result.users);
 
       setLoading(false);
     };
@@ -71,7 +71,7 @@ function Search() {
             {searchResult.map((result) => (
               <UserItem
                 className={cx('list-group-item')}
-                key={result.id}
+                key={result._id}
                 data={result}
               />
             ))}

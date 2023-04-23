@@ -31,11 +31,9 @@ exports.register = async (req, res, next) => {
   try {
     const createUser = await user.save();
     res.json({
-      _id: createUser.id,
-      username: createUser.username,
-      email: createUser.email,
-      avatar: createUser.avatar,
       token: generateToken(createUser._id),
+      ...user._doc,
+      password: '',
     });
   } catch (error) {
     return next(new ApiError(400, 'Invalid user data'));
@@ -45,27 +43,37 @@ exports.register = async (req, res, next) => {
 // Login
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d',
+    expiresIn: '1d',
   });
 };
 
 exports.login = async (req, res, next) => {
   try {
-    const user = await User.findOne({
-      email: req.body.email,
-    });
+    const { email, password } = req.body;
 
-    const isPasswordValid = await bcrypt.compare(
-      req.body.password,
-      user.password,
-    );
+    if (!email || !password) {
+      return next(new ApiError(400, 'Please add all fields'));
+    }
+
+    const user = await User.findOne({
+      email,
+    }).populate('followers following', 'avatar username followers following');
+
+    if (!user) {
+      return next(new ApiError(400, 'User does not exist'));
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return next(new ApiError(400, 'Entered wrong password'));
+    }
+
     if (user && isPasswordValid) {
       return res.json({
-        _id: user.id,
-        name: user.username,
-        email: user.email,
-        avatar: user.avatar,
         token: generateToken(user._id),
+        ...user._doc,
+        password: '',
       });
     }
   } catch (error) {
@@ -80,11 +88,12 @@ exports.getMe = async (req, res) => {
 
 exports.search = async (req, res, next) => {
   try {
-    const user = await User.findOne({ username: req.body.username });
-    if (!user) {
-      return next(new ApiError(404, 'User not found'));
-    }
-    return res.json(user.username, user.avatar, user.nickname);
+    const users = await User.find({
+      username: { $regex: req.query.username },
+    })
+      .limit(10)
+      .select('username avatar');
+    return res.json({ users });
   } catch (error) {
     return next(
       new ApiError(500, `Error retrieving user with id=${req.body.username}`),

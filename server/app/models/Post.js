@@ -8,7 +8,7 @@ const Post = new Schema(
       required: true,
       ref: 'User',
     },
-    text: {
+    content: {
       type: String,
       require: [true, 'Please add something'],
       maxLength: 600,
@@ -16,10 +16,10 @@ const Post = new Schema(
     image: {
       type: String,
       maxLength: 300,
-      default: 'no image',
+      default: '',
     },
-    liked: { type: Number, default: 0 },
-    comments: { type: Number, default: 0 },
+    liked: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
   {
     timestamps: true,
