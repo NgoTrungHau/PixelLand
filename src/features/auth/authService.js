@@ -41,12 +41,25 @@ const getMe = async (token) => {
 
   return response;
 };
+const editProfile = async (token, id, userData) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await httpRequest.post(API_URL + id, userData, config);
+  console.log(response);
+
+  return response;
+};
 
 const authService = {
   register,
   logout,
   login,
   getMe,
+  editProfile,
 };
 
 export default authService;

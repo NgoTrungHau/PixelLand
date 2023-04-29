@@ -1,6 +1,7 @@
 import config from '~/config';
 
-// Lauouts
+// Layouts
+import { HeaderOnly } from '~/layouts';
 
 // Pages
 import Home from '~/pages/Home';
@@ -16,7 +17,7 @@ const publicRoutes = [
   { path: config.routes.gallery, component: Gallery },
   { path: config.routes.digital, component: Gallery },
   { path: config.routes.search, component: Search },
-  { path: config.routes.profile, component: Profile },
+  { path: config.routes.profile, component: Profile, layout: HeaderOnly },
   { path: config.routes.following, component: Following },
   { path: config.routes.mygallery, component: MyGallery },
 ];

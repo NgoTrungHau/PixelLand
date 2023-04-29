@@ -3,7 +3,7 @@ const routes = {
   gallery: '/gallery',
   digital: '/digitalart',
   search: '/search',
-  profile: '/:nickname',
+  profile: '/profile/:id',
   following: '/following',
   mygallery: '/mygallery',
   upload: '/upload',

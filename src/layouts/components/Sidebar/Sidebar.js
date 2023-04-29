@@ -23,7 +23,7 @@ function Sidebar() {
         />
         <MenuItem
           title={user.username}
-          to={config.routes.profile}
+          to={`/profile/${user._id}`}
           image={user.avatar}
         />
         <MenuItem

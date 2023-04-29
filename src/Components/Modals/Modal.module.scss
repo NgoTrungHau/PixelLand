@@ -1,5 +1,7 @@
 .wrapper {
-  margin-left: 10px;
+  + .wrapper {
+    margin-left: 10px;
+  }
 }
 
 .modal,
@@ -31,6 +33,14 @@
   max-width: 800px;
   min-width: 500px;
 
+  .heading {
+    text-align: center !important;
+  }
+
+  h2 {
+    text-align: center !important;
+  }
+
   label {
     margin: 8px 0 8px;
   }
@@ -54,7 +64,7 @@
     }
   }
 
-  .form-control {
+  &.form-control {
     background-color: #edf1f4 !important;
     border-color: #edf1f4 !important;
   }

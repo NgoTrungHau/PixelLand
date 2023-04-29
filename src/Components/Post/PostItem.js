@@ -19,10 +19,10 @@ function PostItem({ post }) {
         <Avatar avatar={post.user.avatar} medium />
         <div>
           <h4>{post.user.username}</h4>
-          <h4>{moment(post.createdAt).fromNow()}</h4>
+          <h5>{moment(post.createdAt).fromNow()}</h5>
         </div>
       </div>
-      <h2>{post.content}</h2>
+      <p>{post.content}</p>
       {user._id === post.user._id && (
         <button
           onClick={() => dispatch(deletePost(post._id))}

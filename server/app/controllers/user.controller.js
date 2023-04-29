@@ -112,19 +112,11 @@ exports.findAll = async (req, res, next) => {
 
 exports.findOne = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select('-password');
     if (!user) {
       return next(new ApiError(404, 'User not found'));
     }
-    return res.json({
-      _id: user.id,
-      name: user.username,
-      email: user.email,
-      avatar: user.avatar,
-      bio: user.bio,
-      followings: user.followings,
-      followers: user.followers,
-    });
+    res.json(user);
   } catch (error) {
     return next(
       new ApiError(500, `Error retrieving user with id=${req.params.id}`),
@@ -134,10 +126,15 @@ exports.findOne = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const updateUser = await User.updateOne(
-      { _id: req.params.id },
-      { $set: req.body },
-    );
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return next(new ApiError(404, 'User not found'));
+    }
+
+    const updateUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     res.json(updateUser);
   } catch (error) {
     return next(
