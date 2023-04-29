@@ -3,17 +3,18 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faPen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Button from '~/components/Button';
 import styles from '../Modal.module.scss';
-import { register, reset } from '~/features/auth/authSlice';
+import { editProfile } from '~/features/auth/authSlice';
 import SpinIcon from '~/components/SpinIcon';
+import Avatar from '~/components/Avatar';
 
 const cx = classNames.bind(styles);
 
-function ModalSignUp() {
+function ModalEditProfile() {
   const [modal, setModal] = useState(false);
 
   const toggleModal = () => {
@@ -30,12 +31,12 @@ function ModalSignUp() {
 
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
-    password: '',
-    password2: '',
+    avatar: '',
+    background: '',
+    bio: '',
   });
 
-  const { username, email, password, password2 } = formData;
+  const { username, avatar, background, bio } = formData;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -48,12 +49,6 @@ function ModalSignUp() {
     if (isError) {
       toast.error(message);
     }
-
-    if (isSuccess || user) {
-      navigate('/');
-    }
-
-    dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const handleFormData = (e) => {
@@ -66,60 +61,35 @@ function ModalSignUp() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (password !== password2) {
-      toast.error('Passwords do not match');
-    } else {
-      const userData = {
-        username,
-        email,
-        password,
-      };
+    const userData = {
+      username,
+      avatar,
+      background,
+      bio,
+    };
 
-      dispatch(register(userData));
-    }
+    dispatch(editProfile(userData));
   };
 
   if (isLoading) {
     return <SpinIcon />;
-    // return (
-    //   <div className={cx('wrapper')}>
-    //     <Button
-    //       signup
-    //       up
-    //       leftIcon={<FontAwesomeIcon icon={faUser} />}
-    //       onClick={toggleModal}
-    //     >
-    //       Sign Up
-    //     </Button>
-    //     {modal && (
-    //       <div className={cx('modal')}>
-    //         <div onClick={toggleModal} className={cx('overlay')}></div>
-    //         <div className={cx('modal-content')}>
-    //           <FontAwesomeIcon icon={faSpinner} />
-    //         </div>
-    //       </div>
-    //     )}
-    //   </div>
-    // );
   }
 
   return (
     <div className={cx('wrapper')}>
       <Button
-        signup
-        up
-        leftIcon={<FontAwesomeIcon icon={faUser} />}
+        gray
+        leftIcon={<FontAwesomeIcon icon={faPen} />}
         onClick={toggleModal}
       >
-        Sign Up
+        Edit Profile
       </Button>
       {modal && (
         <div className={cx('modal')}>
           <div onClick={toggleModal} className={cx('overlay')}></div>
           <div className={cx('modal-content')}>
             <div className="heading">
-              <h2>Create an account</h2>
-              <p>Become part of pixel art community</p>
+              <h2>Edit Profile</h2>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
@@ -135,7 +105,7 @@ function ModalSignUp() {
                   value={username}
                   id="username"
                   name="username"
-                  placeholder="Username"
+                  placeholder={user.username}
                   onChange={handleFormData}
                 />
               </div>
@@ -144,16 +114,43 @@ function ModalSignUp() {
                   className="d-flex justify-content-left"
                   htmlFor="auth-username-signup"
                 >
-                  Email:
+                  Avatar:
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   className="form-control"
-                  id="email"
-                  name="email"
-                  value={email}
-                  placeholder="Email"
+                  id="avatar"
+                  name="avatar"
+                  value={avatar}
+                  placeholder={user.avatar}
                   onChange={handleFormData}
+                />
+              </div>
+              <div className="form-group">
+                <Avatar avatar={user.avatar} large />
+              </div>
+              <div className="form-group">
+                <label
+                  className="d-flex justify-content-left"
+                  htmlFor="auth-username-signup"
+                >
+                  Background Image:
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="background"
+                  name="background"
+                  value={background}
+                  placeholder={user.background}
+                  onChange={handleFormData}
+                />
+              </div>
+              <div className="form-group">
+                <img
+                  src={user.background}
+                  alt=""
+                  style={{ width: 400, height: 200 }}
                 />
               </div>
               <div className="form-group">
@@ -161,39 +158,22 @@ function ModalSignUp() {
                   className="d-flex justify-content-left"
                   htmlFor="auth-username-signup"
                 >
-                  Password:
+                  Bio:
                 </label>
                 <input
-                  type="password"
+                  type="text"
                   className="form-control"
-                  id="password"
-                  name="password"
-                  value={password}
-                  placeholder="Password"
-                  onChange={handleFormData}
-                />
-              </div>
-              <div className="form-group">
-                <label
-                  className="d-flex justify-content-left"
-                  htmlFor="auth-username-signup"
-                >
-                  Comfirm password:
-                </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password2"
-                  name="password2"
-                  value={password2}
-                  placeholder="Comfirm"
+                  id="bio"
+                  name="bio"
+                  value={bio}
+                  placeholder={user.bio}
                   onChange={handleFormData}
                 />
               </div>
 
               <div className="form-group">
                 <Button primary type="submit">
-                  Create account
+                  Complete Edit
                 </Button>
               </div>
             </form>
@@ -207,4 +187,4 @@ function ModalSignUp() {
   );
 }
 
-export default ModalSignUp;
+export default ModalEditProfile;

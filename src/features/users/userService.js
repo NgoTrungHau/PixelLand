@@ -35,18 +35,10 @@ const deleteUser = async (userId, token) => {
   return response;
 };
 
-// Get one user info
-const getUserInfo = async (userId) => {
-  const response = await httpRequest.get(API_URL + userId);
-
-  return response;
-};
-
 const userService = {
   createUser,
   getUsers,
   deleteUser,
-  getUserInfo,
 };
 
 export default userService;

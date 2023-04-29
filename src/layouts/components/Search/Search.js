@@ -72,7 +72,7 @@ function Search() {
               <UserItem
                 className={cx('list-group-item')}
                 key={result._id}
-                data={result}
+                user={result}
               />
             ))}
           </ul>

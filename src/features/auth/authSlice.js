@@ -61,6 +61,23 @@ export const getMe = createAsyncThunk('posts/getMe', async (_, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
+export const editProfile = createAsyncThunk(
+  'auth/editProfile',
+  async (id, user, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await authService.editProfile(token, id, user);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -104,6 +121,20 @@ export const authSlice = createSlice({
         state.user = null;
       })
       .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+      })
+      .addCase(editProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(editProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
         state.user = null;
       });
   },

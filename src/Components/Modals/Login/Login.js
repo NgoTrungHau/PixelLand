@@ -3,15 +3,13 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import {
-  faSpinner,
-  faArrowRightToBracket,
-} from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from '../Modal.module.scss';
 import Button from '~/components/Button';
 import { login, reset } from '~/features/auth/authSlice';
+import SpinIcon from '~/components/SpinIcon';
 
 const cx = classNames.bind(styles);
 
@@ -75,7 +73,7 @@ function ModalLogin() {
   };
 
   if (isLoading) {
-    return <FontAwesomeIcon icon={faSpinner} />;
+    return <SpinIcon />;
   }
 
   return (

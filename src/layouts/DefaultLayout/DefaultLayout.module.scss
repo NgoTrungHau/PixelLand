@@ -5,13 +5,13 @@
 .container {
   margin-top: var(--default-layout-header-height);
   padding: 0 var(--default-layout-horizontal-spacer - 10);
-  height: 1000px;
+  height: 940px;
   background-color: #edf1f4;
 }
 
 .content {
   display: flex;
   flex: 1;
-  padding: 24px 250px 0;
+  padding: 0 250px 0;
   justify-content: center;
 }
