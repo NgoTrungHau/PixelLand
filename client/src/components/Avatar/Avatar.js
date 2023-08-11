@@ -8,6 +8,7 @@ const cx = classNames.bind(styles);
 
 function Avatar({
   avatar,
+  XL = false,
   large = false,
   medium = false,
   small = false,
@@ -16,7 +17,7 @@ function Avatar({
   return (
     <Image
       src={avatar}
-      className={cx('user-avatar', { large, medium, small, profile })}
+      className={cx('user-avatar', { XL, large, medium, small, profile })}
       alt="user"
     />
   );
@@ -25,6 +26,7 @@ function Avatar({
 Avatar.propTypes = {
   user: PropTypes.string,
   profile: PropTypes.bool,
+  XL: PropTypes.bool,
   large: PropTypes.bool,
   medium: PropTypes.bool,
   small: PropTypes.bool,

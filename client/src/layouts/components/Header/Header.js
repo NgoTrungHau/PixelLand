@@ -33,33 +33,36 @@ const cx = classNames.bind(styles);
 function Header() {
   const { user } = useSelector((state) => state.auth);
 
-  const Menu_Profile = [
-    {
-      image:
-        'https://cdn.pixilart.com/images/user/profile/large/1b3b80606abab6f.webp?v=1677879129',
-      title: 'Profile',
-      to: '/profile',
-    },
-    {
-      icon: <FontAwesomeIcon icon={faImage}></FontAwesomeIcon>,
-      title: 'My Gallery',
-      to: '/gallery',
-      divider: true,
-    },
-    {
-      icon: <FontAwesomeIcon icon={faCamera}></FontAwesomeIcon>,
-      title: 'My Photos',
-    },
-    {
-      icon: <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>,
-      title: 'Settings',
-    },
-    {
-      icon: <FontAwesomeIcon icon={faArrowRightFromBracket}></FontAwesomeIcon>,
-      title: 'Logout',
-      divider: true,
-    },
-  ];
+  if (user) {
+    var Menu_Profile = [
+      {
+        image: user.avatar,
+        title: 'Profile',
+        to: `/profile/${user._id}`,
+      },
+      {
+        icon: <FontAwesomeIcon icon={faImage}></FontAwesomeIcon>,
+        title: 'My Gallery',
+        to: '/gallery',
+        divider: true,
+      },
+      {
+        icon: <FontAwesomeIcon icon={faCamera}></FontAwesomeIcon>,
+        title: 'My Photos',
+      },
+      {
+        icon: <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>,
+        title: 'Settings',
+      },
+      {
+        icon: (
+          <FontAwesomeIcon icon={faArrowRightFromBracket}></FontAwesomeIcon>
+        ),
+        title: 'Logout',
+        divider: true,
+      },
+    ];
+  }
 
   return (
     <>

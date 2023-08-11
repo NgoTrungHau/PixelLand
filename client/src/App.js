@@ -27,7 +27,9 @@ function App() {
 
           if (!user) {
             Layout = HeaderOnly;
-            Page = Gallery;
+            {
+              /* Page = Gallery; */
+            }
           }
 
           return (

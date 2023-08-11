@@ -23,13 +23,12 @@ const User = new Schema(
       type: String,
       maxLength: 300,
       default:
-        'https://cdn.pixilart.com/images/user/profile/large/1b3b80606abab6f.webp?v=1677879129',
+        'https://scontent.fsgn5-8.fna.fbcdn.net/v/t1.30497-1/143086968_2856368904622192_1959732218791162458_n.png?_nc_cat=1&ccb=1-7&_nc_sid=eb6d92&_nc_ohc=FWEVIl3SNvwAX-bFvwR&_nc_ht=scontent.fsgn5-8.fna&oh=00_AfDFgE61wuWUaR0nkwk3IOo7hTQteete-svLoiN6CMwMAQ&oe=647921F8',
     },
     background: {
       type: String,
       maxLength: 300,
-      default:
-        'https://c4.wallpaperflare.com/wallpaper/406/189/125/digital-art-pixel-art-pixelated-pixels-wallpaper-preview.jpg',
+      default: '',
     },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
