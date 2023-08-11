@@ -127,14 +127,20 @@ exports.findOne = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
-
     if (!user) {
       return next(new ApiError(404, 'User not found'));
     }
 
-    const updateUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const { username, avatar, background, bio } = req.body;
+
+    await User.findByIdAndUpdate(
+      { _id: req.user._id },
+      {
+        $set: { username, avatar, background, bio },
+      },
+    );
+
+    const updateUser = await User.findById(req.params.id);
     res.json(updateUser);
   } catch (error) {
     return next(

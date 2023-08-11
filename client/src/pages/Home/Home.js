@@ -16,6 +16,7 @@ function Home() {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
+
   const { posts, isLoading, isError, message } = useSelector(
     (state) => state.posts,
   );
@@ -35,6 +36,13 @@ function Home() {
       dispatch(reset());
     };
   }, [user, navigate, isError, message, dispatch]);
+  if (!user) {
+    return (
+      <div className="d-flex justify-content-center">
+        <h1>Please log in</h1>
+      </div>
+    );
+  }
 
   return (
     <div className={cx('wrapper')}>

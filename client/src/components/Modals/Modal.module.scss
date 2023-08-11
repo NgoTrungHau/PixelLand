@@ -21,7 +21,7 @@
 .modal-content {
   position: absolute;
   display: block;
-  top: 40%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 100;
@@ -32,7 +32,6 @@
   border-radius: 3px;
   max-width: 800px;
   min-width: 500px;
-
   .heading {
     text-align: center !important;
   }

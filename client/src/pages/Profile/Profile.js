@@ -35,7 +35,7 @@ function Profile() {
       setUserInfo(profile.user);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile.user, id]);
+  }, [profile.user, id, auth.user]);
 
   return (
     <div className={cx('profile')}>

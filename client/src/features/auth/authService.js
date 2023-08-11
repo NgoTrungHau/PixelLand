@@ -41,15 +41,19 @@ const getMe = async (token) => {
 
   return response;
 };
+
+// Edit profile data
 const editProfile = async (token, id, userData) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
-
   const response = await httpRequest.post(API_URL + id, userData, config);
-  console.log(response);
+
+  if (response) {
+    localStorage.setItem('user', JSON.stringify({ ...response, token }));
+  }
 
   return response;
 };

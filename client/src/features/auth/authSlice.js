@@ -49,7 +49,7 @@ export const logout = createAsyncThunk('auth/logout', async () => {
 });
 
 // Get my info
-export const getMe = createAsyncThunk('posts/getMe', async (_, thunkAPI) => {
+export const getMe = createAsyncThunk('auth/getMe', async (_, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user.token;
     return await authService.getMe(token);
@@ -61,12 +61,13 @@ export const getMe = createAsyncThunk('posts/getMe', async (_, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
+
+// Edit profile
 export const editProfile = createAsyncThunk(
   'auth/editProfile',
-  async (id, user, thunkAPI) => {
+  async (userData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      return await authService.editProfile(token, id, user);
+      return await authService.editProfile(user.token, user._id, userData);
     } catch (error) {
       const message =
         (error.response &&
@@ -129,13 +130,25 @@ export const authSlice = createSlice({
       .addCase(editProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.user = action.payload;
+        state.user = {
+          ...state.user,
+          username: action.payload.username,
+          avatar: action.payload.avatar,
+          background: action.payload.background,
+          bio: action.payload.bio,
+        };
+        // console.log({
+        //   ...state.user,
+        //   username: action.payload.username,
+        //   avatar: action.payload.avatar,
+        //   background: action.payload.background,
+        //   bio: action.payload.bio,
+        // });
       })
       .addCase(editProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
-        state.user = null;
       });
   },
 });
