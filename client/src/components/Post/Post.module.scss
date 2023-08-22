@@ -71,6 +71,26 @@
   }
 }
 
+.img-input-icon {
+  margin-bottom: 0px !important;
+  margin-left: 10px !important;
+  font-size: 24px;
+  display: flex;
+  align-items: center !important;
+  cursor: pointer;
+}
+.img-post {
+  margin: 10px 0;
+  width: 660px;
+  label {
+    margin: 0;
+  }
+  img {
+    margin-left: 48px;
+    width: 400px;
+  }
+}
+
 .btn-post {
   display: flex;
   justify-content: flex-end;

@@ -36,7 +36,7 @@ function Header() {
   if (user) {
     var Menu_Profile = [
       {
-        image: user.avatar,
+        image: user.avatar?.url,
         title: 'Profile',
         to: `/profile/${user._id}`,
       },
@@ -148,7 +148,7 @@ function Header() {
 
                   <Menu items={Menu_Profile}>
                     <Image
-                      src={user.avatar}
+                      src={user.avatar?.url}
                       className={cx('user-avatar')}
                       alt="user"
                     />
