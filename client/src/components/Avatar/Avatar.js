@@ -24,7 +24,7 @@ function Avatar({
 }
 
 Avatar.propTypes = {
-  user: PropTypes.string,
+  avatar: PropTypes.string,
   profile: PropTypes.bool,
   XL: PropTypes.bool,
   large: PropTypes.bool,

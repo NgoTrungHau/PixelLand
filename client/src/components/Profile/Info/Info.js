@@ -16,12 +16,12 @@ function Info({ id, isAuth, profile, dispatch }) {
     <div className={cx('profile-header')}>
       <div
         className={cx('profile-background')}
-        style={{ backgroundImage: `url(${profile.background})` }}
+        style={{ backgroundImage: `url(${profile.background?.url})` }}
       ></div>
       <div className={cx('info')} key={profile._id}>
         <div className={cx('avatar')}>
           <Link to={`/profile/${profile._id}`}>
-            <Avatar avatar={profile.avatar} profile />
+            <Avatar avatar={profile.avatar?.url} profile />
           </Link>
         </div>
         <div className={cx('info-user')}>

@@ -16,13 +16,14 @@ function PostItem({ post }) {
   return (
     <div className={cx('post')}>
       <div className={cx('info')}>
-        <Avatar avatar={post.user.avatar} medium />
+        <Avatar avatar={post.user.avatar?.url} medium />
         <div>
           <h4>{post.user.username}</h4>
           <h5>{moment(post.createdAt).fromNow()}</h5>
         </div>
       </div>
       <p>{post.content}</p>
+      <img src={post.image?.url} />
       {user._id === post.user._id && (
         <button
           onClick={() => dispatch(deletePost(post._id))}

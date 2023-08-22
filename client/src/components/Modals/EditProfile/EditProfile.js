@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import imageCompression from 'browser-image-compression';
 
 import Button from '~/components/Button';
 import styles from '../Modal.module.scss';
@@ -15,6 +16,8 @@ const cx = classNames.bind(styles);
 
 function ModalEditProfile() {
   const [modal, setModal] = useState(false);
+  const [avt, setAvt] = useState('');
+  const [bg, setBg] = useState('');
 
   const toggleModal = () => {
     setModal(!modal);
@@ -28,9 +31,6 @@ function ModalEditProfile() {
     }
   }, [modal]);
 
-  // const [avatar, setAvatar] = useState('');
-  // const [background, setBackground] = useState('');
-
   const dispatch = useDispatch();
 
   const { user, isLoading, isError, isSuccess, message } = useSelector(
@@ -39,12 +39,12 @@ function ModalEditProfile() {
 
   const [formData, setFormData] = useState({
     username: '',
-    avatar: '',
-    background: '',
+    avatar: null,
+    background: null,
     bio: '',
   });
 
-  const { username, avatar, background, bio } = formData;
+  const { username, bio } = formData;
 
   useEffect(() => {
     if (isError) {
@@ -53,19 +53,56 @@ function ModalEditProfile() {
   }, [user, isError, isSuccess, message, dispatch]);
 
   useEffect(() => {
-    setFormData(user);
+    setFormData({ username: user.username, bio: user.bio });
   }, [user]);
 
-  //   const changeAvatar = (e) => {
-  //     const file = e.target.files[0]
+  const handleAvatar = async (e) => {
+    const file = e.target.files[0];
 
-  //     const err = checkImage(file)
-  //     if(err) return dispatch({
-  //         type: GLOBALTYPES.ALERT, payload: {error: err}
-  //     })
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      const reader = new FileReader();
+      reader.readAsDataURL(compressedFile);
+      reader.onloadend = function () {
+        setAvt(reader.result);
+        setFormData((prevState) => ({ ...prevState, avatar: reader.result }));
+      };
+    } catch (error) {
+      console.error(error);
+    }
 
-  //     setAvatar(file)
-  // }
+    e.target.value = '';
+  };
+  const handleBackground = async (e) => {
+    const file = e.target.files[0];
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      const reader = new FileReader();
+      reader.readAsDataURL(compressedFile);
+      reader.onloadend = function () {
+        setBg(reader.result);
+        setFormData((prevState) => ({
+          ...prevState,
+          background: reader.result,
+        }));
+      };
+    } catch (error) {
+      console.error(error);
+    }
+
+    e.target.value = '';
+  };
 
   const handleFormData = (e) => {
     setFormData((prevState) => ({
@@ -100,53 +137,45 @@ function ModalEditProfile() {
             ) : (
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
+                  <label className="d-flex justify-content-left">Avatar:</label>
                   <label
-                    className="d-flex justify-content-left"
-                    htmlFor="auth-username-signup"
+                    htmlFor="avatar"
+                    className="d-flex justify-content-center"
                   >
-                    Avatar:
-                  </label>
-                  <div className="d-flex justify-content-center">
-                    <Avatar
-                      avatar={avatar ? avatar : user.avatar}
-                      XL
-                      onChange
+                    <Avatar avatar={avt ? avt : user.avatar?.url} XL onChange />
+                    <input
+                      type="file"
+                      className="form-control"
+                      id="avatar"
+                      accept="image/*"
+                      onChange={handleAvatar}
+                      style={{ display: 'none' }}
                     />
-                  </div>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="avatar"
-                    name="avatar"
-                    value={avatar}
-                    placeholder={user.avatar}
-                    onChange={handleFormData}
-                  />
+                  </label>
                 </div>
 
                 <div className="form-group">
-                  <label
-                    className="d-flex justify-content-left"
-                    htmlFor="auth-username-signup"
-                  >
+                  <label className="d-flex justify-content-left">
                     Background Image:
                   </label>
-                  <div className="d-flex justify-content-center">
+                  <label
+                    htmlFor="background"
+                    className="d-flex justify-content-center"
+                  >
                     <img
-                      src={background ? background : user.background}
+                      src={bg ? bg : user.background?.url}
                       alt=""
                       style={{ width: 400, height: 200 }}
                     />
-                  </div>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="background"
-                    name="background"
-                    value={background}
-                    placeholder={user.background}
-                    onChange={handleFormData}
-                  />
+                    <input
+                      type="file"
+                      className="form-control"
+                      id="background"
+                      accept="image/*"
+                      onChange={handleBackground}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
                 </div>
 
                 <div className="form-group">

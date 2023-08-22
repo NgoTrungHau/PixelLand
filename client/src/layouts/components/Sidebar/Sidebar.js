@@ -24,7 +24,7 @@ function Sidebar() {
         <MenuItem
           title={user.username}
           to={`/profile/${user._id}`}
-          image={user.avatar}
+          image={user.avatar?.url}
         />
         <MenuItem
           divider

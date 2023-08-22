@@ -5,7 +5,7 @@
 .container {
   margin-top: var(--default-layout-header-height);
   padding: 0 var(--default-layout-horizontal-spacer - 10);
-  height: 940px;
+  min-height: 940px;
   background-color: #edf1f4;
 }
 

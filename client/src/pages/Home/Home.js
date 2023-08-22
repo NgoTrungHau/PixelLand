@@ -36,41 +36,32 @@ function Home() {
       dispatch(reset());
     };
   }, [user, navigate, isError, message, dispatch]);
+
   if (!user) {
-    return (
-      <div className="d-flex justify-content-center">
-        <h1>Please log in</h1>
-      </div>
-    );
+    return null;
   }
 
   return (
     <div className={cx('wrapper')}>
-      {!user ? (
-        <>
-          <h3>Please log in</h3>
-        </>
-      ) : (
-        <>
-          <PostForm />
+      <>
+        <PostForm />
 
-          {isLoading ? (
-            <SpinIcon />
-          ) : (
-            <section className={cx('content')}>
-              {posts.length > 0 ? (
-                <div className={cx('posts')}>
-                  {posts.map((post) => (
-                    <PostItem key={post._id} post={post} />
-                  ))}
-                </div>
-              ) : (
-                <h3>There are no posts</h3>
-              )}
-            </section>
-          )}
-        </>
-      )}
+        {isLoading ? (
+          <SpinIcon />
+        ) : (
+          <section className={cx('content')}>
+            {posts.length > 0 ? (
+              <div className={cx('posts')}>
+                {posts.map((post) => (
+                  <PostItem key={post._id} post={post} />
+                ))}
+              </div>
+            ) : (
+              <h3>There are no posts</h3>
+            )}
+          </section>
+        )}
+      </>
     </div>
   );
 }
