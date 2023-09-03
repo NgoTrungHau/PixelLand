@@ -13,8 +13,21 @@ const cx = classNames.bind(styles);
 function Sidebar() {
   const { user } = useSelector((state) => state.auth);
 
+  const handleMouseEnter = (e) => {
+    // console.log('scroll');
+    e.target.style.overflowY = 'auto';
+  };
+  const handleMouseLeave = (e) => {
+    // console.log('not scroll');
+    e.target.style.overflowY = 'hidden';
+  };
+
   return (
-    <aside className={cx('wrapper')}>
+    <aside
+      className={cx('wrapper')}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <Menu>
         <MenuItem
           title="Home"

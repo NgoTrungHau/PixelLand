@@ -3,6 +3,8 @@
   justify-content: center;
 }
 .container {
+  display: grid;
+  grid-template-columns: 15% 70% 15%;
   margin-top: var(--default-layout-header-height);
   padding: 0 var(--default-layout-horizontal-spacer - 10);
   min-height: 940px;
@@ -11,7 +13,8 @@
 
 .content {
   display: flex;
+  width: 100%;
   flex: 1;
-  padding: 0 250px 0;
   justify-content: center;
+  overflow: auto;
 }

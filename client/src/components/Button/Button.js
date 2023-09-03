@@ -16,6 +16,7 @@ const Button = forwardRef(
       primary = false,
       white = false,
       gray = false,
+      grayLight = false,
       login = false,
       signup = false,
       upload = false,
@@ -23,6 +24,7 @@ const Button = forwardRef(
       rounded = false,
       children,
       className,
+      sz,
       image,
       leftIcon,
       rightIcon,
@@ -32,11 +34,13 @@ const Button = forwardRef(
     ref,
   ) => {
     let CompBut = 'button';
-    let classN = cx('wrapper', {
+    let classN = cx('wrapper', sz, {
       [className]: className,
       primary,
       white,
       gray,
+      grayLight,
+
       login,
       signup,
       upload,
@@ -45,6 +49,7 @@ const Button = forwardRef(
     });
     const props = {
       onClick,
+      type,
       ...passProps,
     };
 
@@ -52,11 +57,14 @@ const Button = forwardRef(
       if (navlink) {
         CompBut = NavLink;
         classN = (nav) =>
-          cx('wrapper', {
+          cx('wrapper', sz, {
             [className]: className,
             primary,
             white,
             gray,
+            grayLight,
+
+            sz,
             rounded,
             up,
             active: nav.isActive,
@@ -97,6 +105,7 @@ Button.propTypes = {
   type: PropTypes.string,
   children: PropTypes.node,
   className: PropTypes.string,
+  sz: PropTypes.string,
   image: PropTypes.string,
   leftIcon: PropTypes.node,
   rightIcon: PropTypes.node,

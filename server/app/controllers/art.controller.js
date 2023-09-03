@@ -1,28 +1,48 @@
 const ApiError = require('../api-error');
 const Art = require('../models/Art');
 const User = require('../models/User');
+const cloudinary = require('../utils/cloudinary');
 
 exports.create = async (req, res, next) => {
   if (!req.body?.art) {
     return next(new ApiError(400, 'Art can not be empty'));
   }
 
+  const result = await cloudinary.uploader.upload(req.body.art, {
+    folder: 'arts',
+    // width: 300,
+    // crop: 'scale'
+  });
+
   const art = new Art({
     author: req.user.id,
+    title: req.body.title,
     description: req.body.description,
-    art: req.body.art,
+    art: {
+      public_id: result.public_id,
+      url: result.secure_url,
+    },
   });
 
   try {
     const createArt = await art.save();
-    res.json(createArt);
+    res.json({
+      ...createArt._doc,
+      user: {
+        _id: req.user._id,
+        username: req.user.username,
+        avatar: req.user.avatar,
+      },
+    });
   } catch (error) {
     return next(new ApiError(500, 'An error occurred while creating the art'));
   }
 };
 exports.findAll = async (req, res, next) => {
   try {
-    const arts = await Art.find({});
+    const arts = await Art.find({})
+      .sort({ createdAt: -1 })
+      .populate('author', 'username avatar');
     res.json(arts);
   } catch (error) {
     return next(new ApiError(500, 'An error occurred while retrieving art'));
