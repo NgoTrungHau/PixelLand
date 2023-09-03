@@ -1,27 +1,41 @@
-import { useState, useEffect } from 'react';
-import { Card } from 'react-bootstrap';
-import Masonry from 'react-masonry-css';
-import axios from 'axios';
+import classNames from 'classnames/bind';
+import { Masonry } from '@mui/lab';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-function Art({ props }) {
-  return (
-    <Card>
-      <Card.Img variant="top" src={props.art} />
-    </Card>
-  );
-}
+import { getArts, reset } from '~/features/arts/artSlice';
+
+import styles from './ArtList.module.scss';
+import ArtItem from '../Art/ArtItem';
+import { toast } from 'react-toastify';
+
+const cx = classNames.bind(styles);
 
 function ArtList() {
-  // const [arts, setArt] = useState([]);
-  // useEffect(() => {
-  //   getArts();
-  // }, []);
+  const dispatch = useDispatch();
 
-  // const getArts = async () => {
-  //   const document = await axios.get('http://localhost:3000/api/arts');
-  //   setArt(document.data);
-  // };
+  const { arts, isSuccess, isError, message } = useSelector(
+    (state) => state.arts,
+  );
 
+  useEffect(() => {
+    dispatch(getArts());
+  }, []);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+    if (isSuccess) {
+      toast.success(message);
+      dispatch(getArts());
+    }
+
+    return () => {
+      dispatch(reset());
+    };
+  }, [message, dispatch]);
   const breakpoint = {
     default: 4,
     1100: 3,
@@ -30,16 +44,23 @@ function ArtList() {
   };
 
   return (
-    <div>something</div>
-    // <Masonry
-    //   breakpointCols={breakpoint}
-    //   className="my-masonry-grid"
-    //   columnClassName="my-masonry-grid_column"
-    // >
-    //   {arts.map((art) => {
-    //     return <Art key={art._id} art={art}></Art>;
-    //   })}
-    // </Masonry>
+    <div className={cx('wrapper')}>
+      <div className={cx('art-options')}>
+        <div className={cx('option')}>popular</div>
+        <div className={cx('option')}>staff pick</div>
+        <div className={cx('option')}>digital art</div>
+        <div className={cx('option')}>fan art</div>
+      </div>
+      <div className={cx('masonry-wrapper')}>
+        {
+          <Masonry className={cx('masonry')} columns={4} spacing={4}>
+            {arts.map((art, index) => (
+              <ArtItem key={index} art={art} />
+            ))}
+          </Masonry>
+        }
+      </div>
+    </div>
   );
 }
 

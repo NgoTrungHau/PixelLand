@@ -10,7 +10,7 @@ const createArt = async (artData, token) => {
     },
   };
 
-  const response = await httpRequest.art(API_URL + 'create', artData, config);
+  const response = await httpRequest.post(API_URL + 'create', artData, config);
 
   return response.data;
 };
@@ -19,7 +19,7 @@ const createArt = async (artData, token) => {
 const getArts = async () => {
   const response = await httpRequest.get(API_URL);
 
-  return response.data;
+  return response;
 };
 
 // Delete user art
@@ -30,7 +30,7 @@ const deleteArt = async (artId, token) => {
     },
   };
 
-  const response = await httpRequest.deleteOne(API_URL + artId, config);
+  const response = await httpRequest.deleteReq(API_URL + artId, config);
 
   return response.data;
 };

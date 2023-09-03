@@ -13,7 +13,7 @@
   text-overflow: ellipsis;
   overflow: hidden;
   color: var(--dark);
-  background-color: var(--white);
+  background-color: transparent;
   user-select: none;
   + .wrapper {
     margin-left: 10px;
@@ -38,11 +38,15 @@
   margin-left: 8px;
 }
 .icon {
-  display: inline-block;
+  display: flex;
   position: relative;
-  width: 20px;
-  height: 20px;
+  align-items: center;
   text-align: center;
+
+  svg {
+    min-width: 20px;
+    min-height: 20px;
+  }
 }
 .image {
   display: inline-block;
@@ -71,6 +75,15 @@
   color: var(--white);
   background-color: var(--gray);
   box-shadow: 0 5px 10px 0 rgb(0 0 0 / 5%);
+}
+.grayLight {
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-font);
+  background-color: var(--gray-light);
+  &:hover {
+    background-color: rgb(221, 221, 221);
+  }
 }
 .white {
   font-size: 16px;
@@ -161,4 +174,8 @@
 
 span {
   margin-right: 0px !important;
+}
+
+.small {
+  max-width: 150px;
 }

@@ -29,7 +29,7 @@ export const createArt = createAsyncThunk(
 );
 
 // Get user arts
-export const getArts = createAsyncThunk('arts/', async (thunkAPI) => {
+export const getArts = createAsyncThunk('arts/getAll', async (thunkAPI) => {
   try {
     return await artService.getArts();
   } catch (error) {
@@ -74,7 +74,8 @@ export const artSlice = createSlice({
       .addCase(createArt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.arts.push(action.payload);
+        state.arts.unshift(action.payload);
+        state.message = 'Successful upload art!';
       })
       .addCase(createArt.rejected, (state, action) => {
         state.isLoading = false;

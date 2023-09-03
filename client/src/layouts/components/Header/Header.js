@@ -5,7 +5,6 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowRightFromBracket,
-  faArrowUpFromBracket,
   faCamera,
   faGear,
   faHouse,
@@ -27,6 +26,7 @@ import Menu from '~/components/Popper/Menu';
 import config from '~/config';
 import Search from '../Search';
 import styles from './Header.module.scss';
+import { ModalCreateArt } from '~/components/Modals/CreateArt';
 
 const cx = classNames.bind(styles);
 
@@ -111,18 +111,7 @@ function Header() {
             <div className={cx('actions')}>
               {user ? (
                 <>
-                  <Tippy
-                    interactive
-                    appendTo={() => document.body}
-                    content="Upload pixel art"
-                    placement="bottom"
-                  >
-                    <Button
-                      upload
-                      up
-                      leftIcon={<FontAwesomeIcon icon={faArrowUpFromBracket} />}
-                    ></Button>
-                  </Tippy>
+                  <ModalCreateArt></ModalCreateArt>
                   <Tippy
                     interactive
                     appendTo={() => document.body}

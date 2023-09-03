@@ -23,7 +23,7 @@ function PostItem({ post }) {
         </div>
       </div>
       <p>{post.content}</p>
-      <img src={post.image?.url} />
+      <img src={post.image?.url} alt="" />
       {user._id === post.user._id && (
         <button
           onClick={() => dispatch(deletePost(post._id))}

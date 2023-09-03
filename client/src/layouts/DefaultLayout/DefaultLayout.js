@@ -8,13 +8,26 @@ import Sidebar from '~/layouts/components/Sidebar';
 const cx = classNames.bind(styles);
 
 function DefaultLayout({ children }) {
+  const handleMouseEnter = (e) => {
+    e.target.style.overflowY = 'auto';
+  };
+  const handleMouseLeave = (e) => {
+    e.target.style.overflowY = 'hidden';
+  };
+
   return (
     <>
       <Header />
 
       <div className={cx('container')}>
         <Sidebar />
-        <div className={cx('content')}>{children}</div>
+        <div
+          className={cx('content')}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {children}
+        </div>
       </div>
     </>
   );

@@ -1,17 +1,17 @@
-const express = require("express");
+const express = require('express');
 
-const posts = require("../controllers/post.controller");
-const { protect } = require("../middleware/authMiddleware");
+const posts = require('../controllers/post.controller');
+const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 // post
-router.route("/").get(posts.findAll);
-router.route("/create").post(protect, posts.create);
-router.route("/delete").delete(protect, posts.deleteAll);
+router.route('/').get(posts.findAll);
+router.route('/create').post(protect, posts.create);
+router.route('/delete').delete(protect, posts.deleteAll);
 
 router
-  .route("/:id")
+  .route('/:id')
   .get(posts.findOne)
   .post(protect, posts.update)
   .delete(protect, posts.delete);

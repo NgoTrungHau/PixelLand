@@ -8,15 +8,23 @@ const Art = new Schema(
       required: true,
       ref: 'User',
     },
+    title: {
+      type: String,
+      maxLength: 200,
+    },
     description: { type: String, maxLength: 600 },
     art: {
-      type: String,
-      maxLength: 300,
-      required: true,
-      default: 'https://art.pixilart.com/sr2fdbf6ae4d23d.png',
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
     },
-    liked: { type: Number, default: 0 },
-    comments: { type: Number, default: 0 },
+    liked: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
   {
     timestamps: true,
