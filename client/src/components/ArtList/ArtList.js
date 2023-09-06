@@ -1,65 +1,86 @@
 import classNames from 'classnames/bind';
 import { Masonry } from '@mui/lab';
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { debounce } from 'lodash';
 
-import { getArts, reset } from '~/features/arts/artSlice';
+import { getArts, getAuthArts, reset } from '~/features/arts/artSlice';
 
 import styles from './ArtList.module.scss';
 import ArtItem from '../Art/ArtItem';
-import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
-function ArtList() {
-  const dispatch = useDispatch();
+const MemoizedArtItem = memo(({ art, index }) => (
+  <ArtItem key={index} art={art} />
+));
 
-  const { arts, isSuccess, isError, message } = useSelector(
+function ArtList() {
+  const [isArtsReady, setIsArtsReady] = useState(false);
+
+  const { arts, isArtsLoading, isSuccess, isError, message } = useSelector(
     (state) => state.arts,
   );
+  const { user } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    dispatch(getArts());
-  }, []);
+  const cards_sample = Array(12)
+    .fill(undefined)
+    .map((a, i) => <div className={cx('card-thumb-sample')} key={i}></div>);
 
+  const setArtsReadyDebounced = useCallback(
+    debounce(() => setIsArtsReady(true), 1000),
+    [],
+  );
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // useEffect
   useEffect(() => {
-    if (isError) {
-      toast.error(message);
+    if (user) {
+      dispatch(getAuthArts({ user_id: user._id, token: user.token }));
     }
-    if (isSuccess) {
-      toast.success(message);
+    if (!user) {
       dispatch(getArts());
     }
+  }, [navigate]);
 
-    return () => {
-      dispatch(reset());
-    };
-  }, [message, dispatch]);
-  const breakpoint = {
-    default: 4,
-    1100: 3,
-    700: 2,
-    500: 1,
-  };
+  useEffect(() => {
+    if (isError && message) {
+      toast.error(message);
+    }
+    if (isSuccess && message) {
+      toast.success(message);
+    }
+    // if (navigate) {
+    //   dispatch(reset());
+    // }
+  }, [navigate, message, dispatch]);
+
+  useEffect(() => {
+    setArtsReadyDebounced();
+  }, [arts, navigate, dispatch, setArtsReadyDebounced]);
 
   return (
     <div className={cx('wrapper')}>
       <div className={cx('art-options')}>
-        <div className={cx('option')}>popular</div>
-        <div className={cx('option')}>staff pick</div>
-        <div className={cx('option')}>digital art</div>
-        <div className={cx('option')}>fan art</div>
+        {!isArtsLoading && (
+          <>
+            <div className={cx('option')}>popular</div>
+            <div className={cx('option')}>staff pick</div>
+            <div className={cx('option')}>digital art</div>
+            <div className={cx('option')}>fan art</div>
+          </>
+        )}
       </div>
-      <div className={cx('masonry-wrapper')}>
-        {
-          <Masonry className={cx('masonry')} columns={4} spacing={4}>
-            {arts.map((art, index) => (
-              <ArtItem key={index} art={art} />
-            ))}
-          </Masonry>
-        }
-      </div>
+
+      <Masonry className={cx('masonry-wrapper')} columns={4} spacing={2}>
+        {!isArtsReady
+          ? cards_sample
+          : arts.map((art, index) => <MemoizedArtItem art={art} key={index} />)}
+      </Masonry>
     </div>
   );
 }

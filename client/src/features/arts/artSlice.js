@@ -6,6 +6,7 @@ const initialState = {
   isError: false,
   isSuccess: false,
   isLoading: false,
+  isArtsLoading: false,
   message: '',
 };
 
@@ -41,6 +42,24 @@ export const getArts = createAsyncThunk('arts/getAll', async (thunkAPI) => {
   }
 });
 
+// Get user arts
+export const getAuthArts = createAsyncThunk(
+  'arts/getAll_auth',
+  async (auth, thunkAPI) => {
+    try {
+      return await artService.getAuthArts(auth);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 // Delete user art
 export const deleteArt = createAsyncThunk(
   'arts/delete',
@@ -48,6 +67,46 @@ export const deleteArt = createAsyncThunk(
     try {
       const token = thunkAPI.getState().auth.user.token;
       return await artService.deleteArt(id, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+// Like art
+export const likeArt = createAsyncThunk(
+  'arts/likeArt',
+  async (artData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const response = await artService.likeArt(artData, token);
+      return { response, artData };
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+// unlike art
+export const unlikeArt = createAsyncThunk(
+  'arts/unlikeArt',
+  async (artData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const response = await artService.unlikeArt(artData, token);
+      return { response, artData };
     } catch (error) {
       const message =
         (error.response &&
@@ -75,7 +134,7 @@ export const artSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.arts.unshift(action.payload);
-        state.message = 'Successful upload art!';
+        state.message = 'Uploading art successful!';
       })
       .addCase(createArt.rejected, (state, action) => {
         state.isLoading = false;
@@ -84,14 +143,33 @@ export const artSlice = createSlice({
       })
       .addCase(getArts.pending, (state) => {
         state.isLoading = true;
+        state.isArtsLoading = true;
       })
       .addCase(getArts.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isArtsLoading = false;
         state.isSuccess = true;
         state.arts = action.payload;
       })
       .addCase(getArts.rejected, (state, action) => {
         state.isLoading = false;
+        state.isArtsLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(getAuthArts.pending, (state) => {
+        state.isLoading = true;
+        state.isArtsLoading = true;
+      })
+      .addCase(getAuthArts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isArtsLoading = false;
+        state.isSuccess = true;
+        state.arts = action.payload;
+      })
+      .addCase(getAuthArts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isArtsLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
@@ -104,6 +182,48 @@ export const artSlice = createSlice({
         state.arts = state.arts.filter((art) => art._id !== action.payload.id);
       })
       .addCase(deleteArt.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(likeArt.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(likeArt.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        const { artData } = action.payload;
+        const { art_id, user_id } = artData;
+
+        state.arts.find((art) => {
+          if (art._id === art_id) {
+            art.likes.push(user_id);
+            art.liked = true;
+          }
+        });
+      })
+      .addCase(likeArt.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(unlikeArt.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(unlikeArt.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        const { artData } = action.payload;
+        const { art_id, user_id } = artData;
+
+        state.arts.find((art) => {
+          if (art._id === art_id) {
+            art.likes.pop(user_id);
+            art.liked = false;
+          }
+        });
+      })
+      .addCase(unlikeArt.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

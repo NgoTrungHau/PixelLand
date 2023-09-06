@@ -2,9 +2,6 @@
   width: 100%;
   height: 100%;
   justify-content: center;
-  .masonry {
-    margin: 0;
-  }
 }
 .art-options {
   width: 100%;
@@ -31,7 +28,29 @@
 
 .masonry-wrapper {
   width: 100%;
-  margin-top: 20px;
+  margin: 20px 0 0 !important;
   padding: 0 20px;
   background-color: #edf1f4;
+}
+
+@keyframes card-loading {
+  0% {
+    opacity: 0.2;
+  }
+
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+.card-thumb-sample {
+  width: 100%;
+  height: 400px;
+  background-color: var(--white);
+  border-radius: 14px;
+  animation-name: card-loading;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
 }

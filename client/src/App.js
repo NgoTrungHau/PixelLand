@@ -1,10 +1,11 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSelector } from 'react-redux';
 
 import { publicRoutes } from '~/routes';
+import { scrollToTop as ScrollToTop } from './hooks';
 import Gallery from '~/pages/Gallery';
 import DefaultLayout, { HeaderOnly } from '~/layouts';
 
@@ -38,6 +39,7 @@ function App() {
               path={route.path}
               element={
                 <Layout>
+                  <ScrollToTop />
                   <Page />
                 </Layout>
               }

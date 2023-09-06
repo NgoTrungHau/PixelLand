@@ -28,7 +28,7 @@ exports.create = async (req, res, next) => {
     const createArt = await art.save();
     res.json({
       ...createArt._doc,
-      user: {
+      author: {
         _id: req.user._id,
         username: req.user.username,
         avatar: req.user.avatar,
@@ -38,7 +38,9 @@ exports.create = async (req, res, next) => {
     return next(new ApiError(500, 'An error occurred while creating the art'));
   }
 };
-exports.findAll = async (req, res, next) => {
+
+// get all arts
+exports.getArts = async (req, res, next) => {
   try {
     const arts = await Art.find({})
       .sort({ createdAt: -1 })
@@ -48,6 +50,25 @@ exports.findAll = async (req, res, next) => {
     return next(new ApiError(500, 'An error occurred while retrieving art'));
   }
 };
+// get all auth arts
+exports.getAuthArts = async (req, res, next) => {
+  try {
+    const arts = await Art.find({})
+      .sort({ createdAt: -1 })
+      .populate('author', 'username avatar');
+    arts.map((art) => {
+      if (art.likes.includes(req.params.id.toString())) {
+        art._doc.liked = true;
+      }
+    });
+
+    res.json(arts);
+  } catch (error) {
+    return next(new ApiError(500, 'An error occurred while retrieving art'));
+  }
+};
+
+// get art
 exports.findOne = async (req, res, next) => {
   try {
     const art = await Art.findById(req.params.id);
@@ -61,6 +82,8 @@ exports.findOne = async (req, res, next) => {
     );
   }
 };
+
+// Update art
 exports.update = async (req, res, next) => {
   try {
     const art = await Art.findById(req.params.id);
@@ -94,9 +117,59 @@ exports.update = async (req, res, next) => {
     );
   }
 };
+
+// Like art
+exports.likeArt = async (req, res, next) => {
+  try {
+    const art = await Art.find({
+      _id: req.body.art_id,
+      likes: req.body.user_id,
+    });
+    if (art.length > 0)
+      return res.status(400).json({ msg: 'You liked this art.' });
+    const like = await Art.findOneAndUpdate(
+      { _id: req.body.art_id },
+      {
+        $addToSet: { likes: req.body.user_id },
+      },
+      { new: true },
+    );
+
+    if (!like) return res.status(400).json({ msg: 'This art does not exist.' });
+
+    res.json({ msg: 'Liked Post!' });
+  } catch (error) {
+    return next(
+      new ApiError(500, `Error retrieving art with id=${req.body.art_id}`),
+    );
+  }
+};
+
+// Unlike art
+exports.unlikeArt = async (req, res, next) => {
+  try {
+    const like = await Art.findOneAndUpdate(
+      { _id: req.body.art_id },
+      {
+        $pull: { likes: req.body.user_id },
+      },
+      { new: true },
+    );
+
+    if (!like) return res.status(400).json({ msg: 'This art does not exist.' });
+
+    res.json({ msg: 'Unliked Post!' });
+  } catch (error) {
+    return next(
+      new ApiError(500, `Error retrieving art with id=${req.body.art_id}`),
+    );
+  }
+};
+
+// Delete art
 exports.delete = async (req, res, next) => {
   try {
-    const art = await Art.findById(req.params.id);
+    const art = await Art.findById(req.body.id);
 
     if (!art) {
       return next(new ApiError(401, 'Art not found'));
@@ -121,6 +194,8 @@ exports.delete = async (req, res, next) => {
     );
   }
 };
+
+// Delete all arts
 exports.deleteAll = async (req, res, next) => {
   try {
     const deleteAllArts = await Art.deleteMany({});
