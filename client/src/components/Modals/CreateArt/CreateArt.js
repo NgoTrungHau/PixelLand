@@ -25,9 +25,11 @@ function ModalCreateArt() {
 
   useEffect(() => {
     if (modal) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflowY = 'scroll';
+      document.body.style.position = 'fixed';
     } else {
-      document.body.style.overflow = 'scroll';
+      document.body.style.overflowY = 'auto';
+      document.body.style.position = 'static';
     }
   }, [modal]);
 
@@ -98,6 +100,8 @@ function ModalCreateArt() {
     validationSchema: ArtSchema,
     onSubmit: () => {
       dispatch(createArt(formik.values));
+      formik.resetForm();
+      setArt('');
     },
   });
 
@@ -146,7 +150,6 @@ function ModalCreateArt() {
                       id="description"
                       name="description"
                       rows="5"
-                      // cols="50"
                       value={formik.values.description}
                       placeholder="Description"
                       onChange={formik.handleChange}
