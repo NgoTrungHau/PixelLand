@@ -1,1 +1,1 @@
-export { default as ModalSignUp } from './SignUp';
+export { default } from './SignUp';

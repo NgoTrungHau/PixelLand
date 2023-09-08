@@ -8,12 +8,12 @@ import Sidebar from '~/layouts/components/Sidebar';
 const cx = classNames.bind(styles);
 
 function DefaultLayout({ children }) {
-  const handleMouseEnter = (e) => {
-    e.target.style.overflowY = 'auto';
-  };
-  const handleMouseLeave = (e) => {
-    e.target.style.overflowY = 'hidden';
-  };
+  // const handleMouseEnter = (e) => {
+  //   e.target.style.overflowY = 'auto';
+  // };
+  // const handleMouseLeave = (e) => {
+  //   e.target.style.overflowY = 'hidden';
+  // };
 
   return (
     <>
@@ -23,8 +23,8 @@ function DefaultLayout({ children }) {
         <Sidebar />
         <div
           className={cx('content')}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          // onMouseEnter={handleMouseEnter}
+          // onMouseLeave={handleMouseLeave}
         >
           {children}
         </div>

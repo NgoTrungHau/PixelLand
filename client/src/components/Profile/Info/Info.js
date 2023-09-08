@@ -3,11 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
 
+import styles from './Info.module.scss';
 import Avatar from '~/components/Avatar';
 import Button from '~/components/Button';
-import { ModalEditProfile } from '~/components/Modals/EditProfile';
-
-import styles from './Info.module.scss';
+import Modal from '~/components/Modals/Modal';
 
 const cx = classNames.bind(styles);
 
@@ -31,7 +30,7 @@ function Info({ id, isAuth, profile, dispatch }) {
               Follow
             </Button>
           ) : (
-            <ModalEditProfile />
+            <Modal modalType="editProfile" />
           )}
         </div>
       </div>

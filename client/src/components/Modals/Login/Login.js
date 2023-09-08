@@ -3,31 +3,14 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import styles from '../Modal.module.scss';
 import Button from '~/components/Button';
 import { login, reset } from '~/features/auth/authSlice';
-import SpinIcon from '~/components/SpinIcon';
 
 const cx = classNames.bind(styles);
 
-function ModalLogin() {
-  const [modal, setModal] = useState(false);
-
-  const toggleModal = () => {
-    setModal(!modal);
-  };
-
-  useEffect(() => {
-    if (modal) {
-      document.body.classList.add('active-modal');
-    } else {
-      document.body.classList.remove('active-modal');
-    }
-  }, [modal]);
-
+function LoginForm() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -38,7 +21,7 @@ function ModalLogin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, isLoading, isError, isSuccess, message } = useSelector(
+  const { user, isError, isSuccess, message } = useSelector(
     (state) => state.auth,
   );
 
@@ -72,77 +55,55 @@ function ModalLogin() {
     dispatch(login(userData));
   };
 
-  if (isLoading) {
-    return <SpinIcon />;
-  }
-
   return (
     <div className={cx('wrapper')}>
-      <Button
-        login
-        up
-        leftIcon={<FontAwesomeIcon icon={faArrowRightToBracket} />}
-        onClick={toggleModal}
-      >
-        Log In
-      </Button>
-      {modal && (
-        <div className={cx('modal')}>
-          <div onClick={toggleModal} className={cx('overlay')}></div>
-          <div className={cx('modal-content')}>
-            <div className="heading">
-              <h2>Log in</h2>
-              <p>Welcome back!</p>
-            </div>
-            <form onSubmit={loginSubmit}>
-              <div className="form-group">
-                <label
-                  className="d-flex justify-content-left"
-                  htmlFor="auth-username-signup"
-                >
-                  Email:
-                </label>
-                <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  name="email"
-                  value={email}
-                  placeholder="Email"
-                  onChange={handleFormData}
-                ></input>
-              </div>
-              <div className="form-group">
-                <label
-                  className="d-flex justify-content-left"
-                  htmlFor="auth-username-signup"
-                >
-                  Password:
-                </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  name="password"
-                  value={password}
-                  placeholder="Password"
-                  onChange={handleFormData}
-                ></input>
-              </div>
-              <div className="form-group">
-                <Button primary type="submit">
-                  Login
-                </Button>
-              </div>
-            </form>
-            <button className={cx('close-modal')} onClick={toggleModal}>
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
+      <div className="heading">
+        <h2>Log in</h2>
+        <p>Welcome back!</p>
+      </div>
+      <form onSubmit={loginSubmit}>
+        <div className="form-group">
+          <label
+            className="d-flex justify-content-left"
+            htmlFor="auth-username-signup"
+          >
+            Email:
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            name="email"
+            value={email}
+            placeholder="Email"
+            onChange={handleFormData}
+          ></input>
         </div>
-      )}
+        <div className="form-group">
+          <label
+            className="d-flex justify-content-left"
+            htmlFor="auth-username-signup"
+          >
+            Password:
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            name="password"
+            value={password}
+            placeholder="Password"
+            onChange={handleFormData}
+          ></input>
+        </div>
+        <div className="form-group">
+          <Button primary type="submit">
+            Login
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
 
-export default ModalLogin;
+export default LoginForm;

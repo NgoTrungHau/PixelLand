@@ -5,10 +5,12 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowRightFromBracket,
+  faBook,
   faCamera,
   faGear,
   faHouse,
   faImages,
+  faTag,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Tippy from '@tippyjs/react';
@@ -20,13 +22,11 @@ import 'tippy.js/dist/tippy.css';
 import images from '~/assets/images';
 import Button from '~/components/Button';
 import Image from '~/components/Image';
-import { ModalLogin } from '~/components/Modals/Login';
-import { ModalSignUp } from '~/components/Modals/SignUp';
 import Menu from '~/components/Popper/Menu';
 import config from '~/config';
 import Search from '../Search';
 import styles from './Header.module.scss';
-import { ModalCreateArt } from '~/components/Modals/CreateArt';
+import Modal from '~/components/Modals/';
 
 const cx = classNames.bind(styles);
 
@@ -99,19 +99,27 @@ function Header() {
             >
               Gallery
             </Button>
-            {/* <Button white navlink to={config.routes.following}>
-              Following
+            <Button
+              white
+              to={config.routes.gallery}
+              leftIcon={<FontAwesomeIcon icon={faBook} />}
+            >
+              Courses
             </Button>
-            <Button white navlink to={config.routes.profile}>
-              Profile
-            </Button> */}
+            <Button
+              white
+              to={config.routes.gallery}
+              leftIcon={<FontAwesomeIcon icon={faTag} />}
+            >
+              Shop
+            </Button>
           </div>
 
           <div className={cx('right-header')}>
             <div className={cx('actions')}>
               {user ? (
                 <>
-                  <ModalCreateArt></ModalCreateArt>
+                  <Modal modalType="upload" />
                   <Tippy
                     interactive
                     appendTo={() => document.body}
@@ -145,8 +153,8 @@ function Header() {
                 </>
               ) : (
                 <>
-                  <ModalSignUp />
-                  <ModalLogin />
+                  <Modal modalType="signup" />
+                  <Modal modalType="login" />
                 </>
               )}
             </div>
