@@ -7,11 +7,12 @@ import { faComment, faEye, faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
 
 import styles from './ArtItem.module.scss';
-import Avatar from '../Avatar';
-import Button from '../Button';
+import Avatar from '../../Avatar';
+import Button from '../../Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { likeArt, unlikeArt } from '~/features/arts/artSlice';
 import { toast } from 'react-toastify';
+import Image from '~/components/Image';
 
 const cx = classNames.bind(styles);
 
@@ -52,7 +53,7 @@ function ArtItem({ art }) {
       onMouseLeave={() => setCardHover(false)}
     >
       <Link className={cx('img-thumb')} src={art.art?.url}>
-        <img src={art.art?.url} alt="" />
+        <Image src={art.art?.url} alt="" />
         <div
           className={cx('dark-overlay', cardHover ? 'item-show' : 'item-hide')}
         ></div>

@@ -1,1 +1,1 @@
-export { default as ModalEditProfile } from './EditProfile';
+export { default } from './EditProfile';

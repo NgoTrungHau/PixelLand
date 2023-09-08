@@ -9,7 +9,7 @@ import { debounce } from 'lodash';
 import { getArts, getAuthArts, reset } from '~/features/arts/artSlice';
 
 import styles from './ArtList.module.scss';
-import ArtItem from '../Art/ArtItem';
+import ArtItem from '../ArtItem/ArtItem';
 
 const cx = classNames.bind(styles);
 

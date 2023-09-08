@@ -1,1 +1,1 @@
-export { default as ModalLogin } from './Login';
+export { default } from './Login';
