@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
-import { createContext, useEffect, useState } from 'react';
+import { cloneElement, createContext, useEffect, useState } from 'react';
 import {
   faArrowRightToBracket,
   faArrowUpFromBracket,
@@ -16,15 +16,17 @@ import { UploadArt } from '../Art';
 import LoginForm from './Login';
 import SignUpForm from './SignUp';
 import EditProfileForm from './EditProfile';
+import ArtDetail from '../Art/ArtDetail';
 
-export const ModalToggleContext = createContext();
+export const ModalToggleContext = createContext(() => {});
 
 const cx = classNames.bind(styles);
 
-function Modal({ modalType }) {
+function Modal({ modalType, data, sz, children }) {
   const [modal, setModal] = useState(false);
   const toggleModal = () => {
     setModal(!modal);
+    // console.log(!modal);
   };
 
   useEffect(() => {
@@ -72,6 +74,8 @@ function Modal({ modalType }) {
             onClick={toggleModal}
           />
         );
+      case 'art-detail':
+        return <>{cloneElement(children, { onClick: toggleModal })}</>;
       case 'editProfile':
         return (
           <Button
@@ -83,7 +87,7 @@ function Modal({ modalType }) {
           </Button>
         );
       default:
-        return null;
+        return <button onClick={toggleModal} />;
     }
   };
   const renderChildrenModal = () => {
@@ -94,6 +98,8 @@ function Modal({ modalType }) {
         return <LoginForm />;
       case 'upload':
         return <UploadArt />;
+      case 'art-detail':
+        return <ArtDetail art={data} />;
       case 'editProfile':
         return <EditProfileForm />;
       default:
@@ -108,7 +114,7 @@ function Modal({ modalType }) {
         {modal && (
           <div className={cx('modal')}>
             <div onClick={toggleModal} className={cx('overlay')}></div>
-            <div className={cx('modal-content')}>
+            <div className={cx('modal-content', sz)}>
               {renderChildrenModal()}
               <Button className={cx('close-modal')} onClick={toggleModal}>
                 <FontAwesomeIcon icon={faXmark} />
@@ -122,8 +128,16 @@ function Modal({ modalType }) {
 }
 
 Modal.propTypes = {
-  modalType: PropTypes.oneOf(['upload', 'login', 'signup', 'editProfile'])
-    .isRequired,
+  children: PropTypes.node,
+  data: PropTypes.object,
+  sz: PropTypes.string,
+  modalType: PropTypes.oneOf([
+    'login',
+    'signup',
+    'upload',
+    'art-detail',
+    'editProfile',
+  ]).isRequired,
 };
 
 export default Modal;

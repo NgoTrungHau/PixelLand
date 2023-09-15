@@ -1,7 +1,8 @@
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faEye, faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
@@ -9,14 +10,15 @@ import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
 import styles from './ArtItem.module.scss';
 import Avatar from '../../Avatar';
 import Button from '../../Button';
-import { useDispatch, useSelector } from 'react-redux';
-import { likeArt, unlikeArt } from '~/features/arts/artSlice';
-import { toast } from 'react-toastify';
 import Image from '~/components/Image';
+import Modal, { ModalToggleContext } from '~/components/Modals/Modal';
+import { likeArt, unlikeArt } from '~/features/arts/artSlice';
 
 const cx = classNames.bind(styles);
 
 function ArtItem({ art }) {
+  const toggleModal = useContext(ModalToggleContext);
+
   const [cardHover, setCardHover] = useState(false);
   const [isLiked, setIsLiked] = useState(art.liked);
 
@@ -29,7 +31,7 @@ function ArtItem({ art }) {
   }, [art.liked]);
 
   const handleLike = () => {
-    if (user == null) {
+    if (!user) {
       toast.error('Not logged in yet!');
       return;
     }
@@ -52,14 +54,19 @@ function ArtItem({ art }) {
       onMouseEnter={() => setCardHover(true)}
       onMouseLeave={() => setCardHover(false)}
     >
-      <Link className={cx('img-thumb')} src={art.art?.url}>
-        <Image src={art.art?.url} alt="" />
-        <div
-          className={cx('dark-overlay', cardHover ? 'item-show' : 'item-hide')}
-        ></div>
-      </Link>
+      <Modal modalType="art-detail" data={art} sz="medium">
+        <div className={cx('img-thumb')}>
+          <Image src={art.art?.url} alt="" />
+          <div
+            className={cx(
+              'dark-overlay',
+              cardHover ? 'item-show' : 'item-hide',
+            )}
+          ></div>
+        </div>
+      </Modal>
       <div className={cx('item-detail', cardHover ? 'item-show' : 'item-hide')}>
-        <div className={cx('react-quantity')}>
+        <div className={cx('actions-quantity')}>
           <span>
             <FontAwesomeIcon icon={faEye} />
             {Math.floor(Math.random() * (20000 - 1 + 1) + 1)}
