@@ -11,31 +11,7 @@
 .detail {
   position: relative;
   height: 100%;
-  // width: calc(100% - var(--scrollbar-width));
-  // padding-right: var(--scrollbar-width);
-  // overflow: scroll;
-  // overflow-x: hidden;
-  // overflow-y: overlay;
-  // &::-webkit-scrollbar {
-  //   overflow: visible;
-  //   // background: transparent;
-  //   display: none;
-  // }
-
-  // &:hover {
-  //   &::-webkit-scrollbar {
-  //     display: block;
-  //   }
-  // }
 }
-// .detail::before {
-//   content: '';
-//   position: absolute;
-//   top: 0;
-//   right: 0;
-//   bottom: 0;
-//   width: var(--scrollbar-width);
-// }
 
 .head {
   display: flex;
@@ -43,10 +19,14 @@
   justify-content: space-between;
   width: 100%;
   padding-top: 10px;
+  padding-right: 10px;
   border-top: 1px solid var(--gray);
 
-  button:hover {
+  .dropdown-btn {
     border-radius: 50px;
+  }
+
+  button:hover {
     background-color: var(--gray-light);
   }
 }

@@ -41,21 +41,21 @@ function Header() {
         to: `/profile/${user._id}`,
       },
       {
-        icon: <FontAwesomeIcon icon={faImage}></FontAwesomeIcon>,
+        rightIcon: <FontAwesomeIcon icon={faImage}></FontAwesomeIcon>,
         title: 'My Gallery',
         to: '/gallery',
         divider: true,
       },
       {
-        icon: <FontAwesomeIcon icon={faCamera}></FontAwesomeIcon>,
+        rightIcon: <FontAwesomeIcon icon={faCamera}></FontAwesomeIcon>,
         title: 'My Photos',
       },
       {
-        icon: <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>,
+        rightIcon: <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>,
         title: 'Settings',
       },
       {
-        icon: (
+        rightIcon: (
           <FontAwesomeIcon icon={faArrowRightFromBracket}></FontAwesomeIcon>
         ),
         title: 'Logout',
@@ -143,11 +143,16 @@ function Header() {
                     ></Button>
                   </Tippy>
 
-                  <Menu items={Menu_Profile}>
+                  <Menu
+                    items={Menu_Profile}
+                    hideOnClick
+                    trigger="click"
+                    offset={[0, 15]}
+                  >
                     <Image
                       src={user.avatar?.url}
                       className={cx('user-avatar')}
-                      alt="user"
+                      alt=""
                     />
                   </Menu>
                 </>

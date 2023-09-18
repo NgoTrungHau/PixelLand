@@ -3,7 +3,7 @@ import classNames from 'classnames/bind';
 // proptypes
 import PropTypes from 'prop-types';
 // overlay scrollbar react
-// import 'overlayscrollbars/overlayscrollbars.css';
+import 'overlayscrollbars/overlayscrollbars.css';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import styles from './OverlayScrollbar.module.scss';
@@ -14,24 +14,21 @@ function OverlayScrollbar({ children, classNames }) {
   return (
     <OverlayScrollbarsComponent
       options={{
+        overflowBehavior: { x: 'hidden', y: 'overlay' },
         scrollbars: {
-          className: cx('os-theme-dark'),
-          size: 'thin', // equivalent to width: 8px;
+          className: cx('os-theme-custom'),
+          size: '10px',
           visibility: 'auto',
-          autoHide: 'scroll',
-          autoHideDelay: 800,
+          autoHide: 'leave',
+          autoHideDelay: 500,
           clickScrolling: true,
           touchSupport: true,
           snapHandle: true,
-          colors: {
-            track: 'rgba(0, 0, 0, 0.1)', // Use same color as thumb
-            thumb: 'rgba(0, 0, 0, 0.1)',
-          },
+          backgroundColor: 'rgba(0, 0, 0, 0.15)',
         },
         paddingAbsolute: true,
       }}
-      style={{ width: '100%', height: '100%' }}
-      className={classNames}
+      className={cx('custom-scrollbar', classNames)}
     >
       {children}
     </OverlayScrollbarsComponent>
