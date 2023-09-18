@@ -12,7 +12,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faMessage } from '@fortawesome/free-regular-svg-icons';
 import {
   faEllipsisVertical,
+  faPen,
   faRepeat,
+  faTrashCan,
   faHeart as fullHeart,
 } from '@fortawesome/free-solid-svg-icons';
 // other
@@ -29,6 +31,7 @@ import Image from '~/components/Image';
 import Button from '~/components/Button';
 import CommentForm from '~/components/Comment/CommentForm/CommentForm';
 import OverlayScrollbar from '~/components/OverlayScrollbar';
+import Menu from '~/components/Popper/Menu';
 
 const cx = classNames.bind(styles);
 
@@ -98,9 +101,24 @@ function ArtDetail({ art }) {
               <h5>{moment(art.createdAt).fromNow()}</h5>
             </div>
           </div>
-          <Button>
-            <FontAwesomeIcon icon={faEllipsisVertical} />
-          </Button>
+          <Menu
+            items={[
+              {
+                leftIcon: <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>,
+                title: 'Edit',
+              },
+              {
+                leftIcon: <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>,
+                title: 'Delete',
+              },
+            ]}
+            hideOnClick
+            offset={[0, 0]}
+          >
+            <Button className={cx('dropdown-btn')}>
+              <FontAwesomeIcon icon={faEllipsisVertical} />
+            </Button>
+          </Menu>
         </div>
         <div className={cx('art-detail')}>
           <div className={cx('title')}>{art.title}</div>
@@ -135,6 +153,10 @@ function ArtDetail({ art }) {
             </Button>
           </div>
         </div>
+        <div>sdsadas</div>
+        <div>sdsadas</div>
+        <div>sdsadas</div>
+        <div>sdsadas</div>
       </OverlayScrollbar>
       <div className={cx('comments')}>{user ? <CommentForm /> : null}</div>
     </div>

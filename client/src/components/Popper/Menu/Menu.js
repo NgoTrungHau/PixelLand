@@ -1,19 +1,32 @@
 import PropTypes from 'prop-types';
+// classNames
 import classNames from 'classnames/bind';
+// react
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { logout, reset } from '~/features/auth/authSlice';
+import { cloneElement, useState } from 'react';
 import Tippy from '@tippyjs/react/headless';
+
+// css
+import styles from './Menu.module.scss';
+// component
 import { Wrapper as PopperWrapper } from '~/components/Popper';
 import MenuItem from './MenuItem';
-import styles from './Menu.module.scss';
+// features
+import { logout, reset } from '~/features/auth/authSlice';
 
 const cx = classNames.bind(styles);
 
-function Menu({ children, items = [], hideOnClick = false }) {
+function Menu({ children, items = [], offset }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // show-hide when clicked
+  const [isClicked, setClicked] = useState(false);
+
+  const handleClick = () => setClicked(!isClicked);
+
+  // logout
   const onLogout = () => {
     dispatch(logout());
     dispatch(reset());
@@ -29,6 +42,9 @@ function Menu({ children, items = [], hideOnClick = false }) {
       />
     ));
   };
+  const childrenWithProps = cloneElement(children, {
+    onClick: handleClick,
+  });
 
   return (
     // Using a wrapper <div> tag around the reference element solves
@@ -37,8 +53,9 @@ function Menu({ children, items = [], hideOnClick = false }) {
       <Tippy
         interactive
         delay={[0, 700]}
-        offset={[0, 15]}
-        hideOnClick={hideOnClick}
+        offset={offset}
+        visible={isClicked}
+        onClickOutside={() => setClicked(false)}
         placement="bottom-end"
         render={(attrs) => (
           <div className={cx('menu-profile')} tabIndex="-1" {...attrs}>
@@ -46,7 +63,7 @@ function Menu({ children, items = [], hideOnClick = false }) {
           </div>
         )}
       >
-        {children}
+        {childrenWithProps}
       </Tippy>
     </div>
   );

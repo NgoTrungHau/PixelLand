@@ -16,7 +16,8 @@ function MenuItem({ data, onClick }) {
           className={classes}
           white
           image={data.image}
-          rightIcon={data.icon}
+          leftIcon={data.leftIcon}
+          rightIcon={data.rightIcon}
           to={data.to}
           onClick={onClick}
         >
@@ -30,7 +31,8 @@ function MenuItem({ data, onClick }) {
       className={classes}
       white
       image={data.image}
-      rightIcon={data.icon}
+      leftIcon={data.leftIcon}
+      rightIcon={data.rightIcon}
       to={data.to}
       onClick={onClick}
     >
