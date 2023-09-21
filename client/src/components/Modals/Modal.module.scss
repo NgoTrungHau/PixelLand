@@ -17,7 +17,7 @@
   right: 0;
   bottom: 0;
   position: fixed;
-  z-index: 50;
+  z-index: 90;
 }
 
 .overlay {
@@ -34,16 +34,12 @@
   line-height: 1.4;
   background: var(--white);
   color: #000;
-  padding: 15px 15px !important;
   border: 1px solid transparent;
   border-radius: 8px;
   min-width: 500px;
   max-width: 900px;
   cursor: default;
   overflow-y: hidden;
-  .heading {
-    text-align: center !important;
-  }
 
   h2 {
     text-align: center !important;
@@ -64,7 +60,6 @@
   }
 
   button {
-    margin: 8px 0 !important;
     span {
       display: flex;
       justify-content: center !important;
@@ -78,6 +73,15 @@
     background-color: var(--gray-light) !important;
     border-color: #edf1f4 !important;
   }
+}
+.heading {
+  display: flex;
+  height: 50px;
+  border-bottom: 1px solid var(--gray);
+  text-align: center !important;
+  justify-content: center !important;
+  align-items: center !important;
+  font-size: 24px;
 }
 
 // modal size
@@ -110,8 +114,15 @@ textarea {
   justify-content: center;
   top: 0;
   right: 0;
+  margin: 5px;
   padding: 0 5px !important;
-  background-color: transparent;
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  background-color: rgba(0, 0, 0, 0.05);
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
   svg {
     height: 20px;
   }

@@ -45,8 +45,7 @@ const deleteArt = async (artId, token) => {
   };
 
   const response = await httpRequest.deleteReq(API_URL + artId, config);
-
-  return response.data;
+  return response;
 };
 
 // Like art

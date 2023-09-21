@@ -17,6 +17,7 @@ import LoginForm from './Login';
 import SignUpForm from './SignUp';
 import EditProfileForm from './EditProfile';
 import ArtDetail from '../Art/ArtDetail';
+import { createPortal } from 'react-dom';
 
 export const ModalToggleContext = createContext(() => {});
 
@@ -24,22 +25,25 @@ const cx = classNames.bind(styles);
 
 function Modal({ modalType, data, sz, children }) {
   const [modal, setModal] = useState(false);
+
   const toggleModal = () => {
     setModal(!modal);
-    // console.log(!modal);
   };
 
   useEffect(() => {
+    const body = document.body.style;
+
     if (modal) {
-      document.body.style.overflowY = 'scroll';
-      document.body.style.position = 'fixed';
-      document.body.style.left = '0';
-      document.body.style.right = '0';
+      body.overflowY = 'scroll';
+      body.position = 'fixed';
+      body.left = '0';
+      body.right = '0';
     } else {
-      document.body.style.overflowY = 'auto';
-      document.body.style.position = 'static';
+      body.overflowY = 'auto';
+      body.position = 'static';
     }
   }, [modal]);
+
   const renderBtnModal = () => {
     switch (modalType) {
       case 'signup':
@@ -76,6 +80,8 @@ function Modal({ modalType, data, sz, children }) {
         );
       case 'art-detail':
         return <>{cloneElement(children, { onClick: toggleModal })}</>;
+      case 'remove-art':
+        return <>{cloneElement(children, { onClick: toggleModal })}</>;
       case 'editProfile':
         return (
           <Button
@@ -100,6 +106,23 @@ function Modal({ modalType, data, sz, children }) {
         return <UploadArt />;
       case 'art-detail':
         return <ArtDetail art={data} />;
+      case 'remove-art':
+        return (
+          <>
+            <div className={cx('heading')}>Delete Art</div>
+            <div className="d-flex justify-content-center align-item-center">
+              Do you really want to delete this art?
+            </div>
+            <div className="d-flex justify-content-end">
+              <Button gray onClick={toggleModal}>
+                Cancel
+              </Button>
+              <Button primary onClick={data.onClick}>
+                Delete
+              </Button>
+            </div>
+          </>
+        );
       case 'editProfile':
         return <EditProfileForm />;
       default:
@@ -111,18 +134,23 @@ function Modal({ modalType, data, sz, children }) {
     <div className={cx('wrapper')}>
       <ModalToggleContext.Provider value={toggleModal}>
         {renderBtnModal()}
-        {modal && (
+      </ModalToggleContext.Provider>
+      {modal &&
+        createPortal(
           <div className={cx('modal')}>
             <div onClick={toggleModal} className={cx('overlay')}></div>
             <div className={cx('modal-content', sz)}>
+              {modalType === 'art-detail' && (
+                <div className={cx('heading')}></div>
+              )}
               {renderChildrenModal()}
               <Button className={cx('close-modal')} onClick={toggleModal}>
                 <FontAwesomeIcon icon={faXmark} />
               </Button>
             </div>
-          </div>
+          </div>,
+          document.body,
         )}
-      </ModalToggleContext.Provider>
     </div>
   );
 }
@@ -136,6 +164,7 @@ Modal.propTypes = {
     'signup',
     'upload',
     'art-detail',
+    'remove-art',
     'editProfile',
   ]).isRequired,
 };

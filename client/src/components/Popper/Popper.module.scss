@@ -1,11 +1,14 @@
 .wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
   max-height: min((100vh - 96px) - 60px, 734px);
-  min-height: 100px;
   padding: 8px 10px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;
+  button {
+    margin: 0 !important;
+  }
 }

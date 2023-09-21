@@ -15,8 +15,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Tippy from '@tippyjs/react';
 import classNames from 'classnames/bind';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import 'tippy.js/dist/tippy.css';
 
 import images from '~/assets/images';
@@ -27,10 +27,13 @@ import config from '~/config';
 import Search from '../Search';
 import styles from './Header.module.scss';
 import Modal from '~/components/Modals/';
+import { logout, reset } from '~/features/auth/authSlice';
 
 const cx = classNames.bind(styles);
 
 function Header() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
   if (user) {
@@ -59,6 +62,11 @@ function Header() {
           <FontAwesomeIcon icon={faArrowRightFromBracket}></FontAwesomeIcon>
         ),
         title: 'Logout',
+        onClick: () => {
+          dispatch(logout());
+          dispatch(reset());
+          navigate('/');
+        },
         divider: true,
       },
     ];

@@ -38,7 +38,12 @@ function Menu({ children, items = [], offset }) {
       <MenuItem
         key={index}
         data={item}
-        onClick={item.title === 'Logout' ? onLogout : null}
+        onClick={() => {
+          if (item.title === 'Logout') {
+            onLogout();
+          }
+          setClicked(false);
+        }}
       />
     ));
   };

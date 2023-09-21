@@ -1,7 +1,11 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import Button from '~/components/Button/';
+
+// css
 import styles from './Menu.module.scss';
+// components
+import Button from '~/components/Button/';
+import Modal from '~/components/Modals/Modal';
 
 const cx = classNames.bind(styles);
 
@@ -24,6 +28,24 @@ function MenuItem({ data, onClick }) {
           {data.title}
         </Button>
       </>
+    );
+  }
+  if (data.modal) {
+    return (
+      <div onClick={onClick}>
+        <Modal modalType="remove-art" sz="small" data={data}>
+          <Button
+            className={cx('full', classes)}
+            white
+            image={data.image}
+            leftIcon={data.leftIcon}
+            rightIcon={data.rightIcon}
+            to={data.to}
+          >
+            {data.title}
+          </Button>
+        </Modal>
+      </div>
     );
   }
   return (

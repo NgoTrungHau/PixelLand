@@ -74,9 +74,7 @@ function UploadArt() {
   });
   return (
     <div className={cx('wrapper')}>
-      <div className="heading">
-        <h2>Upload Art</h2>
-      </div>
+      <div className={cx('heading')}>Upload Art</div>
       <Formik
         initialValues={formik.initialValues}
         validationSchema={ArtSchema}

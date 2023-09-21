@@ -79,7 +79,9 @@ function ArtList() {
       <Masonry className={cx('masonry-wrapper')} columns={4} spacing={2}>
         {!isArtsReady
           ? cards_sample
-          : arts.map((art, index) => <MemoizedArtItem art={art} key={index} />)}
+          : arts.map((art, index) => (
+              <MemoizedArtItem art={art} key={art._id} />
+            ))}
       </Masonry>
     </div>
   );
