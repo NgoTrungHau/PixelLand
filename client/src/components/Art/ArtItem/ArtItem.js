@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,14 +11,12 @@ import styles from './ArtItem.module.scss';
 import Avatar from '../../Avatar';
 import Button from '../../Button';
 import Image from '~/components/Image';
-import Modal, { ModalToggleContext } from '~/components/Modals/Modal';
+import Modal from '~/components/Modals/Modal';
 import { likeArt, unlikeArt } from '~/features/arts/artSlice';
 
 const cx = classNames.bind(styles);
 
 function ArtItem({ art }) {
-  const toggleModal = useContext(ModalToggleContext);
-
   const [cardHover, setCardHover] = useState(false);
   const [isLiked, setIsLiked] = useState(art.liked);
 

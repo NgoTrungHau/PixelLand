@@ -7,6 +7,7 @@ import 'overlayscrollbars/overlayscrollbars.css';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import styles from './OverlayScrollbar.module.scss';
+import { useEffect } from 'react';
 
 const cx = classNames.bind(styles);
 

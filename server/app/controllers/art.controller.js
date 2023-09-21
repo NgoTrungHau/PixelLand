@@ -169,14 +169,14 @@ exports.unlikeArt = async (req, res, next) => {
 // Delete art
 exports.delete = async (req, res, next) => {
   try {
-    const art = await Art.findById(req.body.id);
+    const art = await Art.findById(req.params.id);
 
     if (!art) {
       return next(new ApiError(401, 'Art not found'));
     }
+    const user = await User.findById(req.user._id);
 
-    const user = await User.findById(req.user.id);
-
+    console.log('error ');
     if (!user) {
       return next(new ApiError(401, 'User not found'));
     }

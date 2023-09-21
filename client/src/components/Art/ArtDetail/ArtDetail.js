@@ -23,14 +23,18 @@ import moment from 'moment';
 // css
 import styles from './ArtDetail.module.scss';
 // features, function
-import { createArt, likeArt, unlikeArt } from '~/features/arts/artSlice';
+import {
+  createArt,
+  deleteArt,
+  likeArt,
+  unlikeArt,
+} from '~/features/arts/artSlice';
 import { ModalToggleContext } from '../../Modals/Modal';
 // components
 import Avatar from '~/components/Avatar';
 import Image from '~/components/Image';
 import Button from '~/components/Button';
 import CommentForm from '~/components/Comment/CommentForm/CommentForm';
-import OverlayScrollbar from '~/components/OverlayScrollbar';
 import Menu from '~/components/Popper/Menu';
 
 const cx = classNames.bind(styles);
@@ -43,9 +47,6 @@ function ArtDetail({ art }) {
 
   // get data from redux reducer
   const { user } = useSelector((state) => state.auth);
-  const { arts, isLoading, isError, message } = useSelector(
-    (state) => state.arts,
-  );
 
   const handleLike = () => {
     if (user == null) {
@@ -60,15 +61,14 @@ function ArtDetail({ art }) {
     }
   };
 
+  const handleDelete = () => {
+    dispatch(deleteArt(art._id));
+    toggleModal();
+  };
+
   useEffect(() => {
     setIsLiked(art.liked);
   }, [art.liked]);
-
-  useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-  }, [user, arts, isError, message, dispatch]);
 
   // validation
   const ArtSchema = Yup.object().shape({
@@ -92,7 +92,7 @@ function ArtDetail({ art }) {
 
   return (
     <div className={cx('wrapper')}>
-      <OverlayScrollbar className={cx('detail')}>
+      <div className={cx('detail')}>
         <div className={cx('head')}>
           <div className={cx('author')}>
             <Avatar avatar={art.author.avartar?.url} medium />
@@ -102,16 +102,33 @@ function ArtDetail({ art }) {
             </div>
           </div>
           <Menu
-            items={[
-              {
-                leftIcon: <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>,
-                title: 'Edit',
-              },
-              {
-                leftIcon: <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>,
-                title: 'Delete',
-              },
-            ]}
+            items={
+              user?._id == art.author?._id
+                ? [
+                    {
+                      leftIcon: (
+                        <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
+                      ),
+                      title: 'Edit',
+                    },
+                    {
+                      leftIcon: (
+                        <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
+                      ),
+                      title: 'Remove',
+                      modal: true,
+                      onClick: handleDelete,
+                    },
+                  ]
+                : [
+                    {
+                      // leftIcon: (
+                      //   <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
+                      // ),
+                      title: 'Report',
+                    },
+                  ]
+            }
             hideOnClick
             offset={[0, 0]}
           >
@@ -153,11 +170,13 @@ function ArtDetail({ art }) {
             </Button>
           </div>
         </div>
-        <div>sdsadas</div>
-        <div>sdsadas</div>
-        <div>sdsadas</div>
-        <div>sdsadas</div>
-      </OverlayScrollbar>
+        <div className={cx('comments')}>
+          <div>sdsadas</div>
+          <div>sdsadas</div>
+          <div>sdsadas</div>
+          <div>sdsadas</div>
+        </div>
+      </div>
       <div className={cx('comments')}>{user ? <CommentForm /> : null}</div>
     </div>
   );
