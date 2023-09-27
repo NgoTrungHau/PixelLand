@@ -36,6 +36,20 @@ const getAuthArts = async (auth) => {
   return response;
 };
 
+// Edit user art
+const editArt = async (artData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await httpRequest.post(
+    API_URL + artData.id,
+    artData,
+    config,
+  );
+  return response;
+};
 // Delete user art
 const deleteArt = async (artId, token) => {
   const config = {
@@ -84,6 +98,7 @@ const artService = {
   createArt,
   getArts,
   getAuthArts,
+  editArt,
   deleteArt,
   likeArt,
   unlikeArt,

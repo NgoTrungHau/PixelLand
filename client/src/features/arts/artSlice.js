@@ -60,6 +60,25 @@ export const getAuthArts = createAsyncThunk(
   },
 );
 
+// Edit user art
+export const editArt = createAsyncThunk(
+  'arts/edit',
+  async (artData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await artService.editArt(artData, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 // Delete user art
 export const deleteArt = createAsyncThunk(
   'arts/delete',
@@ -173,6 +192,22 @@ export const artSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
+      .addCase(editArt.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editArt.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.arts = state.arts.map((art) =>
+          art._id === action.payload._id ? action.payload : art,
+        );
+        state.message = 'Update art successful!';
+      })
+      .addCase(editArt.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
       .addCase(deleteArt.pending, (state) => {
         state.isLoading = true;
       })
@@ -180,7 +215,7 @@ export const artSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.arts = state.arts.filter((art) => art._id !== action.payload._id);
-        state.message = 'Delete art successfully!';
+        state.message = 'Delete art successful!';
       })
       .addCase(deleteArt.rejected, (state, action) => {
         state.isLoading = false;

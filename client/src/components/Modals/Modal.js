@@ -18,6 +18,7 @@ import SignUpForm from './SignUp';
 import EditProfileForm from './EditProfile';
 import ArtDetail from '../Art/ArtDetail';
 import { createPortal } from 'react-dom';
+import EditArt from '../Art/EditArt/EditArt';
 
 export const ModalToggleContext = createContext(() => {});
 
@@ -27,7 +28,7 @@ function Modal({ modalType, data, sz, children }) {
   const [modal, setModal] = useState(false);
 
   const toggleModal = () => {
-    setModal(!modal);
+    setModal((prevModal) => !prevModal);
   };
 
   useEffect(() => {
@@ -80,7 +81,9 @@ function Modal({ modalType, data, sz, children }) {
         );
       case 'art-detail':
         return <>{cloneElement(children, { onClick: toggleModal })}</>;
-      case 'remove-art':
+      case 'edit-art':
+        return <>{cloneElement(children, { onClick: toggleModal })}</>;
+      case 'delete-art':
         return <>{cloneElement(children, { onClick: toggleModal })}</>;
       case 'editProfile':
         return (
@@ -106,7 +109,9 @@ function Modal({ modalType, data, sz, children }) {
         return <UploadArt />;
       case 'art-detail':
         return <ArtDetail art={data} />;
-      case 'remove-art':
+      case 'edit-art':
+        return <EditArt art={data.art} />;
+      case 'delete-art':
         return (
           <>
             <div className={cx('heading')}>Delete Art</div>
@@ -134,23 +139,20 @@ function Modal({ modalType, data, sz, children }) {
     <div className={cx('wrapper')}>
       <ModalToggleContext.Provider value={toggleModal}>
         {renderBtnModal()}
+        {modal &&
+          createPortal(
+            <div className={cx('modal')}>
+              <div onClick={toggleModal} className={cx('overlay')}></div>
+              <div className={cx('modal-content', sz)}>
+                {renderChildrenModal()}
+                <Button className={cx('close-modal')} onClick={toggleModal}>
+                  <FontAwesomeIcon icon={faXmark} />
+                </Button>
+              </div>
+            </div>,
+            document.body,
+          )}
       </ModalToggleContext.Provider>
-      {modal &&
-        createPortal(
-          <div className={cx('modal')}>
-            <div onClick={toggleModal} className={cx('overlay')}></div>
-            <div className={cx('modal-content', sz)}>
-              {modalType === 'art-detail' && (
-                <div className={cx('heading')}></div>
-              )}
-              {renderChildrenModal()}
-              <Button className={cx('close-modal')} onClick={toggleModal}>
-                <FontAwesomeIcon icon={faXmark} />
-              </Button>
-            </div>
-          </div>,
-          document.body,
-        )}
     </div>
   );
 }
@@ -164,7 +166,8 @@ Modal.propTypes = {
     'signup',
     'upload',
     'art-detail',
-    'remove-art',
+    'edit-art',
+    'delete-art',
     'editProfile',
   ]).isRequired,
 };

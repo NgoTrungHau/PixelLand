@@ -12,6 +12,15 @@ const cx = classNames.bind(styles);
 function MenuItem({ data, onClick }) {
   const classes = cx('menu-item');
 
+  const renderModalType = () => {
+    switch (data.title) {
+      case 'Edit':
+        return 'edit-art';
+      case 'Delete':
+        return 'delete-art';
+    }
+  };
+
   if (data.divider) {
     return (
       <>
@@ -33,7 +42,7 @@ function MenuItem({ data, onClick }) {
   if (data.modal) {
     return (
       <div onClick={onClick}>
-        <Modal modalType="remove-art" sz="small" data={data}>
+        <Modal modalType={renderModalType()} sz="small" data={data}>
           <Button
             className={cx('full', classes)}
             white
@@ -56,7 +65,7 @@ function MenuItem({ data, onClick }) {
       leftIcon={data.leftIcon}
       rightIcon={data.rightIcon}
       to={data.to}
-      onClick={onClick}
+      onClick={data.onClick}
     >
       {data.title}
     </Button>
