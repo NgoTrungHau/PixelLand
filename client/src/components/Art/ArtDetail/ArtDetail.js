@@ -4,9 +4,6 @@ import classNames from 'classnames/bind';
 import { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-// validation
-import { Formik, ErrorMessage, useFormik } from 'formik';
-import * as Yup from 'yup';
 // Icon
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faMessage } from '@fortawesome/free-regular-svg-icons';
@@ -22,13 +19,10 @@ import moment from 'moment';
 
 // css
 import styles from './ArtDetail.module.scss';
+import mStyles from '~/components/Modals/Modal.module.scss';
+
 // features, function
-import {
-  createArt,
-  deleteArt,
-  likeArt,
-  unlikeArt,
-} from '~/features/arts/artSlice';
+import { deleteArt, likeArt, unlikeArt } from '~/features/arts/artSlice';
 import { ModalToggleContext } from '../../Modals/Modal';
 // components
 import Avatar from '~/components/Avatar';
@@ -38,6 +32,7 @@ import CommentForm from '~/components/Comment/CommentForm/CommentForm';
 import Menu from '~/components/Popper/Menu';
 
 const cx = classNames.bind(styles);
+const mcx = classNames.bind(mStyles);
 
 function ArtDetail({ art }) {
   const [isLiked, setIsLiked] = useState(art.liked);
@@ -61,6 +56,9 @@ function ArtDetail({ art }) {
     }
   };
 
+  const handleEdit = () => {
+    toggleModal();
+  };
   const handleDelete = () => {
     dispatch(deleteArt(art._id));
     toggleModal();
@@ -70,28 +68,9 @@ function ArtDetail({ art }) {
     setIsLiked(art.liked);
   }, [art.liked]);
 
-  // validation
-  const ArtSchema = Yup.object().shape({
-    title: Yup.string(),
-    description: Yup.string(),
-    art: Yup.string().required('An image is required'),
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      title: '',
-      description: '',
-      art: '',
-    },
-    validationSchema: ArtSchema,
-    onSubmit: () => {
-      dispatch(createArt(formik.values));
-      formik.resetForm();
-    },
-  });
-
   return (
     <div className={cx('wrapper')}>
+      <div className={mcx('heading')}></div>
       <div className={cx('detail')}>
         <div className={cx('head')}>
           <div className={cx('author')}>
@@ -110,12 +89,15 @@ function ArtDetail({ art }) {
                         <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
                       ),
                       title: 'Edit',
+                      modal: true,
+                      art: art,
+                      onClick: handleEdit,
                     },
                     {
                       leftIcon: (
                         <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
                       ),
-                      title: 'Remove',
+                      title: 'Delete',
                       modal: true,
                       onClick: handleDelete,
                     },

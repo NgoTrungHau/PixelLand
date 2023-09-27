@@ -87,7 +87,6 @@ exports.findOne = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const art = await Art.findById(req.params.id);
-
     if (!art) {
       return next(new ApiError(401, 'Art not found'));
     }
@@ -103,13 +102,28 @@ exports.update = async (req, res, next) => {
       return next(new ApiError(401, 'User not authorized'));
     }
 
-    const updateArt = await Art.Post.findByIdAndUpdate(
-      req.params.id,
-      req.body,
+    let result = null;
+    if (art.art.url !== req.body.image) {
+      await cloudinary.uploader.destroy(art.art.public_id, (error, result) => {
+        console.log(result, error);
+      });
+      // Upload new image
+      result = await cloudinary.uploader.upload(req.body.image, {
+        folder: 'arts',
+      });
+    }
+
+    const updateArt = await Art.findByIdAndUpdate(
+      { _id: req.params.id },
       {
-        new: true,
+        $set: {
+          title: req.body.title,
+          description: req.body.description,
+          art: result ? result : art.art,
+        },
       },
-    );
+      { new: true },
+    ).populate('author', 'username avatar');
     res.json(updateArt);
   } catch (error) {
     return next(
@@ -176,7 +190,6 @@ exports.delete = async (req, res, next) => {
     }
     const user = await User.findById(req.user._id);
 
-    console.log('error ');
     if (!user) {
       return next(new ApiError(401, 'User not found'));
     }
@@ -185,6 +198,13 @@ exports.delete = async (req, res, next) => {
     if (art.author.toString() !== req.user.id) {
       return next(new ApiError(401, 'User not authorized'));
     }
+
+    // Delete old image from Cloudinary
+    const oldImageUrl = art.art.url;
+    const public_id = oldImageUrl.split('/').slice(-1)[0].split('.')[0]; // extract public_id from url
+    await cloudinary.uploader.destroy(public_id, (error, result) => {
+      console.log(result, error);
+    });
 
     const deleteArt = await art.remove();
     res.json(deleteArt);
