@@ -42,7 +42,7 @@ function MenuItem({ data, onClick }) {
   if (data.modal) {
     return (
       <div onClick={onClick}>
-        <Modal modalType={renderModalType()} sz="small" data={data}>
+        <Modal modalType={renderModalType()} sz="small" data={data} isChild>
           <Button
             className={cx('full', classes)}
             white

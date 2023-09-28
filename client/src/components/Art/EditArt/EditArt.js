@@ -16,7 +16,7 @@ import { ModalToggleContext } from '../../Modals/Modal';
 import Avatar from '~/components/Avatar';
 import moment from 'moment';
 import Image from '~/components/Image';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 const ecx = classNames.bind(editStyles);
@@ -122,18 +122,34 @@ function EditArt({ art }) {
               <ErrorMessage name="description" component="div" />
             </div>
             <div className={cx('form-field')}>
-              <label htmlFor="image" className={ecx('image-thumb')}>
-                <Button
-                  grayLight
-                  type="button"
-                  leftIcon={<FontAwesomeIcon icon={faPen} />}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('image').click();
-                  }}
-                >
-                  Edit
-                </Button>
+              <div className={ecx('image-thumb')}>
+                <label htmlFor="image" className={ecx('change-art')}>
+                  <Button
+                    grayLight
+                    type="button"
+                    leftIcon={<FontAwesomeIcon icon={faPen} />}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('image').click();
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <input
+                    type="file"
+                    className="form-control"
+                    id="image"
+                    name="image"
+                    accept="image/*"
+                    onChange={(e) => {
+                      handleArt(e);
+                    }}
+                    hidden
+                  />
+                </label>
+                {/* <Button type="button" className={ecx('remove-art')}>
+                  <FontAwesomeIcon icon={faXmark} />
+                </Button> */}
                 <Image
                   src={image || art.art?.url}
                   alt=""
@@ -144,18 +160,8 @@ function EditArt({ art }) {
                     borderRadius: '10px',
                   }}
                 />
-                <input
-                  type="file"
-                  className="form-control"
-                  id="image"
-                  name="image"
-                  accept="image/*"
-                  onChange={(e) => {
-                    handleArt(e);
-                  }}
-                  hidden
-                />
-              </label>
+              </div>
+
               {formik.errors.image && formik.touched.image && (
                 <p className={cx('mess-error')}>{formik.errors.image}</p>
               )}

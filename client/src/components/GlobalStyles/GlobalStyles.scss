@@ -55,20 +55,22 @@ body {
   line-height: 1.5;
   text-rendering: optimizeSpeed;
   color: var(--text-color);
-  overflow-y: overlay;
+  overflow-y: unset;
 }
 
 // Scrollbar
-html *::-webkit-scrollbar {
+html *::-webkit-scrollbar,
+body *::-webkit-scrollbar {
   border-radius: 0;
   width: 10px;
 }
-html *::-webkit-scrollbar-thumb {
+html *::-webkit-scrollbar-thumb,
+body *::-webkit-scrollbar-thumb {
   border-radius: 4px;
-  // background-color: rgba(22, 24, 35, 0.06);
   background-color: rgba(0, 0, 0, 0.15);
 }
-html *::-webkit-scrollbar-track {
+html *::-webkit-scrollbar-track,
+body *::-webkit-scrollbar-track {
   border-radius: 0;
   background-color: rgba(0, 0, 0, 0);
 }

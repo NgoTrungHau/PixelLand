@@ -16,7 +16,7 @@ import { likeArt, unlikeArt } from '~/features/arts/artSlice';
 
 const cx = classNames.bind(styles);
 
-function ArtItem({ art }) {
+function ArtItem({ key, art }) {
   const [cardHover, setCardHover] = useState(false);
   const [isLiked, setIsLiked] = useState(art.liked);
 
@@ -83,7 +83,7 @@ function ArtItem({ art }) {
             <Avatar avatar={art.author.avatar?.url} medium />
             <div className={cx('detail')}>
               <div>{art.author?.username}</div>
-              <span>{art?.description}</span>
+              <span>{art?.title}</span>
             </div>
           </div>
           <Button
