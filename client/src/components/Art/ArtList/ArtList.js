@@ -13,9 +13,7 @@ import ArtItem from '../ArtItem/ArtItem';
 
 const cx = classNames.bind(styles);
 
-const MemoizedArtItem = memo(({ art, index }) => (
-  <ArtItem key={index} art={art} />
-));
+const MemoizedArtItem = memo(({ art, index }) => <ArtItem art={art} />);
 
 function ArtList() {
   const [isArtsReady, setIsArtsReady] = useState(false);

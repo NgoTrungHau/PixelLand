@@ -64,6 +64,35 @@ function ArtDetail({ art }) {
     toggleModal();
   };
 
+  const renderItems = () => {
+    if (user?._id === art.author?._id) {
+      return [
+        {
+          leftIcon: <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>,
+          title: 'Edit',
+          modal: true,
+          art: art,
+          onClick: handleEdit,
+        },
+        {
+          leftIcon: <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>,
+          title: 'Delete',
+          modal: true,
+          onClick: handleDelete,
+        },
+      ];
+    } else {
+      return [
+        {
+          // leftIcon: (
+          //   <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
+          // ),
+          title: 'Report',
+        },
+      ];
+    }
+  };
+
   useEffect(() => {
     setIsLiked(art.liked);
   }, [art.liked]);
@@ -74,46 +103,13 @@ function ArtDetail({ art }) {
       <div className={cx('detail')}>
         <div className={cx('head')}>
           <div className={cx('author')}>
-            <Avatar avatar={art.author.avartar?.url} medium />
+            <Avatar avatar={art.author.avatar?.url} medium />
             <div className={cx('author-info')}>
               <h4>{art.author?.username}</h4>
               <h5>{moment(art.createdAt).fromNow()}</h5>
             </div>
           </div>
-          <Menu
-            items={
-              user?._id == art.author?._id
-                ? [
-                    {
-                      leftIcon: (
-                        <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
-                      ),
-                      title: 'Edit',
-                      modal: true,
-                      art: art,
-                      onClick: handleEdit,
-                    },
-                    {
-                      leftIcon: (
-                        <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
-                      ),
-                      title: 'Delete',
-                      modal: true,
-                      onClick: handleDelete,
-                    },
-                  ]
-                : [
-                    {
-                      // leftIcon: (
-                      //   <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
-                      // ),
-                      title: 'Report',
-                    },
-                  ]
-            }
-            hideOnClick
-            offset={[0, 0]}
-          >
+          <Menu items={renderItems()} hideOnClick offset={[0, 0]}>
             <Button className={cx('dropdown-btn')}>
               <FontAwesomeIcon icon={faEllipsisVertical} />
             </Button>

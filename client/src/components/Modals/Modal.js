@@ -23,8 +23,9 @@ import EditArt from '../Art/EditArt/EditArt';
 export const ModalToggleContext = createContext(() => {});
 
 const cx = classNames.bind(styles);
+let scrollPosition = 0;
 
-function Modal({ modalType, data, sz, children }) {
+function Modal({ modalType, data, sz, children, isChild }) {
   const [modal, setModal] = useState(false);
 
   const toggleModal = () => {
@@ -32,16 +33,22 @@ function Modal({ modalType, data, sz, children }) {
   };
 
   useEffect(() => {
-    const body = document.body.style;
+    const body = document.body;
 
     if (modal) {
-      body.overflowY = 'scroll';
-      body.position = 'fixed';
-      body.left = '0';
-      body.right = '0';
+      scrollPosition = window.scrollY;
+      body.style.overflowY = 'scroll';
+      body.style.position = 'fixed';
+      body.style.scrollbarGutter = 'stable';
+      body.style.top = `-${scrollPosition}px`;
+    } else if (!isChild) {
+      body.style.overflowY = 'auto';
+      body.style.position = 'static';
+      window.scrollTo(0, scrollPosition);
     } else {
-      body.overflowY = 'auto';
-      body.position = 'static';
+      body.style.overflowY = 'auto';
+      body.style.position = 'static';
+      window.scrollTo(0, scrollPosition);
     }
   }, [modal]);
 
@@ -161,6 +168,7 @@ Modal.propTypes = {
   children: PropTypes.node,
   data: PropTypes.object,
   sz: PropTypes.string,
+  isChild: PropTypes.bool,
   modalType: PropTypes.oneOf([
     'login',
     'signup',
