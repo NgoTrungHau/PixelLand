@@ -35,17 +35,13 @@ function Modal({ modalType, data, sz, children, isChild }) {
   useEffect(() => {
     const body = document.body;
 
-    if (modal) {
+    if (modal && !isChild) {
       scrollPosition = window.scrollY;
       body.style.overflowY = 'scroll';
       body.style.position = 'fixed';
       body.style.scrollbarGutter = 'stable';
       body.style.top = `-${scrollPosition}px`;
     } else if (!isChild) {
-      body.style.overflowY = 'auto';
-      body.style.position = 'static';
-      window.scrollTo(0, scrollPosition);
-    } else {
       body.style.overflowY = 'auto';
       body.style.position = 'static';
       window.scrollTo(0, scrollPosition);
