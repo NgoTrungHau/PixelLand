@@ -7,6 +7,7 @@ import Image from '~/components/Image';
 const cx = classNames.bind(styles);
 
 function Avatar({
+  className,
   avatar,
   XL = false,
   large = false,
@@ -17,7 +18,14 @@ function Avatar({
   return (
     <Image
       src={avatar}
-      className={cx('user-avatar', { XL, large, medium, small, profile })}
+      className={cx('user-avatar', {
+        [className]: className,
+        XL,
+        large,
+        medium,
+        small,
+        profile,
+      })}
       alt="user"
     />
   );

@@ -16,6 +16,7 @@ const Button = forwardRef(
       to,
       href,
       type,
+      disabled,
       navlink = false,
       primary = false,
       white = false,
@@ -44,7 +45,6 @@ const Button = forwardRef(
       white,
       gray,
       grayLight,
-
       login,
       signup,
       upload,
@@ -54,6 +54,7 @@ const Button = forwardRef(
     const props = {
       onClick,
       type,
+      disabled,
       ...passProps,
     };
 
@@ -67,8 +68,6 @@ const Button = forwardRef(
             white,
             gray,
             grayLight,
-
-            sz,
             rounded,
             up,
             active: nav.isActive,
@@ -97,6 +96,7 @@ const Button = forwardRef(
 Button.propTypes = {
   to: PropTypes.string,
   href: PropTypes.string,
+  disabled: PropTypes.bool,
   navlink: PropTypes.bool,
   primary: PropTypes.bool,
   white: PropTypes.bool,
@@ -109,7 +109,7 @@ Button.propTypes = {
   type: PropTypes.string,
   children: PropTypes.node,
   className: PropTypes.string,
-  sz: PropTypes.string,
+  sz: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
   image: PropTypes.string,
   leftIcon: PropTypes.node,
   rightIcon: PropTypes.node,
