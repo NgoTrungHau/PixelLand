@@ -36,6 +36,7 @@ const mcx = classNames.bind(mStyles);
 
 function ArtDetail({ art }) {
   const [isLiked, setIsLiked] = useState(art.liked);
+  const [isHover, setIsHover] = useState(false);
 
   const toggleModal = useContext(ModalToggleContext);
   const dispatch = useDispatch();
@@ -100,10 +101,21 @@ function ArtDetail({ art }) {
   return (
     <div className={cx('wrapper')}>
       <div className={mcx('heading')}></div>
-      <div className={cx('detail')}>
+      <div
+        className={cx('detail', {
+          'scroll-show': isHover,
+          'scroll-hide': !isHover,
+        })}
+        onMouseEnter={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}
+      >
         <div className={cx('head')}>
           <div className={cx('author')}>
-            <Avatar avatar={art.author.avatar?.url} medium />
+            <Avatar
+              className={cx('avt')}
+              avatar={art.author.avatar?.url}
+              medium
+            />
             <div className={cx('author-info')}>
               <h4>{art.author?.username}</h4>
               <h5>{moment(art.createdAt).fromNow()}</h5>
@@ -148,14 +160,9 @@ function ArtDetail({ art }) {
             </Button>
           </div>
         </div>
-        <div className={cx('comments')}>
-          <div>sdsadas</div>
-          <div>sdsadas</div>
-          <div>sdsadas</div>
-          <div>sdsadas</div>
-        </div>
+        <div className={cx('comments')}></div>
       </div>
-      <div className={cx('comments')}>{user ? <CommentForm /> : null}</div>
+      {user ? <CommentForm art_id={art._id} /> : null}
     </div>
   );
 }

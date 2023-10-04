@@ -1,8 +1,8 @@
 .wrapper {
-  display: inline-grid;
-  grid-template-rows: auto auto;
-  margin-top: 5px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
   width: 700px;
+  height: 100%;
   overflow: hidden;
   position: relative;
 }
@@ -35,6 +35,10 @@
   align-items: center;
   height: 50px;
 }
+.author-info {
+  margin-left: 10px;
+}
+
 .art-detail {
   .image-art {
     width: 100%;

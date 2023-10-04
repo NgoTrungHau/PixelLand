@@ -75,6 +75,39 @@ body *::-webkit-scrollbar-track {
   background-color: rgba(0, 0, 0, 0);
 }
 
+//show-hide scrollbar
+
+html * .scroll-show::-webkit-scrollbar,
+body * .scroll-show::-webkit-scrollbar {
+  width: 10px;
+}
+
+html * .scroll-show::-webkit-scrollbar-thumb,
+body * .scroll-show::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+html * .scroll-show::-webkit-scrollbar-track,
+body * .scroll-show::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+html * .scroll-hide::-webkit-scrollbar,
+body * .scroll-hide::-webkit-scrollbar {
+  width: 10px; /* Adjust to your preference */
+}
+
+html * .scroll-hide::-webkit-scrollbar-thumb,
+body * .scroll-hide::-webkit-scrollbar-thumb {
+  background-color: transparent; /* Or your respective color */
+}
+
+html * .scroll-hide::-webkit-scrollbar-track,
+body * .scroll-hide::-webkit-scrollbar-track {
+  background-color: transparent; /* Or your respective color */
+}
+
+// other
 button,
 input [tabindex] {
   border: none;
@@ -90,6 +123,7 @@ a {
   }
 }
 
+// line divider
 .divider {
   height: 0;
   margin: 0.5rem 0;
@@ -103,6 +137,7 @@ a {
   border-top: 1px solid #cbcfd3;
 }
 
+// masonry
 .my-masonry-grid {
   display: -webkit-box; /* Not needed if autoprefixing */
   display: -ms-flexbox; /* Not needed if autoprefixing */

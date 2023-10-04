@@ -37,7 +37,7 @@ function Search() {
       setLoading(true);
 
       const result = await searchServices.search(deboundedValue);
-      setSearchResult(result.users);
+      setSearchResult(result?.users || []);
 
       setLoading(false);
     };
