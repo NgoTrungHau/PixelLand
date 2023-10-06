@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const Comment = require('../models/Comment');
 const Schema = mongoose.Schema;
 
 const Post = new Schema(
@@ -6,14 +7,19 @@ const Post = new Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "User",
+      ref: 'User',
     },
     content: {
       type: String,
-      required: [true, "Please add something"],
+      required: [true, 'Please add something'],
       maxLength: 600,
     },
-    image: {
+    media: {
+      // Media associated with a comment (either image or video)
+      type: {
+        type: String,
+        enum: ['image', 'video'], // The media can be either an image or a video
+      },
       public_id: {
         type: String,
       },
@@ -21,13 +27,23 @@ const Post = new Schema(
         type: String,
       },
     },
-    liked: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    public: { type: Boolean, default: true },
+    liked: { type: Boolean, default: false },
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
   },
   {
     timestamps: true,
     versionKey: false, // You should be aware of the outcome after set to false
-  }
+  },
 );
 
-module.exports = mongoose.model("Post", Post);
+Post.pre('remove', function (next) {
+  Comment.deleteMany({ art: this._id }).exec((err) => {
+    if (!err) {
+      next();
+    }
+  });
+});
+
+module.exports = mongoose.model('Post', Post);
