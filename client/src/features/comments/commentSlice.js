@@ -16,6 +16,7 @@ export const createCmt = createAsyncThunk(
   async (cmtData, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
+      console.log('slice ', cmtData);
       return await commentService.createCmt(cmtData, token);
     } catch (error) {
       const message =

@@ -3,14 +3,14 @@ import * as httpRequest from '~/utils/httpRequest';
 const API_URL = '/comments/';
 
 // Create new Cmt
-const createCmt = async (CmtData, token) => {
+const createCmt = async (cmtData, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
-
-  const response = await httpRequest.post(API_URL + 'create', CmtData, config);
+  console.log('service ', cmtData);
+  const response = await httpRequest.post(API_URL + 'create', cmtData, config);
 
   return response;
 };

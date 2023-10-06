@@ -11,10 +11,11 @@ import Button from '~/components/Button';
 import Avatar from '~/components/Avatar';
 import styles from './CommentForm.module.scss';
 import Image from '~/components/Image';
+import { createCmt } from '~/features/comments/commentSlice';
 const cx = classNames.bind(styles);
 
-function CommentForm({ art_id }) {
-  const [image, setImage] = useState('');
+function CommentForm({ art_id, post_id }) {
+  const [media, setMedia] = useState('');
   const [isHover, setIsHover] = useState(false);
   const imgRef = useRef();
 
@@ -24,13 +25,20 @@ function CommentForm({ art_id }) {
 
   const handleImage = async (e) => {
     const file = e.target.files[0];
+    let mediaType;
 
+    if (file.type.startsWith('image')) {
+      mediaType = 'image';
+    } else if (file.type.startsWith('video')) {
+      mediaType = 'video';
+    }
     try {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = function () {
-        setImage(reader.result);
-        formik.setFieldValue('image', reader.result);
+        setMedia(reader.result);
+        formik.setFieldValue('media', reader.result);
+        formik.setFieldValue('mediaType', mediaType);
       };
     } catch (error) {
       console.error(error);
@@ -38,24 +46,29 @@ function CommentForm({ art_id }) {
   };
 
   const CommentSchema = Yup.object().shape({
-    author: Yup.string(),
-    src: Yup.string(),
-    text: Yup.string(),
-    image: Yup.string(),
+    commentedBy: Yup.string(),
+    art: Yup.string(),
+    post: Yup.string(),
+    content: Yup.string(),
+    media: Yup.string(),
+    mediaType: Yup.string(),
   });
 
   const formik = useFormik({
     initialValues: {
-      author: user._id,
-      src: art_id,
-      text: '',
-      image: '',
+      commentedBy: user._id,
+      art: art_id,
+      post: post_id,
+      content: '',
+      media: '',
+      mediaType: '',
     },
     validationSchema: CommentSchema,
     onSubmit: () => {
-      // dispatch(editArt(formik.values));
+      dispatch(createCmt(formik.values));
       formik.resetForm();
-      setImage('');
+      imgRef.current.value = '';
+      setMedia('');
     },
   });
 
@@ -82,15 +95,15 @@ function CommentForm({ art_id }) {
             <div className={cx('input-comment')}>
               <ReactTextareaAutosize
                 minRows={1} // minimum number of rows
-                id="text"
-                name="text"
-                value={formik.values.text}
+                id="content"
+                name="content"
+                value={formik.values.content}
                 placeholder="Write your comment"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               <div className={cx('btn-post')}>
-                {(formik.values.text || formik.values.image) && (
+                {(formik.values.content || formik.values.media) && (
                   <Button className={cx('post-comment')} type="submit" sz="md">
                     Post
                   </Button>
@@ -104,7 +117,7 @@ function CommentForm({ art_id }) {
                     id="imgInput"
                     ref={imgRef}
                     className={cx('img-thumb')}
-                    accept="image/*"
+                    accept="image/*,video/*,.gif"
                     onChange={handleImage}
                     style={{ display: 'none' }}
                   />
@@ -112,20 +125,21 @@ function CommentForm({ art_id }) {
               </div>
             </div>
           </div>
-          {image && (
+          {media && (
             <div className={cx('img-thumb')}>
               <Button
                 type="button"
                 className={cx('remove-img')}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   imgRef.current.value = '';
-                  formik.values.image = '';
-                  setImage('');
+                  formik.values.media = '';
+                  setMedia('');
                 }}
               >
                 <FontAwesomeIcon icon={faXmark} />
               </Button>
-              <Image src={image} alt="" />
+              <Image src={media} alt="" />
             </div>
           )}
         </form>
