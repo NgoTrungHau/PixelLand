@@ -5,7 +5,6 @@ const Comment = new Schema(
   {
     content: {
       type: String,
-      required: true,
       maxLength: 200,
     },
     commentedBy: {

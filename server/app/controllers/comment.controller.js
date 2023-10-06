@@ -6,18 +6,29 @@ const cloudinary = require('../utils/cloudinary');
 // Create a new comment
 exports.createComment = async (req, res) => {
   try {
+    if (!req.body.content && !req.body.media) {
+      return res.status(400).send('Either content or media is required.');
+    }
     // upload image to cloudinary
-    const result = await cloudinary.uploader.upload(req.body.media);
+    let result;
+    if (req.body.media) {
+      result = await cloudinary.uploader.upload(req.body.media, {
+        folder: 'comments',
+      });
+    }
+
     let newComment = new Comment({
       content: req.body.content,
       commentedBy: req.body.commentedBy,
       art: req.body.art,
       post: req.body.post,
-      media: {
-        type: req.body.mediaType, //either 'image' or 'video'
-        public_id: result.public_id,
-        url: result.url,
-      },
+      media: result
+        ? {
+            type: req.body.mediaType, //either 'image' or 'video'
+            public_id: result.public_id,
+            url: result.url,
+          }
+        : null,
     });
     let savedComment = await newComment.save();
     let associatedArt = await Post.findById(req.body.post);
@@ -25,7 +36,14 @@ exports.createComment = async (req, res) => {
       associatedArt.comments.push(savedComment._id);
       await associatedArt.save();
     }
-    res.send(savedComment);
+    res.json({
+      ...savedComment._doc,
+      commentedBy: {
+        _id: req.user._id,
+        username: req.user.username,
+        avatar: req.user.avatar,
+      },
+    });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -73,11 +91,15 @@ exports.updateComment = async (req, res) => {
 
     if (comment.media.public_id) {
       // Delete old media from Cloudinary
-      await cloudinary.uploader.destroy(comment.media.public_id);
+      await cloudinary.uploader.destroy(comment.media.public_id, {
+        folder: 'comments',
+      });
     }
 
     // Upload new media to Cloudinary
-    const result = await cloudinary.uploader.upload(req.body.media);
+    const result = await cloudinary.uploader.upload(req.body.media, {
+      folder: 'comments',
+    });
 
     // set new media
     comment.media = {
@@ -116,7 +138,9 @@ exports.deleteComment = async (req, res) => {
     }
 
     if (comment.media.public_id) {
-      await cloudinary.uploader.destroy(comment.media.public_id);
+      await cloudinary.uploader.destroy(comment.media.public_id, {
+        folder: 'comments',
+      });
     }
 
     let result = await Comment.deleteOne({ _id: req.params.id }).exec();
