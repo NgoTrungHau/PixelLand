@@ -1,4 +1,6 @@
 const Comment = require('../models/Comment');
+const Post = require('../models/Post');
+
 const cloudinary = require('../utils/cloudinary');
 
 // Create a new comment
@@ -18,6 +20,11 @@ exports.createComment = async (req, res) => {
       },
     });
     let savedComment = await newComment.save();
+    let associatedArt = await Post.findById(req.body.post);
+    if (associatedArt) {
+      associatedArt.comments.push(savedComment._id);
+      await associatedArt.save();
+    }
     res.send(savedComment);
   } catch (error) {
     res.status(500).send(error);
@@ -113,6 +120,13 @@ exports.deleteComment = async (req, res) => {
     }
 
     let result = await Comment.deleteOne({ _id: req.params.id }).exec();
+    // remove cmt_id from post
+    let associatedPost = await Post.findById(req.body.post);
+    if (associatedPost) {
+      // Pull comment._id from the post's comments array
+      associatedPost.comments.pull(comment._id);
+      await associatedPost.save();
+    }
     res.send(result);
   } catch (error) {
     res.status(500).send(error);
