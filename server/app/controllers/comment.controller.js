@@ -61,7 +61,9 @@ exports.getComment = async (req, res) => {
 // Get all comments from art/post
 exports.getComments = async (req, res) => {
   try {
-    let comments = await Comment.find({ art: req.params.id });
+    let comments = await Comment.find({ art: req.params.id })
+      .sort({ createdAt: -1 })
+      .populate('commentedBy', 'username avatar');
     if (comments.length < 0) {
       comments = await Comment.find({ post: req.params.id });
     }
@@ -151,7 +153,7 @@ exports.deleteComment = async (req, res) => {
       associatedPost.comments.pull(comment._id);
       await associatedPost.save();
     }
-    res.send(result);
+    res.send(req.params.id);
   } catch (error) {
     res.status(500).send(error);
   }

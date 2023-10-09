@@ -215,7 +215,6 @@ export const artSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.arts = state.arts.filter((art) => art._id !== action.payload._id);
-        state.message = 'Delete art successful!';
       })
       .addCase(deleteArt.rejected, (state, action) => {
         state.isLoading = false;

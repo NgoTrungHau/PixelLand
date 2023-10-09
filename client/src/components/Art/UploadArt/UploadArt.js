@@ -154,7 +154,7 @@ function UploadArt() {
               )}
             </div>
             <div className="d-flex justify-content-end">
-              <Button grayLight type="button" sz="small" onClick={handleCancel}>
+              <Button grayLight type="button" sz="sm" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button primary type="submit">

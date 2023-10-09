@@ -16,7 +16,6 @@ export const createCmt = createAsyncThunk(
   async (cmtData, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      console.log('slice ', cmtData);
       return await commentService.createCmt(cmtData, token);
     } catch (error) {
       const message =
@@ -33,10 +32,10 @@ export const createCmt = createAsyncThunk(
 // Get user cmts
 export const getCmts = createAsyncThunk(
   'cmts/getAll_auth',
-  async (cmt_id, thunkAPI) => {
+  async (art_id, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await commentService.getCmts(cmt_id, token);
+      return await commentService.getCmts(art_id, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -142,7 +141,6 @@ export const cmtSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.comments.unshift(action.payload);
-        state.message = 'Uploading cmt successful!';
       })
       .addCase(createCmt.rejected, (state, action) => {
         state.isLoading = false;
@@ -188,10 +186,10 @@ export const cmtSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.comments = state.comments.filter(
-          (cmt) => cmt._id !== action.payload._id,
+          (cmt) => cmt._id !== action.payload,
         );
-        state.message = 'Delete comment successful!';
       })
+
       .addCase(deleteCmt.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;

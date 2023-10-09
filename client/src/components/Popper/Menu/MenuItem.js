@@ -13,11 +13,15 @@ function MenuItem({ data, onClick }) {
   const classes = cx('menu-item');
 
   const renderModalType = () => {
-    switch (data.title) {
-      case 'Edit':
+    switch (data.action) {
+      case 'Edit Art':
         return 'edit-art';
-      case 'Delete':
+      case 'Delete Art':
         return 'delete-art';
+      case 'Edit Comment':
+        return 'edit-cmt';
+      case 'Delete Comment':
+        return 'delete-cmt';
     }
   };
 
