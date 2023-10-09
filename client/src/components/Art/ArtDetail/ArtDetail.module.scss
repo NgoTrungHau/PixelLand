@@ -85,7 +85,25 @@
     padding: 0 5px !important;
   }
 }
+.views {
+  margin: 5px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  width: 100%;
+}
+.view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+}
 
 input[type='text'] {
   width: 100% !important;
+}
+.comments {
+  max-width: 100%;
 }

@@ -9,7 +9,6 @@ const createCmt = async (cmtData, token) => {
       Authorization: `Bearer ${token}`,
     },
   };
-  console.log('service ', cmtData);
   const response = await httpRequest.post(API_URL + 'create', cmtData, config);
 
   return response;

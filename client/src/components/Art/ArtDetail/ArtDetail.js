@@ -22,7 +22,12 @@ import styles from './ArtDetail.module.scss';
 import mStyles from '~/components/Modals/Modal.module.scss';
 
 // features, function
-import { deleteArt, likeArt, unlikeArt } from '~/features/arts/artSlice';
+import {
+  artSlice,
+  deleteArt,
+  likeArt,
+  unlikeArt,
+} from '~/features/arts/artSlice';
 import { ModalToggleContext } from '../../Modals/Modal';
 // components
 import Avatar from '~/components/Avatar';
@@ -30,6 +35,7 @@ import Image from '~/components/Image';
 import Button from '~/components/Button';
 import CommentForm from '~/components/Comment/CommentForm/CommentForm';
 import Menu from '~/components/Popper/Menu';
+import CommentList from '~/components/Comment/CommentList';
 
 const cx = classNames.bind(styles);
 const mcx = classNames.bind(mStyles);
@@ -43,6 +49,7 @@ function ArtDetail({ art }) {
 
   // get data from redux reducer
   const { user } = useSelector((state) => state.auth);
+  const { comments } = useSelector((state) => state.comments);
 
   const handleLike = () => {
     if (user == null) {
@@ -71,6 +78,7 @@ function ArtDetail({ art }) {
         {
           leftIcon: <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>,
           title: 'Edit',
+          action: 'Edit Art',
           modal: true,
           art: art,
           onClick: handleEdit,
@@ -78,6 +86,8 @@ function ArtDetail({ art }) {
         {
           leftIcon: <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>,
           title: 'Delete',
+          action: 'Delete Art',
+          content: 'Do you really want to delete this art?',
           modal: true,
           onClick: handleDelete,
         },
@@ -134,6 +144,10 @@ function ArtDetail({ art }) {
             <Image src={art.art?.url} alt="" />
           </div>
         </div>
+        <div className={cx('views')}>
+          <div className={cx('view')}>{art.likes.length} like</div>
+          <div className={cx('view')}>{comments.length} comments</div>
+        </div>
         <div className={cx('actions')}>
           <div className={cx('action')} onClick={handleLike}>
             <Button
@@ -160,7 +174,10 @@ function ArtDetail({ art }) {
             </Button>
           </div>
         </div>
-        <div className={cx('comments')}></div>
+
+        <div className={cx('comments')}>
+          <CommentList art={art} />
+        </div>
       </div>
       {user ? <CommentForm art_id={art._id} /> : null}
     </div>

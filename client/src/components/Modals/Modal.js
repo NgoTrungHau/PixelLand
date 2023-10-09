@@ -1,6 +1,12 @@
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
-import { cloneElement, createContext, useEffect, useState } from 'react';
+import {
+  cloneElement,
+  createContext,
+  forwardRef,
+  useEffect,
+  useState,
+} from 'react';
 import {
   faArrowRightToBracket,
   faArrowUpFromBracket,
@@ -25,7 +31,7 @@ export const ModalToggleContext = createContext(() => {});
 const cx = classNames.bind(styles);
 let scrollPosition = 0;
 
-function Modal({ modalType, data, sz, children, isChild }) {
+const Modal = forwardRef(({ modalType, data, sz, children, isChild }, ref) => {
   const [modal, setModal] = useState(false);
 
   const toggleModal = () => {
@@ -47,6 +53,31 @@ function Modal({ modalType, data, sz, children, isChild }) {
       window.scrollTo(0, scrollPosition);
     }
   }, [modal]);
+
+  const deleteConfirmation = () => {
+    return (
+      <>
+        <div className={cx('heading')}>{data.action}</div>
+        <div className="d-flex justify-content-center align-item-center">
+          {data.content}
+        </div>
+        <div className="d-flex justify-content-end">
+          <Button gray onClick={toggleModal}>
+            Cancel
+          </Button>
+          <Button
+            primary
+            onClick={() => {
+              data.onClick();
+              toggleModal();
+            }}
+          >
+            Delete
+          </Button>
+        </div>
+      </>
+    );
+  };
 
   const renderBtnModal = () => {
     switch (modalType) {
@@ -88,6 +119,10 @@ function Modal({ modalType, data, sz, children, isChild }) {
         return <>{cloneElement(children, { onClick: toggleModal })}</>;
       case 'delete-art':
         return <>{cloneElement(children, { onClick: toggleModal })}</>;
+      case 'edit-cmt':
+        return <>{cloneElement(children, { onClick: toggleModal })}</>;
+      case 'delete-cmt':
+        return <>{cloneElement(children, { onClick: toggleModal })}</>;
       case 'editProfile':
         return (
           <Button
@@ -115,22 +150,11 @@ function Modal({ modalType, data, sz, children, isChild }) {
       case 'edit-art':
         return <EditArt art={data.art} />;
       case 'delete-art':
-        return (
-          <>
-            <div className={cx('heading')}>Delete Art</div>
-            <div className="d-flex justify-content-center align-item-center">
-              Do you really want to delete this art?
-            </div>
-            <div className="d-flex justify-content-end">
-              <Button gray onClick={toggleModal}>
-                Cancel
-              </Button>
-              <Button primary onClick={data.onClick}>
-                Delete
-              </Button>
-            </div>
-          </>
-        );
+        return deleteConfirmation();
+      case 'edit-cmt':
+        return deleteConfirmation();
+      case 'delete-cmt':
+        return deleteConfirmation();
       case 'editProfile':
         return <EditProfileForm />;
       default:
@@ -146,7 +170,7 @@ function Modal({ modalType, data, sz, children, isChild }) {
           createPortal(
             <div className={cx('modal')}>
               <div onClick={toggleModal} className={cx('overlay')}></div>
-              <div className={cx('modal-content', sz)}>
+              <div className={cx('modal-content', sz && sz)}>
                 {renderChildrenModal()}
                 <Button className={cx('close-modal')} onClick={toggleModal}>
                   <FontAwesomeIcon icon={faXmark} />
@@ -158,12 +182,12 @@ function Modal({ modalType, data, sz, children, isChild }) {
       </ModalToggleContext.Provider>
     </div>
   );
-}
+});
 
 Modal.propTypes = {
   children: PropTypes.node,
   data: PropTypes.object,
-  sz: PropTypes.string,
+  sz: PropTypes.oneOf(['small', 'medium']),
   isChild: PropTypes.bool,
   modalType: PropTypes.oneOf([
     'login',
@@ -172,6 +196,8 @@ Modal.propTypes = {
     'art-detail',
     'edit-art',
     'delete-art',
+    'edit-cmt',
+    'delete-cmt',
     'editProfile',
   ]).isRequired,
 };

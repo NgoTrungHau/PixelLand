@@ -1,0 +1,92 @@
+.wrapper {
+  margin: 5px 0;
+  padding: 5px 0;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  width: 100%;
+  min-height: 50px;
+  word-wrap: break-word;
+  border: transparent;
+  background-clip: border-box;
+  background-color: var(--white);
+  overflow-x: hidden;
+
+  button {
+    max-height: 40px !important;
+  }
+  p {
+    font-size: 16px;
+    font-weight: 500;
+    font-family: var(--font-family2);
+  }
+}
+.detail {
+  display: grid;
+  margin: 0 5px;
+  max-width: 100%;
+  font-size: 16px;
+  .media {
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+  }
+  .menu {
+    display: none;
+    justify-content: center;
+    .dropdown-btn {
+      width: 35px;
+      height: 35px;
+    }
+    &:hover .dropdown-btn {
+      border-radius: 50px;
+      background-color: var(--gray-light);
+    }
+  }
+  &:hover {
+    .menu {
+      display: flex;
+    }
+  }
+}
+.content-menu {
+  display: grid;
+  grid-template-columns: 580px 40px;
+  overflow: hidden;
+}
+.content {
+  display: block;
+  padding: 5px 10px;
+  width: fit-content;
+  min-height: 40px;
+  max-width: 100%;
+  border-radius: 14px;
+  white-space: pre-wrap;
+  p {
+    margin: 0;
+    max-width: 100%;
+    vertical-align: top;
+
+    white-space: pre-wrap;
+    text-overflow: ellipsis;
+  }
+}
+.have-content {
+  background-color: var(--gray-light);
+}
+.actions {
+  display: flex;
+  .action {
+    .liked {
+      color: red;
+    }
+  }
+  .action button {
+    font-size: 12px !important;
+    font-weight: 100 !important;
+
+    svg {
+      width: 10px !important;
+      height: 10px !important;
+    }
+  }
+}

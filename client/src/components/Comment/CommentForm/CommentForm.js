@@ -101,6 +101,12 @@ function CommentForm({ art_id, post_id }) {
                 placeholder="Write your comment"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    formik.handleSubmit();
+                  }
+                }}
               />
               <div className={cx('btn-post')}>
                 {(formik.values.content || formik.values.media) && (

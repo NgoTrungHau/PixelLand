@@ -16,18 +16,20 @@ function Avatar({
   profile = false,
 }) {
   return (
-    <Image
-      src={avatar}
-      className={cx('user-avatar', {
-        [className]: className,
-        XL,
-        large,
-        medium,
-        small,
-        profile,
-      })}
-      alt="user"
-    />
+    <div>
+      <Image
+        src={avatar}
+        className={cx('user-avatar', {
+          [className]: className,
+          XL,
+          large,
+          medium,
+          small,
+          profile,
+        })}
+        alt="user"
+      />
+    </div>
   );
 }
 

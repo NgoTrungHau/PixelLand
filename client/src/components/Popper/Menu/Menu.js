@@ -17,7 +17,7 @@ import { logout, reset } from '~/features/auth/authSlice';
 
 const cx = classNames.bind(styles);
 
-function Menu({ children, items = [], offset }) {
+function Menu({ children, className, items = [], offset }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -54,7 +54,7 @@ function Menu({ children, items = [], offset }) {
   return (
     // Using a wrapper <div> tag around the reference element solves
     // this by creating a new parentNode context.
-    <div>
+    <div className={className}>
       <Tippy
         interactive
         delay={[0, 700]}
@@ -76,6 +76,7 @@ function Menu({ children, items = [], offset }) {
 
 Menu.propTypes = {
   children: PropTypes.node.isRequired,
+  classNames: PropTypes.string,
   items: PropTypes.array,
   hideOnClick: PropTypes.bool,
 };
