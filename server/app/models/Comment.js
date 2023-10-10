@@ -46,6 +46,10 @@ const Comment = new Schema(
         type: String,
       },
     },
+    liked: {
+      type: Boolean,
+      default: false,
+    },
     likedBy: [
       {
         // Users who liked the comment

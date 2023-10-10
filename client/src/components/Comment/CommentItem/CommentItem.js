@@ -23,13 +23,18 @@ import Button from '../../Button';
 import Image from '~/components/Image';
 import Menu from '~/components/Popper/Menu';
 import moment from 'moment';
-import { deleteCmt } from '~/features/comments/commentSlice';
+import {
+  deleteCmt,
+  likeCmt,
+  unlikeCmt,
+} from '~/features/comments/commentSlice';
 import { ModalToggleContext } from '../../Modals/Modal';
 
 const cx = classNames.bind(styles);
 
 function CommentItem({ key, cmt }) {
   const [isLiked, setIsLiked] = useState(cmt.liked);
+  const [liking, setLiking] = useState(false); // This state to prevent immediate re-likes
   const [isEdit, setIsEdit] = useState(false);
   const toggleModal = useContext(ModalToggleContext);
 
@@ -40,14 +45,21 @@ function CommentItem({ key, cmt }) {
   useEffect(() => {
     setIsLiked(cmt.liked);
   }, [cmt.liked]);
+  useEffect(() => {
+    console.log(isLiked);
+  }, [isLiked]);
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    //   if (!isLiked) {
-    //     dispatch(likeArt({ cmt_id: cmt._id, user_id: user._id }));
-    //   } else {
-    //     dispatch(unlikeArt({ cmt_id: cmt._id, user_id: user._id }));
-    //   }
+  const handleLike = async () => {
+    if (!liking) {
+      setLiking(true); // Prevent further likes until server responds
+      setIsLiked(!isLiked);
+      if (!isLiked) {
+        await dispatch(likeCmt(cmt._id));
+      } else {
+        await dispatch(unlikeCmt(cmt._id));
+      }
+      setLiking(false); // Allow liking/unliking again
+    }
   };
   const handleEdit = () => {
     setIsEdit(!isEdit);

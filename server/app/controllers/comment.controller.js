@@ -65,8 +65,15 @@ exports.getComments = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate('commentedBy', 'username avatar');
     if (comments.length < 0) {
-      comments = await Comment.find({ post: req.params.id });
+      comments = await Comment.find({ post: req.params.id })
+        .sort({ createdAt: -1 })
+        .populate('commentedBy', 'username avatar');
     }
+    comments.map((cmt) => {
+      if (cmt.likedBy.includes(req.user._id.toString())) {
+        cmt._doc.liked = true;
+      }
+    });
     res.send(comments);
   } catch (error) {
     res.status(500).send(error);
@@ -165,8 +172,8 @@ exports.likeCmt = async (req, res) => {
     const comment = await Comment.findById(req.params.id);
 
     // Check if the user hasn't already liked the comment
-    if (!comment.likes.includes(req.body.userId)) {
-      comment.likes.push(req.body.userId);
+    if (!comment.likedBy.includes(req.user._id)) {
+      comment.likedBy.push(req.user._id);
       await comment.save();
       return res.status(200).send(comment);
     } else {
@@ -185,9 +192,9 @@ exports.unlikeCmt = async (req, res) => {
     const comment = await Comment.findById(req.params.id);
 
     // Check if the user has liked the comment before unliking
-    const index = comment.likes.indexOf(req.body.userId);
+    const index = comment.likedBy.indexOf(req.user._id);
     if (index > -1) {
-      comment.likes.splice(index, 1);
+      comment.likedBy.splice(index, 1);
       await comment.save();
       return res.status(200).send(comment);
     } else {
