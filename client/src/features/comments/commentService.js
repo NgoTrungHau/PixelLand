@@ -53,7 +53,7 @@ const deleteCmt = async (CmtId, token) => {
 };
 
 // Like Cmt
-const likeCmt = async (CmtData, token) => {
+const likeCmt = async (cmt_id, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -61,14 +61,13 @@ const likeCmt = async (CmtData, token) => {
   };
 
   const response = await httpRequest.patch(
-    API_URL + CmtData.Cmt_id + '/like',
-    CmtData,
+    API_URL + cmt_id + '/like',
+    {},
     config,
   );
-
-  return response.data;
+  return response;
 };
-const unlikeCmt = async (CmtData, token) => {
+const unlikeCmt = async (cmt_id, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -76,12 +75,11 @@ const unlikeCmt = async (CmtData, token) => {
   };
 
   const response = await httpRequest.patch(
-    API_URL + CmtData.Cmt_id + '/unlike',
-    CmtData,
+    API_URL + cmt_id + '/unlike',
+    {},
     config,
   );
-
-  return response.data;
+  return response;
 };
 
 const CmtService = {

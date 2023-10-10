@@ -89,11 +89,11 @@ export const deleteCmt = createAsyncThunk(
 // Like cmt
 export const likeCmt = createAsyncThunk(
   'cmts/likeCmt',
-  async (cmtData, thunkAPI) => {
+  async (cmt_id, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      const response = await commentService.likeCmt(cmtData, token);
-      return { response, cmtData };
+      const response = await commentService.likeCmt(cmt_id, token);
+      return response;
     } catch (error) {
       const message =
         (error.response &&
@@ -109,11 +109,11 @@ export const likeCmt = createAsyncThunk(
 // unlike cmt
 export const unlikeCmt = createAsyncThunk(
   'cmts/unlikeCmt',
-  async (cmtData, thunkAPI) => {
+  async (cmt_id, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      const response = await commentService.unlikeCmt(cmtData, token);
-      return { response, cmtData };
+      const response = await commentService.unlikeCmt(cmt_id, token);
+      return response;
     } catch (error) {
       const message =
         (error.response &&
@@ -201,13 +201,11 @@ export const cmtSlice = createSlice({
       .addCase(likeCmt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        const { cmtData } = action.payload;
-        const { cmt_id, user_id } = cmtData;
 
-        state.comments.find((cmt) => {
-          if (cmt._id === cmt_id) {
-            cmt.likes.push(user_id);
-            cmt.liked = true;
+        state.comments.forEach((cmt) => {
+          if (cmt._id === action.payload._id) {
+            cmt.likedBy = action.payload.likedBy;
+            cmt.liked = action.payload.liked;
           }
         });
       })
@@ -222,18 +220,11 @@ export const cmtSlice = createSlice({
       .addCase(unlikeCmt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        const { cmtData } = action.payload;
-        const { cmt_id, user_id } = cmtData;
 
-        state.comments.find((cmt) => {
-          if (cmt._id === cmt_id) {
-            const index = cmt.likes.indexOf(user_id);
-            if (index > -1) {
-              // If user_id is in the likes array, remove it
-              cmt.likes.splice(index, 1);
-            }
-
-            cmt.liked = cmt.likes.includes(user_id); // If user_id is in the likes array: set to true, else set to false
+        state.comments.forEach((cmt) => {
+          if (cmt._id === action.payload._id) {
+            cmt.likedBy = action.payload.likedBy;
+            cmt.liked = action.payload.liked;
           }
         });
       })
