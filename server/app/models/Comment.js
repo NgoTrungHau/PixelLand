@@ -37,7 +37,7 @@ const Comment = new Schema(
       // Media associated with a comment (either image or video)
       type: {
         type: String,
-        enum: ['image', 'video'], // The media can be either an image or a video
+        enum: ['image', 'video', null], // The media can be either an image or a video
       },
       public_id: {
         type: String,

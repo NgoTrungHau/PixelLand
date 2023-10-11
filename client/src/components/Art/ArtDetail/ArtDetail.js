@@ -179,7 +179,9 @@ function ArtDetail({ art }) {
           <CommentList art={art} />
         </div>
       </div>
-      {user ? <CommentForm art_id={art._id} /> : null}
+      <div className={cx('comment-form')}>
+        {user ? <CommentForm art_id={art._id} action="create" /> : null}
+      </div>
     </div>
   );
 }

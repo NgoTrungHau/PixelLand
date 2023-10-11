@@ -27,15 +27,15 @@ const getCmts = async (art_id, token) => {
 };
 
 // Edit user Cmt
-const editCmt = async (CmtData, token) => {
+const editCmt = async (cmtData, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
   const response = await httpRequest.post(
-    API_URL + CmtData.id,
-    CmtData,
+    API_URL + cmtData.id,
+    cmtData,
     config,
   );
   return response;

@@ -1,21 +1,29 @@
 import classNames from 'classnames/bind';
+import PropTypes from 'prop-types';
+// React hook
 import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import ReactTextareaAutosize from 'react-textarea-autosize';
+// font
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faXmark } from '@fortawesome/free-solid-svg-icons';
-import ReactTextareaAutosize from 'react-textarea-autosize';
+// validation form
 import { Formik, ErrorMessage, useFormik } from 'formik';
 import * as Yup from 'yup';
 
+// scss
+import styles from './CommentForm.module.scss';
+//components
 import Button from '~/components/Button';
 import Avatar from '~/components/Avatar';
-import styles from './CommentForm.module.scss';
 import Image from '~/components/Image';
-import { createCmt } from '~/features/comments/commentSlice';
+// features
+import { createCmt, editCmt } from '~/features/comments/commentSlice';
+
 const cx = classNames.bind(styles);
 
-function CommentForm({ art_id, post_id }) {
-  const [media, setMedia] = useState('');
+function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
+  const [media, setMedia] = useState(cmt?.media?.url || '');
   const [isHover, setIsHover] = useState(false);
   const imgRef = useRef();
 
@@ -46,6 +54,7 @@ function CommentForm({ art_id, post_id }) {
   };
 
   const CommentSchema = Yup.object().shape({
+    id: Yup.string(),
     commentedBy: Yup.string(),
     art: Yup.string(),
     post: Yup.string(),
@@ -56,19 +65,27 @@ function CommentForm({ art_id, post_id }) {
 
   const formik = useFormik({
     initialValues: {
+      id: cmt?._id,
       commentedBy: user._id,
-      art: art_id,
-      post: post_id,
-      content: '',
-      media: '',
-      mediaType: '',
+      art: art_id || cmt?.art,
+      post: post_id || cmt?.post,
+      parentCommentId: cmt?._id,
+      content: cmt?.content || '',
+      media: cmt?.media?.url || '',
+      mediaType: cmt?.media?.mediaType || '',
     },
     validationSchema: CommentSchema,
     onSubmit: () => {
-      dispatch(createCmt(formik.values));
+      if (action === 'create') {
+        dispatch(createCmt(formik.values));
+      }
+      if (action === 'edit') {
+        dispatch(editCmt(formik.values));
+      }
       formik.resetForm();
       imgRef.current.value = '';
       setMedia('');
+      onClick();
     },
   });
 
@@ -95,7 +112,7 @@ function CommentForm({ art_id, post_id }) {
             <div className={cx('input-comment')}>
               <ReactTextareaAutosize
                 minRows={1} // minimum number of rows
-                id="content"
+                id={`content-${action}`}
                 name="content"
                 value={formik.values.content}
                 placeholder="Write your comment"
@@ -111,16 +128,16 @@ function CommentForm({ art_id, post_id }) {
               <div className={cx('btn-post')}>
                 {(formik.values.content || formik.values.media) && (
                   <Button className={cx('post-comment')} type="submit" sz="md">
-                    Post
+                    {action === 'create' ? 'Post' : 'Edit'}
                   </Button>
                 )}
               </div>
               <div className={cx('img-input-icon')}>
-                <label htmlFor="imgInput">
+                <label htmlFor={`imgInput-${action}`}>
                   <FontAwesomeIcon icon={faImage} />
                   <input
                     type="file"
-                    id="imgInput"
+                    id={`imgInput-${action}`}
                     ref={imgRef}
                     className={cx('img-thumb')}
                     accept="image/*,video/*,.gif"
@@ -139,7 +156,8 @@ function CommentForm({ art_id, post_id }) {
                 onClick={(e) => {
                   e.preventDefault();
                   imgRef.current.value = '';
-                  formik.values.media = '';
+                  formik.setFieldValue('media', '');
+                  formik.setFieldValue('mediaType', '');
                   setMedia('');
                 }}
               >
@@ -153,5 +171,13 @@ function CommentForm({ art_id, post_id }) {
     </div>
   );
 }
+
+CommentForm.propTypes = {
+  art_id: PropTypes.string,
+  post_id: PropTypes.string,
+  cmt: PropTypes.object,
+  action: PropTypes.oneOf(['create', 'edit']),
+  onClick: PropTypes.func,
+};
 
 export default CommentForm;

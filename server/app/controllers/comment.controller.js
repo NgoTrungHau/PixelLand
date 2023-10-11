@@ -97,29 +97,39 @@ exports.getAllComments = async (req, res) => {
 exports.updateComment = async (req, res) => {
   try {
     let comment = await Comment.findById(req.params.id);
+    let result = null;
+    if (req.body.media !== null && comment.media.url !== req.body.media) {
+      if (comment.media.public_id) {
+        // Delete old media from Cloudinary
+        await cloudinary.uploader.destroy(comment.media.public_id, {
+          folder: 'comments',
+        });
+      }
 
-    if (comment.media.public_id) {
-      // Delete old media from Cloudinary
-      await cloudinary.uploader.destroy(comment.media.public_id, {
-        folder: 'comments',
-      });
+      if (req.body.media !== '') {
+        // Upload new media to Cloudinary
+        result = await cloudinary.uploader.upload(req.body.media, {
+          folder: 'comments',
+        });
+
+        // set new media
+        comment.media = {
+          type: req.body.mediaType, //either 'image' or 'video'
+          public_id: result.public_id,
+          url: result.url,
+        };
+      } else {
+        comment.media = null;
+        console.log(comment.media);
+      }
     }
-
-    // Upload new media to Cloudinary
-    const result = await cloudinary.uploader.upload(req.body.media, {
-      folder: 'comments',
-    });
-
-    // set new media
-    comment.media = {
-      type: req.body.mediaType, //either 'image' or 'video'
-      public_id: result.public_id,
-      url: result.url,
-    };
-
     // save comment
-    comment.set(req.body);
-    let savedComment = await comment.save();
+    comment.content = req.body.content;
+    let savedComment = await comment
+      .save()
+      .then((savedComment) =>
+        savedComment.populate('commentedBy', 'username avatar'),
+      );
 
     res.send(savedComment);
   } catch (error) {
