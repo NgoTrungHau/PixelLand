@@ -61,18 +61,29 @@ exports.getComment = async (req, res) => {
 // Get all comments from art/post
 exports.getComments = async (req, res) => {
   try {
-    let comments = await Comment.find({ art: req.params.id })
-      .sort({ createdAt: -1 })
-      .populate('commentedBy', 'username avatar');
-    if (comments.length < 0) {
-      comments = await Comment.find({ post: req.params.id })
-        .sort({ createdAt: -1 })
-        .populate('commentedBy', 'username avatar');
-    }
-    comments.map((cmt) => {
-      if (cmt.likedBy.includes(req.user._id.toString())) {
-        cmt._doc.liked = true;
-      }
+    const query = {
+      $and: [
+        { $or: [{ art: req.params.id }, { post: req.params.id }] },
+        { parentCommentId: { $exists: false } },
+      ],
+    };
+    let comments = await Comment.find(query)
+      .populate('commentedBy', 'username avatar')
+      .populate({
+        path: 'replies',
+        populate: {
+          path: 'commentedBy',
+          select: 'username avatar',
+        },
+      });
+
+    comments = comments.map((cmt) => {
+      cmt._doc.liked = cmt.likedBy.includes(req.user._id.toString());
+      cmt._doc.replies.map(
+        (reply) =>
+          (reply._doc.liked = reply.likedBy.includes(req.user._id.toString())),
+      );
+      return cmt;
     });
     res.send(comments);
   } catch (error) {
@@ -97,39 +108,48 @@ exports.getAllComments = async (req, res) => {
 exports.updateComment = async (req, res) => {
   try {
     let comment = await Comment.findById(req.params.id);
-    let result = null;
-    if (req.body.media !== null && comment.media.url !== req.body.media) {
-      if (comment.media.public_id) {
-        // Delete old media from Cloudinary
-        await cloudinary.uploader.destroy(comment.media.public_id, {
-          folder: 'comments',
-        });
-      }
-
-      if (req.body.media !== '') {
-        // Upload new media to Cloudinary
-        result = await cloudinary.uploader.upload(req.body.media, {
-          folder: 'comments',
-        });
-
-        // set new media
-        comment.media = {
-          type: req.body.mediaType, //either 'image' or 'video'
-          public_id: result.public_id,
-          url: result.url,
-        };
-      } else {
-        comment.media = null;
-        console.log(comment.media);
-      }
+    if (!comment) {
+      return res.status(404).send('Comment not found');
     }
+    if (req.body.media === '' && comment.media && comment.media.url) {
+      // Delete the old media and set the comment media to null
+      if (comment.media.public_id) {
+        await cloudinary.uploader.destroy(comment.media.public_id);
+      }
+      comment.media = null;
+    } else if (req.body.media !== '' && comment.media.url !== req.body.media) {
+      // Delete the old media and upload the new media
+      let destroyOld = comment.media.public_id
+        ? cloudinary.uploader.destroy(comment.media.public_id)
+        : Promise.resolve();
+      let uploadNew = cloudinary.uploader.upload(req.body.media, {
+        folder: 'comments',
+      });
+
+      let [_, result] = await Promise.all([destroyOld, uploadNew]);
+
+      comment.media = {
+        type: req.body.mediaType, //either 'image' or 'video'
+        public_id: result.public_id,
+        url: result.url,
+      };
+    }
+
     // save comment
     comment.content = req.body.content;
-    let savedComment = await comment
-      .save()
-      .then((savedComment) =>
-        savedComment.populate('commentedBy', 'username avatar'),
-      );
+
+    let savedComment = await comment.save();
+    savedComment = await savedComment.populate(
+      'commentedBy',
+      'username avatar',
+    );
+
+    if (savedComment.replies) {
+      savedComment = await savedComment.populate({
+        path: 'replies',
+        populate: { path: 'commentedBy', select: 'username avatar' },
+      });
+    }
 
     res.send(savedComment);
   } catch (error) {
@@ -141,7 +161,6 @@ exports.updateComment = async (req, res) => {
 exports.deleteComment = async (req, res) => {
   try {
     let comment = await Comment.findById(req.params.id).exec();
-
     // Remove the comment from the parent's reply list
     if (comment.parentCommentId) {
       let parentComment = await Comment.findById(comment.parentCommentId);
@@ -156,21 +175,42 @@ exports.deleteComment = async (req, res) => {
       }
     }
 
+    // Delete all replies of comment
+    if (comment.replies && comment.replies.length > 0) {
+      let replies = await Comment.find({ parentCommentId: comment._id });
+      // Delete media of all replies
+      for (let reply of replies) {
+        if (reply.media && reply.media.public_id) {
+          await cloudinary.uploader.destroy(reply.media.public_id);
+        }
+      }
+      // Delete all replies
+      await Comment.deleteMany({ parentCommentId: comment._id });
+    }
+
     if (comment.media.public_id) {
       await cloudinary.uploader.destroy(comment.media.public_id, {
         folder: 'comments',
       });
     }
 
-    let result = await Comment.deleteOne({ _id: req.params.id }).exec();
-    // remove cmt_id from post
-    let associatedPost = await Post.findById(req.body.post);
-    if (associatedPost) {
-      // Pull comment._id from the post's comments array
-      associatedPost.comments.pull(comment._id);
-      await associatedPost.save();
+    await Comment.deleteOne({ _id: req.params.id }).exec();
+
+    // Remove comment from the associated Post or Art
+    // find the associated post or art
+    let item = await Post.findById(comment.post);
+
+    if (item) {
+      // find the index where the comment is in the item's comments array
+      const index = item.comments.indexOf(req.params.id);
+      if (index > -1) {
+        // delete comment from the array
+        item.comments.splice(index, 1);
+        await item.save();
+      }
     }
-    res.send(req.params.id);
+
+    res.json(comment);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -218,16 +258,39 @@ exports.unlikeCmt = async (req, res) => {
 };
 
 // Add reply to comment
-exports.addReply = async (req, res) => {
+exports.replyToCmt = async (req, res) => {
   try {
+    let comment = await Comment.findById(req.params.id);
+    // upload image to cloudinary
+    let result;
+    if (req.body.media) {
+      result = await cloudinary.uploader.upload(req.body.media, {
+        folder: 'comments',
+      });
+    }
     // Create a new reply (which is a Comment)
     let replyComment = new Comment({
       content: req.body.content,
       commentedBy: req.user.id, // ID from session or decoded JWT
-      parentCommentId: req.params.id, // the original comment ID that you are replying to
-      // More fields...
+      parentCommentId: comment._id,
+      art: comment.art,
+      post: comment.post,
+      media: result
+        ? {
+            type: req.body.mediaType, //either 'image' or 'video'
+            public_id: result.public_id,
+            url: result.url,
+          }
+        : null,
     });
-    let savedReply = await replyComment.save();
+    let savedReply = await replyComment
+      .save()
+      .then((savedReply) =>
+        savedReply.populate('commentedBy', 'username avatar'),
+      );
+    comment.replies.push(savedReply._id);
+    comment = await comment.save();
+
     res.send(savedReply);
   } catch (error) {
     res.status(500).send(error);

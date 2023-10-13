@@ -125,6 +125,24 @@ export const unlikeCmt = createAsyncThunk(
     }
   },
 );
+export const replyCmt = createAsyncThunk(
+  'cmts/reply',
+  async (replyData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const response = await commentService.replyCmt(replyData, token);
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
 
 export const cmtSlice = createSlice({
   name: 'cmt',
@@ -140,7 +158,7 @@ export const cmtSlice = createSlice({
       .addCase(createCmt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.comments.unshift(action.payload);
+        state.comments.push(action.payload);
       })
       .addCase(createCmt.rejected, (state, action) => {
         state.isLoading = false;
@@ -170,9 +188,19 @@ export const cmtSlice = createSlice({
       .addCase(editCmt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.comments = state.comments.map((cmt) =>
-          cmt._id === action.payload._id ? action.payload : cmt,
-        );
+        if (!action.payload.parentCommentId) {
+          state.comments = state.comments.map((cmt) =>
+            cmt._id === action.payload._id ? action.payload : cmt,
+          );
+        } else {
+          state.comments.forEach((cmt) => {
+            if (cmt._id === action.payload.parentCommentId) {
+              cmt.replies = cmt.replies.map((reply) =>
+                reply._id === action.payload._id ? action.payload : reply,
+              );
+            }
+          });
+        }
       })
       .addCase(editCmt.rejected, (state, action) => {
         state.isLoading = false;
@@ -185,11 +213,20 @@ export const cmtSlice = createSlice({
       .addCase(deleteCmt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.comments = state.comments.filter(
-          (cmt) => cmt._id !== action.payload,
-        );
+        if (!action.payload.parentCommentId) {
+          state.comments = state.comments.filter(
+            (cmt) => cmt._id !== action.payload._id,
+          );
+        } else {
+          state.comments.forEach((cmt) => {
+            if (cmt._id === action.payload.parentCommentId) {
+              cmt.replies = cmt.replies.filter(
+                (reply) => reply._id !== action.payload._id,
+              );
+            }
+          });
+        }
       })
-
       .addCase(deleteCmt.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
@@ -206,6 +243,7 @@ export const cmtSlice = createSlice({
           if (cmt._id === action.payload._id) {
             cmt.likedBy = action.payload.likedBy;
             cmt.liked = action.payload.liked;
+            return;
           }
         });
       })
@@ -225,10 +263,29 @@ export const cmtSlice = createSlice({
           if (cmt._id === action.payload._id) {
             cmt.likedBy = action.payload.likedBy;
             cmt.liked = action.payload.liked;
+            return;
           }
         });
       })
       .addCase(unlikeCmt.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(replyCmt.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(replyCmt.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.comments.forEach((cmt) => {
+          if (cmt._id === action.payload.parentCommentId) {
+            cmt.replies.push(action.payload);
+            return;
+          }
+        });
+      })
+      .addCase(replyCmt.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

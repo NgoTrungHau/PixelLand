@@ -47,7 +47,7 @@
       background-color: var(--gray-light);
     }
   }
-  &:hover {
+  .detail-head:hover {
     .menu {
       display: flex;
     }
@@ -55,7 +55,7 @@
 }
 .content-menu {
   display: grid;
-  grid-template-columns: 580px 40px;
+  grid-template-columns: 1fr 40px;
   overflow: hidden;
 }
 .content {
@@ -108,7 +108,20 @@
     }
   }
 }
-.cancel-edit {
+.replies {
+  align-items: center;
+  width: 100%;
+  .reply > button {
+    font-size: 12px !important;
+    font-weight: 100 !important;
+
+    svg {
+      width: 10px !important;
+      height: 10px !important;
+    }
+  }
+}
+.cancel-btn {
   padding-left: 40px;
   button {
     font-size: 12px !important;

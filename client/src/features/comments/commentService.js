@@ -67,6 +67,7 @@ const likeCmt = async (cmt_id, token) => {
   );
   return response;
 };
+// Unlike Cmt
 const unlikeCmt = async (cmt_id, token) => {
   const config = {
     headers: {
@@ -82,6 +83,21 @@ const unlikeCmt = async (cmt_id, token) => {
   return response;
 };
 
+// Reply Cmt
+const replyCmt = async (replyData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await httpRequest.post(
+    API_URL + 'reply/' + replyData.id,
+    replyData,
+    config,
+  );
+  return response;
+};
+
 const CmtService = {
   createCmt,
   getCmts,
@@ -89,6 +105,7 @@ const CmtService = {
   deleteCmt,
   likeCmt,
   unlikeCmt,
+  replyCmt,
 };
 
 export default CmtService;

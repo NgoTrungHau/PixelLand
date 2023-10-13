@@ -36,6 +36,7 @@ import Button from '~/components/Button';
 import CommentForm from '~/components/Comment/CommentForm/CommentForm';
 import Menu from '~/components/Popper/Menu';
 import CommentList from '~/components/Comment/CommentList';
+import { getCmts, reset } from '~/features/comments/commentSlice';
 
 const cx = classNames.bind(styles);
 const mcx = classNames.bind(mStyles);
@@ -50,6 +51,15 @@ function ArtDetail({ art }) {
   // get data from redux reducer
   const { user } = useSelector((state) => state.auth);
   const { comments } = useSelector((state) => state.comments);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(getCmts(art._id));
+    }
+    return () => {
+      dispatch(reset());
+    };
+  }, []);
 
   const handleLike = () => {
     if (user == null) {
@@ -176,7 +186,7 @@ function ArtDetail({ art }) {
         </div>
 
         <div className={cx('comments')}>
-          <CommentList art={art} />
+          <CommentList art={art._id} />
         </div>
       </div>
       <div className={cx('comment-form')}>

@@ -15,7 +15,7 @@ const MemoizedCmtItem = memo(({ cmt, index }) => (
   <CommentItem cmt={cmt} index={index} />
 ));
 
-function CommentList({ art }) {
+function CommentList({ replies }) {
   const [isCmtsReady, setIsCmtsReady] = useState(false);
 
   const { comments, isCmtsLoading, isSuccess, isError, message } = useSelector(
@@ -35,16 +35,6 @@ function CommentList({ art }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // useEffect
-  useEffect(() => {
-    if (user) {
-      dispatch(getCmts(art._id));
-    }
-    return () => {
-      dispatch(reset());
-    };
-  }, []);
-
   useEffect(() => {
     if (isError && message) {
       toast.error(message);
@@ -60,9 +50,13 @@ function CommentList({ art }) {
 
   return (
     <div className={cx('wrapper')}>
-      {comments.map((cmt, index) => (
-        <MemoizedCmtItem cmt={cmt} key={cmt._id} />
-      ))}
+      {!replies
+        ? comments.map((cmt, index) => (
+            <MemoizedCmtItem cmt={cmt} key={cmt._id} />
+          ))
+        : replies.map((reply, index) => (
+            <MemoizedCmtItem cmt={reply} key={reply._id} />
+          ))}
     </div>
   );
 }
