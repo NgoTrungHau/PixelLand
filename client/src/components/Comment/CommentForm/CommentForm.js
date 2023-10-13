@@ -18,12 +18,12 @@ import Button from '~/components/Button';
 import Avatar from '~/components/Avatar';
 import Image from '~/components/Image';
 // features
-import { createCmt, editCmt } from '~/features/comments/commentSlice';
+import { createCmt, editCmt, replyCmt } from '~/features/comments/commentSlice';
 
 const cx = classNames.bind(styles);
 
 function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
-  const [media, setMedia] = useState(cmt?.media?.url || '');
+  const [media, setMedia] = useState(action === 'edit' ? cmt?.media?.url : '');
   const [isHover, setIsHover] = useState(false);
   const imgRef = useRef();
 
@@ -69,10 +69,9 @@ function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
       commentedBy: user._id,
       art: art_id || cmt?.art,
       post: post_id || cmt?.post,
-      parentCommentId: cmt?._id,
-      content: cmt?.content || '',
-      media: cmt?.media?.url || '',
-      mediaType: cmt?.media?.mediaType || '',
+      content: action === 'edit' ? cmt?.content : '',
+      media: action === 'edit' ? cmt?.media?.url : '',
+      mediaType: action === 'edit' ? cmt?.media?.mediaType : '',
     },
     validationSchema: CommentSchema,
     onSubmit: () => {
@@ -81,6 +80,9 @@ function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
       }
       if (action === 'edit') {
         dispatch(editCmt(formik.values));
+      }
+      if (action === 'reply') {
+        dispatch(replyCmt(formik.values));
       }
       formik.resetForm();
       imgRef.current.value = '';
@@ -109,63 +111,69 @@ function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
         >
           <div className={cx('comment-form')}>
             <Avatar className={cx('avatar')} avatar={user.avatar?.url} medium />
-            <div className={cx('input-comment')}>
-              <ReactTextareaAutosize
-                minRows={1} // minimum number of rows
-                id={`content-${action}`}
-                name="content"
-                value={formik.values.content}
-                placeholder="Write your comment"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    formik.handleSubmit();
-                  }
-                }}
-              />
-              <div className={cx('btn-post')}>
-                {(formik.values.content || formik.values.media) && (
-                  <Button className={cx('post-comment')} type="submit" sz="md">
-                    {action === 'create' ? 'Post' : 'Edit'}
+            <div>
+              <div className={cx('input-comment')}>
+                <ReactTextareaAutosize
+                  minRows={1} // minimum number of rows
+                  id={`content-${action}`}
+                  name="content"
+                  value={formik.values.content}
+                  placeholder="Write your comment"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      formik.handleSubmit();
+                    }
+                  }}
+                />
+                <div className={cx('btn-post')}>
+                  {(formik.values.content || formik.values.media) && (
+                    <Button
+                      className={cx('post-comment')}
+                      type="submit"
+                      sz="md"
+                    >
+                      Post
+                    </Button>
+                  )}
+                </div>
+                <div className={cx('img-input-icon')}>
+                  <label htmlFor={`imgInput-${action}`}>
+                    <FontAwesomeIcon icon={faImage} />
+                    <input
+                      type="file"
+                      id={`imgInput-${action}`}
+                      ref={imgRef}
+                      className={cx('img-thumb')}
+                      accept="image/*,video/*,.gif"
+                      onChange={handleImage}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                </div>
+              </div>
+              {media && (
+                <div className={cx('img-thumb')}>
+                  <Button
+                    type="button"
+                    className={cx('remove-img')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      imgRef.current.value = '';
+                      formik.setFieldValue('media', '');
+                      formik.setFieldValue('mediaType', '');
+                      setMedia('');
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faXmark} />
                   </Button>
-                )}
-              </div>
-              <div className={cx('img-input-icon')}>
-                <label htmlFor={`imgInput-${action}`}>
-                  <FontAwesomeIcon icon={faImage} />
-                  <input
-                    type="file"
-                    id={`imgInput-${action}`}
-                    ref={imgRef}
-                    className={cx('img-thumb')}
-                    accept="image/*,video/*,.gif"
-                    onChange={handleImage}
-                    style={{ display: 'none' }}
-                  />
-                </label>
-              </div>
+                  <Image src={media} alt="" />
+                </div>
+              )}
             </div>
           </div>
-          {media && (
-            <div className={cx('img-thumb')}>
-              <Button
-                type="button"
-                className={cx('remove-img')}
-                onClick={(e) => {
-                  e.preventDefault();
-                  imgRef.current.value = '';
-                  formik.setFieldValue('media', '');
-                  formik.setFieldValue('mediaType', '');
-                  setMedia('');
-                }}
-              >
-                <FontAwesomeIcon icon={faXmark} />
-              </Button>
-              <Image src={media} alt="" />
-            </div>
-          )}
         </form>
       </Formik>
     </div>
@@ -176,7 +184,7 @@ CommentForm.propTypes = {
   art_id: PropTypes.string,
   post_id: PropTypes.string,
   cmt: PropTypes.object,
-  action: PropTypes.oneOf(['create', 'edit']),
+  action: PropTypes.oneOf(['create', 'edit', 'reply']),
   onClick: PropTypes.func,
 };
 

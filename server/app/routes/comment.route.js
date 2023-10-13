@@ -8,6 +8,7 @@ router.route('/').get(protect, comments.getAllComments);
 router.route('/create').post(protect, comments.createComment);
 router.route('/:id/like').patch(protect, comments.likeCmt);
 router.route('/:id/unlike').patch(protect, comments.unlikeCmt);
+router.route('/reply/:id').post(protect, comments.replyToCmt);
 // router.route('/delete').delete(protect, comments.deleteAll);
 
 router
