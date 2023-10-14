@@ -101,11 +101,11 @@ export const deleteArt = createAsyncThunk(
 // Like art
 export const likeArt = createAsyncThunk(
   'arts/likeArt',
-  async (artData, thunkAPI) => {
+  async (art_id, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      const response = await artService.likeArt(artData, token);
-      return { response, artData };
+      const response = await artService.likeArt(art_id, token);
+      return response;
     } catch (error) {
       const message =
         (error.response &&
@@ -121,11 +121,11 @@ export const likeArt = createAsyncThunk(
 // unlike art
 export const unlikeArt = createAsyncThunk(
   'arts/unlikeArt',
-  async (artData, thunkAPI) => {
+  async (art_id, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      const response = await artService.unlikeArt(artData, token);
-      return { response, artData };
+      const response = await artService.unlikeArt(art_id, token);
+      return response;
     } catch (error) {
       const message =
         (error.response &&
@@ -227,13 +227,11 @@ export const artSlice = createSlice({
       .addCase(likeArt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        const { artData } = action.payload;
-        const { art_id, user_id } = artData;
-
-        state.arts.find((art) => {
-          if (art._id === art_id) {
-            art.likes.push(user_id);
-            art.liked = true;
+        state.arts.forEach((art) => {
+          if (art._id === action.payload._id) {
+            art.likes = action.payload.likes;
+            art.liked = action.payload.liked;
+            return;
           }
         });
       })
@@ -248,13 +246,11 @@ export const artSlice = createSlice({
       .addCase(unlikeArt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        const { artData } = action.payload;
-        const { art_id, user_id } = artData;
-
-        state.arts.find((art) => {
-          if (art._id === art_id) {
-            art.likes.pop(user_id);
-            art.liked = false;
+        state.arts.forEach((art) => {
+          if (art._id === action.payload._id) {
+            art.likes = action.payload.likes;
+            art.liked = action.payload.liked;
+            return;
           }
         });
       })

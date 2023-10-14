@@ -1,20 +1,27 @@
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+// react
+import { createContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+// font
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faEye, faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
 
+// scss
 import styles from './ArtItem.module.scss';
+// components
 import Avatar from '../../Avatar';
 import Button from '../../Button';
 import Image from '~/components/Image';
 import Modal from '~/components/Modals/Modal';
+// features
 import { likeArt, unlikeArt } from '~/features/arts/artSlice';
 
 const cx = classNames.bind(styles);
+
+export const ArtContext = createContext();
 
 function ArtItem({ key, art }) {
   const [cardHover, setCardHover] = useState(false);
@@ -22,22 +29,18 @@ function ArtItem({ key, art }) {
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { isLoading } = useSelector((state) => state.arts);
-
-  useEffect(() => {
-    setIsLiked(art.liked);
-  }, [art.liked]);
 
   const handleLike = () => {
     if (!user) {
       toast.error('Not logged in yet!');
       return;
     }
-    setIsLiked(!isLiked);
     if (!isLiked) {
-      dispatch(likeArt({ art_id: art._id, user_id: user._id }));
+      dispatch(likeArt(art._id));
+      setIsLiked(true);
     } else {
-      dispatch(unlikeArt({ art_id: art._id, user_id: user._id }));
+      dispatch(unlikeArt(art._id));
+      setIsLiked(false);
     }
   };
 
@@ -52,17 +55,19 @@ function ArtItem({ key, art }) {
       onMouseEnter={() => setCardHover(true)}
       onMouseLeave={() => setCardHover(false)}
     >
-      <Modal modalType="art-detail" data={art} sz="medium">
-        <div className={cx('img-thumb')}>
-          <Image src={art.art?.url} alt="" />
-          <div
-            className={cx(
-              'dark-overlay',
-              cardHover ? 'item-show' : 'item-hide',
-            )}
-          ></div>
-        </div>
-      </Modal>
+      <ArtContext.Provider value={{ isLiked, handleLike }}>
+        <Modal modalType="art-detail" data={art} sz="medium">
+          <div className={cx('img-thumb')}>
+            <Image src={art.art?.url} alt="" />
+            <div
+              className={cx(
+                'dark-overlay',
+                cardHover ? 'item-show' : 'item-hide',
+              )}
+            ></div>
+          </div>
+        </Modal>
+      </ArtContext.Provider>
       <div className={cx('item-detail', cardHover ? 'item-show' : 'item-hide')}>
         <div className={cx('actions-quantity')}>
           <span>
@@ -71,11 +76,11 @@ function ArtItem({ key, art }) {
           </span>
           <span>
             <FontAwesomeIcon icon={faHeart} />
-            {Math.floor(Math.random() * (5000 - 1 + 1) + 1)}
+            {art.likes?.length}
           </span>
           <span>
             <FontAwesomeIcon icon={faComment} />
-            {Math.floor(Math.random() * (1000 - 1 + 1) + 1)}
+            {art.comments?.length}
           </span>
         </div>
         <div className={cx('info-detail')}>
@@ -88,7 +93,6 @@ function ArtItem({ key, art }) {
           </div>
           <Button
             rounded
-            disabled={isLoading ? true : false}
             leftIcon={
               isLiked ? (
                 <FontAwesomeIcon icon={fullHeart} style={{ color: 'red' }} />

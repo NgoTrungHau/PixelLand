@@ -63,7 +63,7 @@ const deleteArt = async (artId, token) => {
 };
 
 // Like art
-const likeArt = async (artData, token) => {
+const likeArt = async (art_id, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -71,14 +71,14 @@ const likeArt = async (artData, token) => {
   };
 
   const response = await httpRequest.patch(
-    API_URL + artData.art_id + '/like',
-    artData,
+    API_URL + 'like/' + art_id,
+    {},
     config,
   );
 
-  return response.data;
+  return response;
 };
-const unlikeArt = async (artData, token) => {
+const unlikeArt = async (art_id, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -86,12 +86,12 @@ const unlikeArt = async (artData, token) => {
   };
 
   const response = await httpRequest.patch(
-    API_URL + artData.art_id + '/unlike',
-    artData,
+    API_URL + 'unlike/' + art_id,
+    {},
     config,
   );
 
-  return response.data;
+  return response;
 };
 
 const artService = {

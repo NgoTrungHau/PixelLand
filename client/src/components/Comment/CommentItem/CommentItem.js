@@ -1,14 +1,12 @@
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 // React
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 // Font
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faComment,
-  faEye,
   faHeart,
   faMessage,
   faTrashCan,
@@ -35,7 +33,6 @@ import {
   deleteCmt,
   likeCmt,
   unlikeCmt,
-  createCmt,
 } from '~/features/comments/commentSlice';
 import CommentList from '../CommentList';
 
@@ -43,7 +40,6 @@ const cx = classNames.bind(styles);
 
 function CommentItem({ key, cmt }) {
   const [isLiked, setIsLiked] = useState(cmt.liked);
-  const [liking, setLiking] = useState(false); // This state to prevent immediate re-likes
   const [isEdit, setIsEdit] = useState(false);
   const [editing, setEditing] = useState(false);
   const [isReply, setIsReply] = useState(false);
@@ -54,24 +50,23 @@ function CommentItem({ key, cmt }) {
   const { isLoading } = useSelector((state) => state.comments);
 
   useEffect(() => {
-    setIsLiked(cmt.liked);
-  }, [cmt.liked]);
-  useEffect(() => {
     if (!isLoading) {
       setEditing(false);
     }
   }, [isLoading]);
 
-  const handleLike = async () => {
-    if (!liking) {
-      setLiking(true); // Prevent further likes until server responds
-      setIsLiked(!isLiked);
-      if (!isLiked) {
-        await dispatch(likeCmt(cmt._id));
-      } else {
-        await dispatch(unlikeCmt(cmt._id));
-      }
-      setLiking(false); // Allow liking/unliking again
+  const handleLike = () => {
+    if (!user) {
+      toast.error('Not logged in yet!');
+      return;
+    }
+
+    if (!isLiked) {
+      dispatch(likeCmt(cmt._id));
+      setIsLiked(true);
+    } else {
+      dispatch(unlikeCmt(cmt._id));
+      setIsLiked(false);
     }
   };
   const handleEdit = () => {
@@ -189,7 +184,12 @@ function CommentItem({ key, cmt }) {
               </Button>
             </div>
             {!cmt?.parentCommentId && (
-              <div className={cx('action')} onClick={handleReply}>
+              <div
+                className={cx('action')}
+                onClick={() => {
+                  setIsReply(true);
+                }}
+              >
                 <Button leftIcon={<FontAwesomeIcon icon={faMessage} />}>
                   Reply
                 </Button>
@@ -201,25 +201,23 @@ function CommentItem({ key, cmt }) {
           </div>
         </div>
         <div className={cx('replies')}>
+          {cmt.replies.length > 0 && (
+            <div className={cx('reply')} onClick={showReplies}>
+              {showReply ? (
+                <CommentList replies={cmt.replies} />
+              ) : (
+                <Button leftIcon={<FontAwesomeIcon icon={faArrowRightLong} />}>
+                  {cmt.replies.length + ' replies'}
+                </Button>
+              )}
+            </div>
+          )}
           {isReply && (
             <div>
               <CommentForm cmt={cmt} action="reply" onClick={handleReply} />
               <div className={cx('cancel-btn')}>
                 <Button onClick={handleReply}>Cancel</Button>
               </div>
-            </div>
-          )}
-
-          {cmt.replies.length > 0 && !isReply && (
-            <div className={cx('reply')} onClick={showReplies}>
-              {showReply ? (
-                <CommentList replies={cmt.replies} />
-              ) : (
-                // <div>dsadsa</div>
-                <Button leftIcon={<FontAwesomeIcon icon={faArrowRightLong} />}>
-                  {cmt.replies.length + ' replies'}
-                </Button>
-              )}
             </div>
           )}
         </div>
