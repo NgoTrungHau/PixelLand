@@ -3,7 +3,6 @@ import classNames from 'classnames/bind';
 // react
 import { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
 // Icon
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faMessage } from '@fortawesome/free-regular-svg-icons';
@@ -22,13 +21,9 @@ import styles from './ArtDetail.module.scss';
 import mStyles from '~/components/Modals/Modal.module.scss';
 
 // features, function
-import {
-  artSlice,
-  deleteArt,
-  likeArt,
-  unlikeArt,
-} from '~/features/arts/artSlice';
+import { deleteArt } from '~/features/arts/artSlice';
 import { ModalToggleContext } from '../../Modals/Modal';
+import { ArtContext } from '../ArtItem/ArtItem';
 // components
 import Avatar from '~/components/Avatar';
 import Image from '~/components/Image';
@@ -42,7 +37,7 @@ const cx = classNames.bind(styles);
 const mcx = classNames.bind(mStyles);
 
 function ArtDetail({ art }) {
-  const [isLiked, setIsLiked] = useState(art.liked);
+  const { isLiked, handleLike } = useContext(ArtContext);
   const [isHover, setIsHover] = useState(false);
 
   const toggleModal = useContext(ModalToggleContext);
@@ -59,20 +54,7 @@ function ArtDetail({ art }) {
     return () => {
       dispatch(reset());
     };
-  }, []);
-
-  const handleLike = () => {
-    if (user == null) {
-      toast.error('Not logged in yet!');
-      return;
-    }
-    setIsLiked(!isLiked);
-    if (!isLiked) {
-      dispatch(likeArt({ art_id: art._id, user_id: user._id }));
-    } else {
-      dispatch(unlikeArt({ art_id: art._id, user_id: user._id }));
-    }
-  };
+  }, [art, dispatch, user]);
 
   const handleEdit = () => {
     toggleModal();
@@ -114,10 +96,6 @@ function ArtDetail({ art }) {
     }
   };
 
-  useEffect(() => {
-    setIsLiked(art.liked);
-  }, [art.liked]);
-
   return (
     <div className={cx('wrapper')}>
       <div className={mcx('heading')}></div>
@@ -155,8 +133,10 @@ function ArtDetail({ art }) {
           </div>
         </div>
         <div className={cx('views')}>
-          <div className={cx('view')}>{art.likes.length} like</div>
-          <div className={cx('view')}>{comments.length} comments</div>
+          <div className={cx('view')}>{art.likes?.length} like</div>
+          <div className={cx('view')}>
+            {comments?.length || art.comments?.length} comments
+          </div>
         </div>
         <div className={cx('actions')}>
           <div className={cx('action')} onClick={handleLike}>

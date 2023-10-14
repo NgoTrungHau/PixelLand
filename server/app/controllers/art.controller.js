@@ -135,26 +135,21 @@ exports.update = async (req, res, next) => {
 // Like art
 exports.likeArt = async (req, res, next) => {
   try {
-    const art = await Art.find({
-      _id: req.body.art_id,
-      likes: req.body.user_id,
-    });
-    if (art.length > 0)
-      return res.status(400).json({ msg: 'You liked this art.' });
     const like = await Art.findOneAndUpdate(
-      { _id: req.body.art_id },
+      req.params.id,
       {
-        $addToSet: { likes: req.body.user_id },
+        $addToSet: { likes: req.user._id },
       },
       { new: true },
     );
 
-    if (!like) return res.status(400).json({ msg: 'This art does not exist.' });
+    if (!like)
+      return res.status(400).json({ error: 'This art does not exist.' });
 
-    res.json({ msg: 'Liked Post!' });
+    return res.status(200).send(like);
   } catch (error) {
     return next(
-      new ApiError(500, `Error retrieving art with id=${req.body.art_id}`),
+      new ApiError(500, `Error retrieving art with id=${req.params.id}`),
     );
   }
 };
@@ -162,20 +157,21 @@ exports.likeArt = async (req, res, next) => {
 // Unlike art
 exports.unlikeArt = async (req, res, next) => {
   try {
-    const like = await Art.findOneAndUpdate(
-      { _id: req.body.art_id },
+    const unlike = await Art.findOneAndUpdate(
+      req.params.id,
       {
-        $pull: { likes: req.body.user_id },
+        $pull: { likes: req.user._id },
       },
       { new: true },
     );
 
-    if (!like) return res.status(400).json({ msg: 'This art does not exist.' });
+    if (!unlike)
+      return res.status(400).json({ msg: 'This art does not exist.' });
 
-    res.json({ msg: 'Unliked Post!' });
+    return res.status(200).send(unlike);
   } catch (error) {
     return next(
-      new ApiError(500, `Error retrieving art with id=${req.body.art_id}`),
+      new ApiError(500, `Error retrieving art with id=${req.params.id}`),
     );
   }
 };

@@ -27,6 +27,7 @@ const Art = new Schema(
     public: { type: Boolean, default: true },
     liked: { type: Boolean, default: false },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
   },
   {
     timestamps: true,

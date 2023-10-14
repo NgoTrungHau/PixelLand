@@ -1,5 +1,6 @@
 const Comment = require('../models/Comment');
 const Post = require('../models/Post');
+const Art = require('../models/Art');
 
 const cloudinary = require('../utils/cloudinary');
 
@@ -30,11 +31,19 @@ exports.createComment = async (req, res) => {
           }
         : null,
     });
+
     let savedComment = await newComment.save();
-    let associatedArt = await Post.findById(req.body.post);
-    if (associatedArt) {
-      associatedArt.comments.push(savedComment._id);
-      await associatedArt.save();
+
+    if (savedComment.art) {
+      await Art.updateOne(
+        { _id: savedComment.art },
+        { $push: { comments: savedComment._id } },
+      );
+    } else if (savedComment.post) {
+      await Post.updateOne(
+        { _id: savedComment.post },
+        { $push: { comments: savedComment._id } },
+      );
     }
     res.json({
       ...savedComment._doc,
@@ -194,21 +203,21 @@ exports.deleteComment = async (req, res) => {
       });
     }
 
-    await Comment.deleteOne({ _id: req.params.id }).exec();
-
     // Remove comment from the associated Post or Art
     // find the associated post or art
-    let item = await Post.findById(comment.post);
-
-    if (item) {
-      // find the index where the comment is in the item's comments array
-      const index = item.comments.indexOf(req.params.id);
-      if (index > -1) {
-        // delete comment from the array
-        item.comments.splice(index, 1);
-        await item.save();
-      }
+    if (comment.art) {
+      await Art.updateOne(
+        { _id: comment.art },
+        { $pull: { comments: comment._id } },
+      );
+    } else if (comment.post) {
+      await Post.updateOne(
+        { _id: comment.post },
+        { $pull: { comments: comment._id } },
+      );
     }
+
+    await Comment.deleteOne({ _id: req.params.id }).exec();
 
     res.json(comment);
   } catch (error) {
@@ -219,18 +228,16 @@ exports.deleteComment = async (req, res) => {
 // Like a comment
 exports.likeCmt = async (req, res) => {
   try {
-    const comment = await Comment.findById(req.params.id);
+    const comment = await Comment.findByIdAndUpdate(
+      req.params.id,
+      { $addToSet: { likedBy: req.user._id } },
+      { new: true }, // This option returns the updated document
+    );
 
-    // Check if the user hasn't already liked the comment
-    if (!comment.likedBy.includes(req.user._id)) {
-      comment.likedBy.push(req.user._id);
-      await comment.save();
-      return res.status(200).send(comment);
-    } else {
-      return res
-        .status(400)
-        .send({ error: 'You have already liked this comment.' });
+    if (!comment) {
+      return res.status(400).send({ error: 'Comment not found' });
     }
+    return res.status(200).send(comment);
   } catch (error) {
     return res.status(500).send(error);
   }
@@ -239,19 +246,16 @@ exports.likeCmt = async (req, res) => {
 // Unlike a comment
 exports.unlikeCmt = async (req, res) => {
   try {
-    const comment = await Comment.findById(req.params.id);
+    const comment = await Comment.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { likedBy: req.user._id } },
+      { new: true },
+    );
 
-    // Check if the user has liked the comment before unliking
-    const index = comment.likedBy.indexOf(req.user._id);
-    if (index > -1) {
-      comment.likedBy.splice(index, 1);
-      await comment.save();
-      return res.status(200).send(comment);
-    } else {
-      return res
-        .status(400)
-        .send({ error: 'You have not liked this comment.' });
+    if (!comment) {
+      return res.status(400).send({ error: 'Comment not found' });
     }
+    return res.status(200).send(comment);
   } catch (error) {
     return res.status().send(error);
   }

@@ -198,6 +198,7 @@ export const cmtSlice = createSlice({
               cmt.replies = cmt.replies.map((reply) =>
                 reply._id === action.payload._id ? action.payload : reply,
               );
+              return;
             }
           });
         }
@@ -224,6 +225,7 @@ export const cmtSlice = createSlice({
                 (reply) => reply._id !== action.payload._id,
               );
             }
+            return;
           });
         }
       })
@@ -238,14 +240,28 @@ export const cmtSlice = createSlice({
       .addCase(likeCmt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-
-        state.comments.forEach((cmt) => {
-          if (cmt._id === action.payload._id) {
-            cmt.likedBy = action.payload.likedBy;
-            cmt.liked = action.payload.liked;
-            return;
-          }
-        });
+        if (!action.payload.parentCommentId) {
+          state.comments.forEach((cmt) => {
+            if (cmt._id === action.payload._id) {
+              cmt.likedBy = action.payload.likedBy;
+              cmt.liked = action.payload.liked;
+              return;
+            }
+          });
+        } else {
+          state.comments.forEach((cmt) => {
+            if (cmt._id === action.payload.parentCommentId) {
+              cmt.replies.forEach((reply) => {
+                if (reply._id === action.payload._id) {
+                  reply.likedBy = action.payload.likedBy;
+                  reply.liked = action.payload.liked;
+                  return;
+                }
+              });
+              return;
+            }
+          });
+        }
       })
       .addCase(likeCmt.rejected, (state, action) => {
         state.isLoading = false;
@@ -258,14 +274,28 @@ export const cmtSlice = createSlice({
       .addCase(unlikeCmt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-
-        state.comments.forEach((cmt) => {
-          if (cmt._id === action.payload._id) {
-            cmt.likedBy = action.payload.likedBy;
-            cmt.liked = action.payload.liked;
-            return;
-          }
-        });
+        if (!action.payload.parentCommentId) {
+          state.comments.forEach((cmt) => {
+            if (cmt._id === action.payload._id) {
+              cmt.likedBy = action.payload.likedBy;
+              cmt.liked = action.payload.liked;
+              return;
+            }
+          });
+        } else {
+          state.comments.forEach((cmt) => {
+            if (cmt._id === action.payload.parentCommentId) {
+              cmt.replies.forEach((reply) => {
+                if (reply._id === action.payload._id) {
+                  reply.likedBy = action.payload.likedBy;
+                  reply.liked = action.payload.liked;
+                  return;
+                }
+              });
+              return;
+            }
+          });
+        }
       })
       .addCase(unlikeCmt.rejected, (state, action) => {
         state.isLoading = false;
