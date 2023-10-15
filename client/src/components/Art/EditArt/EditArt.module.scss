@@ -1,16 +1,44 @@
 .wrapper {
   margin-top: 5px;
-  padding: 0 5px 10px 15px;
+  max-height: 910px;
   position: relative;
-  overflow-y: scroll;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  form {
+    margin-bottom: 5px;
+    padding: 0 5px 10px 15px;
+    overflow-y: scroll;
+  }
+}
+.form-field {
+  overflow: hidden;
 }
 .user {
+  padding: 0 5px 10px 15px;
   display: flex;
   align-items: center;
   height: 50px;
 }
 .user-info {
   margin-left: 10px;
+  cursor: pointer;
+  div {
+    font-size: 16px;
+  }
+  p {
+    margin: 0;
+    padding: 0 10px;
+    display: flex;
+    justify-content: center;
+    border-radius: 5px;
+    background-color: var(--gray-light);
+  }
+  button {
+    padding: 0;
+    font-size: 14px;
+    height: 25px !important;
+  }
 }
 .image-thumb {
   width: 100%;
@@ -25,20 +53,13 @@
   top: 15px;
   left: 20px;
 }
-// .remove-art {
-//   position: absolute;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   top: 20px;
-//   right: 20px;
-//   padding: 0 5px !important;
-//   border-radius: 50px;
-//   background-color: rgba(255, 255, 255, 1);
-//   &:hover {
-//     background-color: rgba(255, 255, 255, 0.8);
-//   }
-//   svg {
-//     height: 20px;
-//   }
-// }
+.autosize-textarea {
+  min-height: 50px; // you can set a minimum height
+  resize: none; // this line won't allow manual resize
+  overflow: hidden; // this line will hide the scrollbar
+  font-family: var(--font-family2);
+}
+.btn-edit {
+  display: flex;
+  justify-content: flex-end;
+}

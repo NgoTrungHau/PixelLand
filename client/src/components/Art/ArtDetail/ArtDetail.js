@@ -39,6 +39,7 @@ const mcx = classNames.bind(mStyles);
 function ArtDetail({ art }) {
   const { isLiked, handleLike } = useContext(ArtContext);
   const [isHover, setIsHover] = useState(false);
+  const [showMore, setShowMore] = useState(false); // new state
 
   const toggleModal = useContext(ModalToggleContext);
   const dispatch = useDispatch();
@@ -48,13 +49,17 @@ function ArtDetail({ art }) {
   const { comments } = useSelector((state) => state.comments);
 
   useEffect(() => {
+    if (comments[0]?.art !== art?._id) {
+      dispatch(reset());
+    }
     if (user) {
       dispatch(getCmts(art._id));
     }
-    return () => {
-      dispatch(reset());
-    };
   }, [art, dispatch, user]);
+
+  const toggleShowMore = () => {
+    setShowMore(!showMore);
+  };
 
   const handleEdit = () => {
     toggleModal();
@@ -115,8 +120,8 @@ function ArtDetail({ art }) {
               medium
             />
             <div className={cx('author-info')}>
-              <h4>{art.author?.username}</h4>
-              <h5>{moment(art.createdAt).fromNow()}</h5>
+              <div>{art.author?.username}</div>
+              <p>{moment(art.createdAt).fromNow()}</p>
             </div>
           </div>
           <Menu items={renderItems()} hideOnClick offset={[0, 0]}>
@@ -127,16 +132,25 @@ function ArtDetail({ art }) {
         </div>
         <div className={cx('art-detail')}>
           <div className={cx('title')}>{art.title}</div>
-          <p className={cx('description')}>{art.description}</p>
+          <p className={cx('description')}>
+            {showMore
+              ? art.description
+              : art.description.length > 200
+              ? `${art.description.substring(0, 200)}...`
+              : art.description}
+            {art.description.length > 200 && (
+              <Button onClick={toggleShowMore}>
+                {showMore ? 'See less' : 'See more'}
+              </Button>
+            )}
+          </p>
           <div className={cx('image-art')}>
             <Image src={art.art?.url} alt="" />
           </div>
         </div>
         <div className={cx('views')}>
           <div className={cx('view')}>{art.likes?.length} like</div>
-          <div className={cx('view')}>
-            {comments?.length || art.comments?.length} comments
-          </div>
+          <div className={cx('view')}>{art.comments?.length} comments</div>
         </div>
         <div className={cx('actions')}>
           <div className={cx('action')} onClick={handleLike}>

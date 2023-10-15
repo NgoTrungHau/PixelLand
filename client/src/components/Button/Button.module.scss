@@ -27,9 +27,10 @@
 }
 
 .title {
+  display: flex;
   justify-content: center;
   align-items: center;
-  // font-size: 16px;
+  font-size: 16px;
 }
 
 .icon + .title,
@@ -177,14 +178,11 @@ span {
 
 // size
 .sm {
-  width: 30px !important;
   height: 30px !important;
 }
 .md {
-  width: 40px !important;
   height: 40px !important;
 }
 .lg {
-  width: 50px !important;
   height: 50px !important;
 }

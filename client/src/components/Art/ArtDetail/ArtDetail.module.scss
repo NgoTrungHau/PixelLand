@@ -37,6 +37,10 @@
 }
 .author-info {
   margin-left: 10px;
+  p {
+    margin: 0;
+    color: var(--gray);
+  }
 }
 
 .art-detail {
@@ -50,6 +54,15 @@
       height: 100%;
       object-fit: cover;
       border-radius: 14px;
+    }
+  }
+  .description,
+  .title {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    button {
+      padding: 0;
+      font-weight: bold;
     }
   }
 }
@@ -105,6 +118,7 @@ input[type='text'] {
   width: 100% !important;
 }
 .comments {
+  margin-top: 10px;
   max-width: 100%;
 }
 .comment-form {

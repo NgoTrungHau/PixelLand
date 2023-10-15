@@ -52,17 +52,15 @@ const Modal = forwardRef(({ modalType, data, sz, children, isChild }, ref) => {
       body.style.position = 'static';
       window.scrollTo(0, scrollPosition);
     }
-  }, [modal]);
+  }, [modal, isChild]);
 
   const deleteConfirmation = () => {
     return (
       <>
         <div className={cx('heading')}>{data.action}</div>
-        <div className="d-flex justify-content-center align-item-center">
-          {data.content}
-        </div>
-        <div className="d-flex justify-content-end">
-          <Button gray onClick={toggleModal}>
+        <div className={cx('confirmation')}>{data.content}</div>
+        <div className={cx('confirm-btn')}>
+          <Button gray onClick={toggleModal} sz="md">
             Cancel
           </Button>
           <Button
