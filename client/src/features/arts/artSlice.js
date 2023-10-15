@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import artService from './artService';
+import { createCmt } from '../comments/commentSlice';
 
 const initialState = {
   arts: [],
@@ -153,7 +154,6 @@ export const artSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.arts.unshift(action.payload);
-        state.message = 'Uploading art successful!';
       })
       .addCase(createArt.rejected, (state, action) => {
         state.isLoading = false;
@@ -201,7 +201,6 @@ export const artSlice = createSlice({
         state.arts = state.arts.map((art) =>
           art._id === action.payload._id ? action.payload : art,
         );
-        state.message = 'Update art successful!';
       })
       .addCase(editArt.rejected, (state, action) => {
         state.isLoading = false;
@@ -258,6 +257,21 @@ export const artSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      .addCase(createCmt.fulfilled, (state, action) => {
+        // action.payload should include the new comment object
+        // which also contains the id (_id) of the art which the comment belongs to (art)
+        const newComment = action.payload;
+
+        // find the correct art object by its id
+        const artIndex = state.arts.findIndex(
+          (art) => art._id === newComment.art,
+        );
+
+        // If the art exists, push the comment id into its comments array
+        if (artIndex !== -1) {
+          state.arts[artIndex].comments.push(newComment._id);
+        }
       });
   },
 });

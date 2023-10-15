@@ -69,13 +69,11 @@ const likeArt = async (art_id, token) => {
       Authorization: `Bearer ${token}`,
     },
   };
-
   const response = await httpRequest.patch(
     API_URL + 'like/' + art_id,
     {},
     config,
   );
-
   return response;
 };
 const unlikeArt = async (art_id, token) => {

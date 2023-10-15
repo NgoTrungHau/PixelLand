@@ -1,9 +1,7 @@
 import classNames from 'classnames/bind';
 import { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { Formik, ErrorMessage, useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -14,9 +12,9 @@ import { editArt } from '~/features/arts/artSlice';
 import SpinIcon from '~/components/SpinIcon';
 import { ModalToggleContext } from '../../Modals/Modal';
 import Avatar from '~/components/Avatar';
-import moment from 'moment';
 import Image from '~/components/Image';
-import { faPen, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faPen } from '@fortawesome/free-solid-svg-icons';
+import ReactTextareaAutosize from 'react-textarea-autosize';
 
 const cx = classNames.bind(styles);
 const ecx = classNames.bind(editStyles);
@@ -24,10 +22,12 @@ const ecx = classNames.bind(editStyles);
 function EditArt({ art }) {
   const toggleModal = useContext(ModalToggleContext);
   const [image, setImage] = useState('');
+  const [isPublic, setIsPublic] = useState(true);
+
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
-  const { isLoading, isError, message } = useSelector((state) => state.arts);
+  const { isLoading } = useSelector((state) => state.arts);
 
   const handleArt = async (e) => {
     const file = e.target.files[0];
@@ -76,7 +76,7 @@ function EditArt({ art }) {
     if (!isLoading) {
       toggleModal();
     }
-  }, [isLoading]);
+  }, [isLoading, toggleModal]);
   return (
     <>
       <div className={cx('heading')}>Edit Art</div>
@@ -84,8 +84,10 @@ function EditArt({ art }) {
         <div className={ecx('user')}>
           <Avatar avatar={user.avatar?.url} medium />
           <div className={ecx('user-info')}>
-            <h4>{user?.username}</h4>
-            <h5>{moment(art.createdAt).fromNow()}</h5>
+            <div>{user?.username}</div>
+            <p onClick={() => setIsPublic(!isPublic)}>
+              {isPublic ? 'Public' : 'Only me'}
+            </p>
           </div>
         </div>
         <Formik
@@ -109,11 +111,11 @@ function EditArt({ art }) {
             </div>
 
             <div className={cx('form-field')}>
-              <textarea
-                className={`${cx('')} form-control`}
+              <ReactTextareaAutosize
+                className={`${ecx('autosize-textarea')} form-control `}
+                minRows={4} // minimum number of rows
                 id="description"
                 name="description"
-                rows="5"
                 value={formik.values.description}
                 placeholder="Description"
                 onChange={formik.handleChange}
@@ -147,9 +149,7 @@ function EditArt({ art }) {
                     hidden
                   />
                 </label>
-                {/* <Button type="button" className={ecx('remove-art')}>
-                  <FontAwesomeIcon icon={faXmark} />
-                </Button> */}
+
                 <Image
                   src={image || art.art?.url}
                   alt=""
@@ -166,8 +166,8 @@ function EditArt({ art }) {
                 <p className={cx('mess-error')}>{formik.errors.image}</p>
               )}
             </div>
-            <div className="d-flex justify-content-end">
-              <Button grayLight type="button" sz="small" onClick={handleCancel}>
+            <div className={ecx('btn-edit')}>
+              <Button grayLight type="button" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button primary type="submit">

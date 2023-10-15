@@ -135,8 +135,8 @@ exports.update = async (req, res, next) => {
 // Like art
 exports.likeArt = async (req, res, next) => {
   try {
-    const like = await Art.findOneAndUpdate(
-      req.params.id,
+    const like = await Art.findByIdAndUpdate(
+      { _id: req.params.id },
       {
         $addToSet: { likes: req.user._id },
       },
@@ -145,7 +145,6 @@ exports.likeArt = async (req, res, next) => {
 
     if (!like)
       return res.status(400).json({ error: 'This art does not exist.' });
-
     return res.status(200).send(like);
   } catch (error) {
     return next(
@@ -157,7 +156,7 @@ exports.likeArt = async (req, res, next) => {
 // Unlike art
 exports.unlikeArt = async (req, res, next) => {
   try {
-    const unlike = await Art.findOneAndUpdate(
+    const unlike = await Art.findByIdAndUpdate(
       req.params.id,
       {
         $pull: { likes: req.user._id },

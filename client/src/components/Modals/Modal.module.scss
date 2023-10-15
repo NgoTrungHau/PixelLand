@@ -57,7 +57,7 @@
 
   input {
     height: 40px;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   button {
@@ -84,15 +84,28 @@
   align-items: center !important;
   font-size: 24px;
 }
+.confirmation {
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.confirm-btn {
+  display: flex;
+  justify-content: flex-end;
+  margin: 5px 0;
+  padding: 5px;
+}
 
 // modal size
 .small {
   width: 500px;
-  // max-height: 500px;
+  max-height: 960px;
 }
 .medium {
   min-width: 700px;
   height: 960px;
+  max-height: 960px;
 }
 
 .form-field {
