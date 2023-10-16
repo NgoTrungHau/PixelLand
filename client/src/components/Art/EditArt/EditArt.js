@@ -1,20 +1,26 @@
 import classNames from 'classnames/bind';
-import { useContext, useEffect, useState } from 'react';
+// React
+import { useContext, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import ReactTextareaAutosize from 'react-textarea-autosize';
+// FontAwesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen } from '@fortawesome/free-solid-svg-icons';
+// Validation form
 import { Formik, ErrorMessage, useFormik } from 'formik';
 import * as Yup from 'yup';
 
-import Button from '~/components/Button';
+// scss
 import styles from '~/components/Modals/Modal.module.scss';
 import editStyles from './EditArt.module.scss';
-import { editArt } from '~/features/arts/artSlice';
+// components
+import Button from '~/components/Button';
 import SpinIcon from '~/components/SpinIcon';
-import { ModalToggleContext } from '../../Modals/Modal';
 import Avatar from '~/components/Avatar';
 import Image from '~/components/Image';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
-import ReactTextareaAutosize from 'react-textarea-autosize';
+// feartures
+import { editArt } from '~/features/arts/artSlice';
+import { ModalToggleContext } from '../../Modals/Modal';
 
 const cx = classNames.bind(styles);
 const ecx = classNames.bind(editStyles);
@@ -63,21 +69,14 @@ function EditArt({ art }) {
       id: art._id,
       title: art.title,
       description: art.description,
-      image: art.art?.url,
+      image: art.art.url,
     },
     validationSchema: ArtSchema,
     onSubmit: async () => {
       await dispatch(editArt(formik.values));
       toggleModal();
-      setImage('');
     },
   });
-
-  useEffect(() => {
-    if (!isLoading) {
-      toggleModal();
-    }
-  }, [isLoading, toggleModal]);
   return (
     <>
       <div className={cx('heading')}>Edit Art</div>

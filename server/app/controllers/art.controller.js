@@ -4,27 +4,26 @@ const User = require('../models/User');
 const cloudinary = require('../utils/cloudinary');
 
 exports.create = async (req, res, next) => {
-  if (!req.body?.art) {
-    return next(new ApiError(400, 'Art can not be empty'));
-  }
-
-  const result = await cloudinary.uploader.upload(req.body.art, {
-    folder: 'arts',
-    // width: 300,
-    // crop: 'scale'
-  });
-
-  const art = new Art({
-    author: req.user.id,
-    title: req.body.title,
-    description: req.body.description,
-    art: {
-      public_id: result.public_id,
-      url: result.secure_url,
-    },
-  });
-
   try {
+    if (!req.body?.art) {
+      return next(new ApiError(400, 'Art can not be empty'));
+    }
+
+    // upload image to cloudinary
+    const result = await cloudinary.uploader.upload(req.body.art, {
+      folder: 'arts',
+    });
+
+    const art = new Art({
+      author: req.user.id,
+      title: req.body.title,
+      description: req.body.description,
+      art: {
+        public_id: result.public_id,
+        url: result.secure_url,
+      },
+    });
+
     const createArt = await art.save();
     res.json({
       ...createArt._doc,
@@ -90,45 +89,60 @@ exports.update = async (req, res, next) => {
     if (!art) {
       return next(new ApiError(401, 'Art not found'));
     }
+    // Delete the old art and upload the new art
+    await cloudinary.uploader.destroy(art.art.public_id);
 
-    const user = await User.findById(req.user.id);
+    let result = await cloudinary.uploader.upload(req.body.image, {
+      folder: 'arts',
+    });
 
-    if (!user) {
-      return next(new ApiError(401, 'User not found'));
-    }
+    // save art
+    art.art = {
+      public_id: result.public_id,
+      url: result.url,
+    };
 
-    // Make sure the logged in user matches the goal user
-    if (art.author.toString() !== req.user.id) {
-      return next(new ApiError(401, 'User not authorized'));
-    }
+    art.title = req.body.title;
+    art.description = req.body.description;
 
-    let result = null;
-    if (art.art.url !== req.body.image) {
-      await cloudinary.uploader.destroy(art.art.public_id, (error, result) => {
-        console.log(result, error);
-      });
-      // Upload new image
-      result = await cloudinary.uploader.upload(req.body.image, {
-        folder: 'arts',
-      });
-    }
-
-    const updateArt = await Art.findByIdAndUpdate(
-      { _id: req.params.id },
-      {
-        $set: {
-          title: req.body.title,
-          description: req.body.description,
-          art: result ? result : art.art,
-        },
-      },
-      { new: true },
-    ).populate('author', 'username avatar');
-    res.json(updateArt);
+    let savedArt = await art.save();
+    savedArt = await savedArt.populate('author', 'username avatar');
+    res.send(savedArt);
   } catch (error) {
     return next(
       new ApiError(500, `Error updating art with id=${req.params.id}`),
     );
+  }
+};
+
+// Delete art
+exports.delete = async (req, res, next) => {
+  try {
+    const art = await Art.findById(req.params.id);
+
+    if (!art) {
+      return next(new ApiError(401, 'Art not found'));
+    }
+
+    // Delete old image from Cloudinary
+    await cloudinary.uploader.destroy(art.art.public_id);
+
+    const deleteArt = await art.remove();
+    res.json(deleteArt);
+  } catch (error) {
+    return next(
+      new ApiError(500, `Error updating art with id=${req.params.id}`),
+    );
+  }
+};
+
+// Delete all arts
+exports.deleteAll = async (req, res, next) => {
+  try {
+    const deleteAllArts = await Art.deleteMany({});
+    res.json(deleteAllArts);
+  } catch (error) {
+    return next(new ApiError(500, `Error deleting all user `));
   }
 };
 
@@ -172,49 +186,5 @@ exports.unlikeArt = async (req, res, next) => {
     return next(
       new ApiError(500, `Error retrieving art with id=${req.params.id}`),
     );
-  }
-};
-
-// Delete art
-exports.delete = async (req, res, next) => {
-  try {
-    const art = await Art.findById(req.params.id);
-
-    if (!art) {
-      return next(new ApiError(401, 'Art not found'));
-    }
-    const user = await User.findById(req.user._id);
-
-    if (!user) {
-      return next(new ApiError(401, 'User not found'));
-    }
-
-    // Make sure the logged in user matches the goal user
-    if (art.author.toString() !== req.user.id) {
-      return next(new ApiError(401, 'User not authorized'));
-    }
-
-    // Delete old image from Cloudinary
-    const oldImageUrl = art.art.url;
-    const public_id = oldImageUrl.split('/').slice(-1)[0].split('.')[0]; // extract public_id from url
-    await cloudinary.uploader.destroy(public_id, (error, result) => {
-      console.log(result, error);
-    });
-    const deleteArt = await art.remove();
-    res.json(deleteArt);
-  } catch (error) {
-    return next(
-      new ApiError(500, `Error updating art with id=${req.params.id}`),
-    );
-  }
-};
-
-// Delete all arts
-exports.deleteAll = async (req, res, next) => {
-  try {
-    const deleteAllArts = await Art.deleteMany({});
-    res.json(deleteAllArts);
-  } catch (error) {
-    return next(new ApiError(500, `Error deleting all user `));
   }
 };
