@@ -25,6 +25,7 @@ import EditProfileForm from './EditProfile';
 import ArtDetail from '../Art/ArtDetail';
 import { createPortal } from 'react-dom';
 import EditArt from '../Art/EditArt/EditArt';
+import SpinIcon from '../SpinIcon';
 
 export const ModalToggleContext = createContext(() => {});
 
@@ -63,14 +64,8 @@ const Modal = forwardRef(({ modalType, data, sz, children, isChild }, ref) => {
           <Button gray onClick={toggleModal} sz="md">
             Cancel
           </Button>
-          <Button
-            primary
-            onClick={() => {
-              data.onClick();
-              toggleModal();
-            }}
-          >
-            Delete
+          <Button primary onClick={data.onClick}>
+            {data.isLoading ? <SpinIcon /> : 'Delete'}
           </Button>
         </div>
       </>
@@ -132,7 +127,7 @@ const Modal = forwardRef(({ modalType, data, sz, children, isChild }, ref) => {
           </Button>
         );
       default:
-        return <button onClick={toggleModal} />;
+        return;
     }
   };
   const renderChildrenModal = () => {
@@ -156,7 +151,7 @@ const Modal = forwardRef(({ modalType, data, sz, children, isChild }, ref) => {
       case 'editProfile':
         return <EditProfileForm />;
       default:
-        return null;
+        return;
     }
   };
 

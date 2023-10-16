@@ -66,8 +66,9 @@ function EditArt({ art }) {
       image: art.art?.url,
     },
     validationSchema: ArtSchema,
-    onSubmit: () => {
-      dispatch(editArt(formik.values));
+    onSubmit: async () => {
+      await dispatch(editArt(formik.values));
+      toggleModal();
       setImage('');
     },
   });
