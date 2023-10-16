@@ -1,19 +1,25 @@
 import classNames from 'classnames/bind';
+// React
 import { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+// FontAwesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
+// Validation form
 import { Formik, ErrorMessage, useFormik } from 'formik';
 import * as Yup from 'yup';
 
-import Button from '~/components/Button';
+// scss
 import styles from './UploadArt.module.scss';
 import mStyles from '~/components/Modals/Modal.module.scss';
-import { createArt } from '~/features/arts/artSlice';
+// components
+import Button from '~/components/Button';
 import SpinIcon from '~/components/SpinIcon';
-import { ModalToggleContext } from '../../Modals/Modal';
 import Image from '~/components/Image';
+// feartures
+import { createArt } from '~/features/arts/artSlice';
+import { ModalToggleContext } from '../../Modals/Modal';
 
 const cx = classNames.bind(styles);
 const mcx = classNames.bind(mStyles);
