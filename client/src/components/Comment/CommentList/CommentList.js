@@ -1,12 +1,13 @@
 import classNames from 'classnames/bind';
-import { useEffect, useState, useCallback, memo } from 'react';
+// react
+import { useEffect, useState, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { debounce } from 'lodash';
 
+// scss
 import styles from './CommentList.module.scss';
-import { getCmts, reset } from '~/features/comments/commentSlice';
+// components
 import CommentItem from '../CommentItem';
 
 const cx = classNames.bind(styles);
@@ -16,21 +17,37 @@ const MemoizedCmtItem = memo(({ cmt, index }) => (
 ));
 
 function CommentList({ replies }) {
-  const [isCmtsReady, setIsCmtsReady] = useState(false);
-
   const { comments, isCmtsLoading, isSuccess, isError, message } = useSelector(
     (state) => state.comments,
   );
-  const { user } = useSelector((state) => state.auth);
 
-  const cards_sample = Array(12)
-    .fill(undefined)
-    .map((a, i) => <div className={cx('card-thumb-sample')} key={i}></div>);
-
-  const setCmtsReadyDebounced = useCallback(
-    debounce(() => setIsCmtsReady(true), 1000),
-    [],
+  const [heightsCycle] = useState(() =>
+    new Array(10)
+      .fill(undefined)
+      .map(() => Math.floor(Math.random() * (12 - 4) + 4) * 10),
   );
+  const [widthsCycle] = useState(() =>
+    new Array(10)
+      .fill(undefined)
+      .map(() => Math.floor(Math.random() * (10 - 5) + 5) * 10),
+  );
+
+  const cards_sample = Array(10)
+    .fill(undefined)
+    .map((a, i) => (
+      <div className={cx('comment-thumb-sample')} key={i}>
+        <div className={cx('comment-avatar-sample')}></div>
+        <div className={cx('comment-detail-sample')}>
+          <div
+            className={cx('comment-content-sample')}
+            style={{
+              height: `${heightsCycle[i]}px`,
+              width: `${widthsCycle[i]}%`,
+            }}
+          ></div>
+        </div>
+      </div>
+    ));
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -42,11 +59,11 @@ function CommentList({ replies }) {
     if (isSuccess && message) {
       toast.success(message);
     }
-  }, [navigate, message, dispatch]);
+  }, [navigate, isSuccess, isError, message, dispatch]);
 
-  useEffect(() => {
-    setCmtsReadyDebounced();
-  }, [comments, navigate, dispatch, setCmtsReadyDebounced]);
+  if (isCmtsLoading && comments.length === 0) {
+    return <div className={cx('wrapper')}>{cards_sample}</div>;
+  }
 
   return (
     <div className={cx('wrapper')}>
