@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 // React
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 // Font
@@ -25,6 +25,7 @@ import Avatar from '../../Avatar';
 import Button from '../../Button';
 import Image from '~/components/Image';
 import Menu from '~/components/Popper/Menu';
+import CommentList from '../CommentList';
 import CommentForm from '../CommentForm/CommentForm';
 import shortenMoment from '~/components/shortenMoment/shortenMoment';
 
@@ -34,7 +35,7 @@ import {
   likeCmt,
   unlikeCmt,
 } from '~/features/comments/commentSlice';
-import CommentList from '../CommentList';
+import { ModalToggleContext } from '../../Modals/Modal';
 
 const cx = classNames.bind(styles);
 
@@ -44,6 +45,7 @@ function CommentItem({ key, cmt }) {
   const [editing, setEditing] = useState(false);
   const [isReply, setIsReply] = useState(false);
   const [showReply, setShowReply] = useState(false);
+  const toggleModal = useContext(ModalToggleContext);
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -84,8 +86,9 @@ function CommentItem({ key, cmt }) {
   const showReplies = () => {
     setShowReply(true);
   };
-  const handleDelete = () => {
-    dispatch(deleteCmt(cmt._id));
+  const handleDelete = async () => {
+    await dispatch(deleteCmt(cmt._id));
+    toggleModal();
   };
 
   if (!cmt) {
@@ -105,6 +108,7 @@ function CommentItem({ key, cmt }) {
           title: 'Delete',
           action: 'Delete Comment',
           content: 'Do you really want to delete this comment?',
+          isLoading: isLoading,
           modal: true,
           onClick: handleDelete,
         },

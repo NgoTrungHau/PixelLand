@@ -22,27 +22,11 @@ function MenuItem({ data, onClick }) {
         return 'edit-cmt';
       case 'Delete Comment':
         return 'delete-cmt';
+      default:
+        return;
     }
   };
 
-  if (data.divider) {
-    return (
-      <>
-        <div className={cx('divider')}></div>
-        <Button
-          className={classes}
-          white
-          image={data.image}
-          leftIcon={data.leftIcon}
-          rightIcon={data.rightIcon}
-          to={data.to}
-          onClick={onClick}
-        >
-          {data.title}
-        </Button>
-      </>
-    );
-  }
   if (data.modal) {
     return (
       <div onClick={onClick}>
@@ -62,17 +46,20 @@ function MenuItem({ data, onClick }) {
     );
   }
   return (
-    <Button
-      className={classes}
-      white
-      image={data.image}
-      leftIcon={data.leftIcon}
-      rightIcon={data.rightIcon}
-      to={data.to}
-      onClick={data.onClick}
-    >
-      {data.title}
-    </Button>
+    <>
+      {data.divider && <div className={cx('divider')}></div>}
+      <Button
+        className={classes}
+        white
+        image={data.image}
+        leftIcon={data.leftIcon}
+        rightIcon={data.rightIcon}
+        to={data.to}
+        onClick={data.divider ? onClick : data.onClick}
+      >
+        {data.title}
+      </Button>
+    </>
   );
 }
 

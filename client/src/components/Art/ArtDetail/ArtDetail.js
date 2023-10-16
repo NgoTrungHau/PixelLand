@@ -46,6 +46,7 @@ function ArtDetail({ art }) {
 
   // get data from redux reducer
   const { user } = useSelector((state) => state.auth);
+  const { isLoading } = useSelector((state) => state.arts);
 
   useEffect(() => {
     if (user) {
@@ -63,8 +64,8 @@ function ArtDetail({ art }) {
   const handleEdit = () => {
     toggleModal();
   };
-  const handleDelete = () => {
-    dispatch(deleteArt(art._id));
+  const handleDelete = async () => {
+    await dispatch(deleteArt(art._id));
     toggleModal();
   };
 
@@ -84,6 +85,7 @@ function ArtDetail({ art }) {
           title: 'Delete',
           action: 'Delete Art',
           content: 'Do you really want to delete this art?',
+          isLoading: isLoading,
           modal: true,
           onClick: handleDelete,
         },

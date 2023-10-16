@@ -69,8 +69,9 @@ function UploadArt() {
       art: '',
     },
     validationSchema: ArtSchema,
-    onSubmit: () => {
-      dispatch(createArt(formik.values));
+    onSubmit: async () => {
+      await dispatch(createArt(formik.values));
+      toggleModal();
       formik.resetForm();
       setArt('');
     },
