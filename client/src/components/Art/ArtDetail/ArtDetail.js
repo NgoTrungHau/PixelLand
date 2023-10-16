@@ -46,16 +46,15 @@ function ArtDetail({ art }) {
 
   // get data from redux reducer
   const { user } = useSelector((state) => state.auth);
-  const { comments } = useSelector((state) => state.comments);
 
   useEffect(() => {
-    if (comments[0]?.art !== art?._id) {
-      dispatch(reset());
-    }
     if (user) {
       dispatch(getCmts(art._id));
     }
-  }, [art, dispatch, user]);
+    return () => {
+      dispatch(reset());
+    };
+  }, [art._id, dispatch, user]);
 
   const toggleShowMore = () => {
     setShowMore(!showMore);
