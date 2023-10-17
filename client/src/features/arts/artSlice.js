@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import artService from './artService';
-import { createCmt } from '../comments/commentSlice';
+import { createCmt, deleteCmt } from '../comments/commentSlice';
 
 const initialState = {
   arts: [],
@@ -271,6 +271,21 @@ export const artSlice = createSlice({
         // If the art exists, push the comment id into its comments array
         if (artIndex !== -1) {
           state.arts[artIndex].comments.push(newComment._id);
+        }
+      })
+      .addCase(deleteCmt.fulfilled, (state, action) => {
+        // action.payload should include the new comment object
+        // which also contains the id (_id) of the art which the comment belongs to (art)
+        const newComment = action.payload;
+
+        // find the correct art object by its id
+        const artIndex = state.arts.findIndex(
+          (art) => art._id === newComment.art,
+        );
+
+        // If the art exists, push the comment id into its comments array
+        if (artIndex !== -1) {
+          state.arts[artIndex].comments.pop(newComment._id);
         }
       });
   },

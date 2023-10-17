@@ -26,7 +26,7 @@ const mcx = classNames.bind(mStyles);
 
 function UploadArt() {
   const toggleModal = useContext(ModalToggleContext);
-  const [art, setArt] = useState('');
+  const [media, setMedia] = useState('');
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
@@ -42,13 +42,13 @@ function UploadArt() {
 
   const handleArt = async (e) => {
     const file = e.target.files[0];
+    formik.setFieldValue('art', file);
 
     try {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = function () {
-        setArt(reader.result);
-        formik.setFieldValue('art', reader.result);
+        setMedia(reader.result);
       };
     } catch (error) {
       console.error(error);
@@ -57,29 +57,50 @@ function UploadArt() {
 
   const handleCancel = (e) => {
     e.target.value = '';
-    formik.setValues({ title: '', description: '', art: '' });
-    setArt('');
+    formik.setValues({ title: '', description: '', art: null });
+    setMedia('');
     toggleModal();
   };
 
+  const FILE_SIZE_LIMIT = 1024 * 1024; // 1MB
+  const SUPPORTED_FORMATS = [
+    'image/jpg',
+    'image/jpeg',
+    'image/gif',
+    'image/png',
+  ];
   const ArtSchema = Yup.object().shape({
     title: Yup.string(),
     description: Yup.string(),
-    art: Yup.string().required('An image is required'),
+    art: Yup.mixed()
+      .required('An image is required')
+      .test(
+        'fileSize',
+        'File too large',
+        (value) => value && value.size <= FILE_SIZE_LIMIT,
+      )
+      .test('type', 'Unsupported Format', (value) => {
+        return value && SUPPORTED_FORMATS.includes(value.type);
+      }),
   });
 
   const formik = useFormik({
     initialValues: {
       title: '',
       description: '',
-      art: '',
+      art: null,
     },
     validationSchema: ArtSchema,
     onSubmit: async () => {
-      await dispatch(createArt(formik.values));
+      const formData = new FormData();
+      formData.append('title', formik.values.title);
+      formData.append('description', formik.values.description);
+      formData.append('art', formik.values.art);
+
+      await dispatch(createArt(formData));
       toggleModal();
       formik.resetForm();
-      setArt('');
+      setMedia('');
     },
   });
   return (
@@ -147,9 +168,9 @@ function UploadArt() {
               {formik.errors.art && formik.touched.art && (
                 <p className={cx('mess-error')}>{formik.errors.art}</p>
               )}
-              {art && (
+              {media && (
                 <Image
-                  src={art}
+                  src={media}
                   alt=""
                   style={{
                     width: 200,

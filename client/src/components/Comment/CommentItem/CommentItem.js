@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 // React
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 // Font
@@ -35,7 +35,6 @@ import {
   likeCmt,
   unlikeCmt,
 } from '~/features/comments/commentSlice';
-import { ModalToggleContext } from '../../Modals/Modal';
 
 const cx = classNames.bind(styles);
 
@@ -45,7 +44,6 @@ function CommentItem({ key, cmt }) {
   const [editing, setEditing] = useState(false);
   const [isReply, setIsReply] = useState(false);
   const [showReply, setShowReply] = useState(false);
-  const toggleModal = useContext(ModalToggleContext);
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -88,7 +86,6 @@ function CommentItem({ key, cmt }) {
   };
   const handleDelete = async () => {
     await dispatch(deleteCmt(cmt._id));
-    toggleModal();
   };
 
   if (!cmt) {

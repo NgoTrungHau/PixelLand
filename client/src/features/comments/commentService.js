@@ -7,8 +7,10 @@ const createCmt = async (cmtData, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
     },
   };
+
   const response = await httpRequest.post(API_URL + 'create', cmtData, config);
 
   return response;
@@ -31,13 +33,18 @@ const editCmt = async (cmtData, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
     },
   };
+  console.log(cmtData);
+
   const response = await httpRequest.post(
     API_URL + cmtData.id,
     cmtData,
     config,
   );
+  console.log(response);
+
   return response;
 };
 // Delete user Cmt
