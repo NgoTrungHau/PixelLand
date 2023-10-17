@@ -3,11 +3,13 @@ import classNames from 'classnames/bind';
 import { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
+import ReactTextareaAutosize from 'react-textarea-autosize';
 // FontAwesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 // Validation form
-import { Formik, ErrorMessage, useFormik } from 'formik';
+import { Formik, useFormik } from 'formik';
 import * as Yup from 'yup';
 
 // scss
@@ -27,6 +29,27 @@ const mcx = classNames.bind(mStyles);
 function UploadArt() {
   const toggleModal = useContext(ModalToggleContext);
   const [media, setMedia] = useState('');
+
+  // options
+  const privacyOptions = [
+    { key: 'Public', value: 'Public' },
+    { key: 'Followers only', value: 'Followers only' },
+    { key: 'Subscribers only', value: 'Subscribers only' },
+    { key: 'Only me', value: 'Only me' },
+  ];
+  const typeOptions = [
+    { key: 'Select art style', value: '' },
+    { key: 'Digital Painting', value: 'Digital Painting' },
+    { key: 'Fan Art', value: 'Fan Art' },
+    { key: 'Concept Art', value: 'Concept Art' },
+    { key: 'Fantasy Art', value: 'Fantasy Art' },
+    { key: 'Vector Art', value: 'Vector Art' },
+    { key: 'Game Art', value: 'Game Art' },
+    { key: 'AI Art', value: 'AI Art' },
+    { key: 'Pixel Art', value: 'Pixel Art' },
+    { key: 'Anime and Manga', value: 'Anime and Manga' },
+  ];
+
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
@@ -69,9 +92,13 @@ function UploadArt() {
     'image/gif',
     'image/png',
   ];
+
   const ArtSchema = Yup.object().shape({
     title: Yup.string(),
     description: Yup.string(),
+    privacyOptions: Yup.string(),
+    typeOptions: Yup.string().required('Required'),
+    checkTerm: Yup.boolean().required('Required'),
     art: Yup.mixed()
       .required('An image is required')
       .test(
@@ -88,6 +115,9 @@ function UploadArt() {
     initialValues: {
       title: '',
       description: '',
+      privacyOptions: '',
+      typeOptions: '',
+      checkTerm: false,
       art: null,
     },
     validationSchema: ArtSchema,
@@ -95,6 +125,8 @@ function UploadArt() {
       const formData = new FormData();
       formData.append('title', formik.values.title);
       formData.append('description', formik.values.description);
+      formData.append('typeOptions', formik.values.typeOptions);
+      formData.append('privacyOptions', formik.values.privacyOptions);
       formData.append('art', formik.values.art);
 
       await dispatch(createArt(formData));
@@ -103,6 +135,7 @@ function UploadArt() {
       setMedia('');
     },
   });
+
   return (
     <>
       <div className={mcx('heading')}>Upload Art</div>
@@ -113,7 +146,7 @@ function UploadArt() {
           onSubmit={formik.handleSubmit}
         >
           <form onSubmit={formik.handleSubmit}>
-            <div className={cx('form-field')}>
+            <div className={mcx('form-field')}>
               <input
                 type="text"
                 className="form-control"
@@ -124,24 +157,62 @@ function UploadArt() {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
-              <ErrorMessage name="title" component="div" />
             </div>
 
-            <div className={cx('form-field')}>
-              <textarea
+            <div className={mcx('form-field')}>
+              <ReactTextareaAutosize
                 className={`${cx('')} form-control`}
+                minRows={4} // minimum number of rows
                 id="description"
                 name="description"
-                rows="5"
                 value={formik.values.description}
                 placeholder="Description"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
-              <ErrorMessage name="description" component="div" />
             </div>
-            <div className={cx('form-field')}>
-              <label htmlFor="art" className="d-flex ">
+            <div className={mcx('form-field')}>
+              <div htmlFor="privacy" className={cx('custom-select')}>
+                <select
+                  id="privacyOptions"
+                  name="privacyOptions"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  {privacyOptions.map((privacy, i) => {
+                    return (
+                      <option key={privacy.value} value={privacy.value}>
+                        {privacy.key}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+            <div className={mcx('form-field')}>
+              <div htmlFor="type" className={cx('custom-select')}>
+                <select
+                  id="typeOptions"
+                  name="typeOptions"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                >
+                  {typeOptions.map((type, i) => {
+                    return (
+                      <option key={type.value} value={type.value}>
+                        {type.key}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              {formik.errors.typeOptions && formik.touched.typeOptions && (
+                <p className={mcx('mess-error')}>{formik.errors.typeOptions}</p>
+              )}
+            </div>
+
+            <div className={mcx('form-field')}>
+              <label htmlFor="art" className={cx('input-img')}>
                 <Button
                   grayLight
                   type="button"
@@ -151,7 +222,7 @@ function UploadArt() {
                     document.getElementById('art').click();
                   }}
                 >
-                  Select Art
+                  {media ? 'Change Art' : 'Select Art'}
                 </Button>
                 <input
                   type="file"
@@ -166,8 +237,10 @@ function UploadArt() {
                 />
               </label>
               {formik.errors.art && formik.touched.art && (
-                <p className={cx('mess-error')}>{formik.errors.art}</p>
+                <p className={mcx('mess-error')}>{formik.errors.art}</p>
               )}
+            </div>
+            <div className={mcx('form-field')}>
               {media && (
                 <Image
                   src={media}
@@ -180,6 +253,22 @@ function UploadArt() {
                   }}
                 />
               )}
+            </div>
+
+            <div className={cx('check-term')}>
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="checkTerm"
+                name="checkTerm"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <label htmlFor="checkTerm">
+                I have read and agree to the <Link to="#">terms of use</Link>{' '}
+                and acknowledge I am the creator of this art and I give Pixel
+                Land permission to post this art on social media.
+              </label>
             </div>
             <div className="d-flex justify-content-end">
               <Button grayLight type="button" onClick={handleCancel}>
