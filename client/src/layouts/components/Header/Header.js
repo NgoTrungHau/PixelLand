@@ -127,7 +127,7 @@ function Header() {
             <div className={cx('actions')}>
               {user ? (
                 <>
-                  <Modal modalType="upload" />
+                  <Modal modalType="upload" sz="small" />
                   <Tippy
                     interactive
                     appendTo={() => document.body}

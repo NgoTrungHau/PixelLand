@@ -159,3 +159,17 @@ a {
   background: grey;
   margin-bottom: 30px;
 }
+
+// input, textarea, select
+input[type='text'],
+textarea,
+select {
+  font-size: 16px;
+  font-family: inherit;
+  color: var(--gray-font);
+}
+
+select:focus {
+  outline: 0;
+  border: 1px solid var(--cyan) !important;
+}
