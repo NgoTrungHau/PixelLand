@@ -7,14 +7,24 @@ const cloudinary = require('../utils/cloudinary');
 // Create a new comment
 exports.createComment = async (req, res) => {
   try {
-    if (!req.body.content && !req.body.media) {
+    if (!req.body.content && !req.file) {
       return res.status(400).send('Either content or media is required.');
     }
     // upload image to cloudinary
     let result;
-    if (req.body.media) {
-      result = await cloudinary.uploader.upload(req.body.media, {
-        folder: 'comments',
+    if (req.file) {
+      result = await new Promise((resolve, reject) => {
+        const streamLoad = cloudinary.uploader.upload_stream(
+          { folder: 'comments' },
+          function (error, result) {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(error);
+            }
+          },
+        );
+        streamLoad.end(req.file.buffer);
       });
     }
 
@@ -120,19 +130,30 @@ exports.updateComment = async (req, res) => {
     if (!comment) {
       return res.status(404).send('Comment not found');
     }
-    if (req.body.media === '' && comment.media && comment.media.url) {
+    if (!req.file) {
       // Delete the old media and set the comment media to null
       if (comment.media.public_id) {
         await cloudinary.uploader.destroy(comment.media.public_id);
       }
       comment.media = null;
-    } else if (req.body.media !== '' && comment.media.url !== req.body.media) {
+    } else if (req.file) {
       // Delete the old media and upload the new media
       let destroyOld = comment.media.public_id
         ? cloudinary.uploader.destroy(comment.media.public_id)
         : Promise.resolve();
-      let uploadNew = cloudinary.uploader.upload(req.body.media, {
-        folder: 'comments',
+
+      let uploadNew = await new Promise((resolve, reject) => {
+        const streamLoad = cloudinary.uploader.upload_stream(
+          { folder: 'comments' },
+          function (error, result) {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(error);
+            }
+          },
+        );
+        streamLoad.end(req.file.buffer);
       });
 
       let [_, result] = await Promise.all([destroyOld, uploadNew]);
@@ -267,9 +288,19 @@ exports.replyToCmt = async (req, res) => {
     let comment = await Comment.findById(req.params.id);
     // upload image to cloudinary
     let result;
-    if (req.body.media) {
-      result = await cloudinary.uploader.upload(req.body.media, {
-        folder: 'comments',
+    if (req.file) {
+      result = await new Promise((resolve, reject) => {
+        const streamLoad = cloudinary.uploader.upload_stream(
+          { folder: 'comments' },
+          function (error, result) {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(error);
+            }
+          },
+        );
+        streamLoad.end(req.file.buffer);
       });
     }
     // Create a new reply (which is a Comment)

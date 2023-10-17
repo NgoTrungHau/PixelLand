@@ -64,7 +64,13 @@ const Modal = forwardRef(({ modalType, data, sz, children, isChild }, ref) => {
           <Button gray onClick={toggleModal} sz="md">
             Cancel
           </Button>
-          <Button primary onClick={data.onClick}>
+          <Button
+            primary
+            onClick={async () => {
+              await data.onClick();
+              toggleModal();
+            }}
+          >
             {data.isLoading ? <SpinIcon /> : 'Delete'}
           </Button>
         </div>

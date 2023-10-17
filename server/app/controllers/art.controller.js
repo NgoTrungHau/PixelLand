@@ -5,13 +5,22 @@ const cloudinary = require('../utils/cloudinary');
 
 exports.create = async (req, res, next) => {
   try {
-    if (!req.body?.art) {
+    if (!req.file) {
       return next(new ApiError(400, 'Art can not be empty'));
     }
-
     // upload image to cloudinary
-    const result = await cloudinary.uploader.upload(req.body.art, {
-      folder: 'arts',
+    const result = await new Promise((resolve, reject) => {
+      const streamLoad = cloudinary.uploader.upload_stream(
+        { folder: 'arts' },
+        function (error, result) {
+          if (result) {
+            resolve(result);
+          } else {
+            reject(error);
+          }
+        },
+      );
+      streamLoad.end(req.file.buffer);
     });
 
     const art = new Art({
@@ -91,9 +100,18 @@ exports.update = async (req, res, next) => {
     }
     // Delete the old art and upload the new art
     await cloudinary.uploader.destroy(art.art.public_id);
-
-    let result = await cloudinary.uploader.upload(req.body.image, {
-      folder: 'arts',
+    const result = await new Promise((resolve, reject) => {
+      const streamLoad = cloudinary.uploader.upload_stream(
+        { folder: 'arts' },
+        function (error, result) {
+          if (result) {
+            resolve(result);
+          } else {
+            reject(error);
+          }
+        },
+      );
+      streamLoad.end(req.file.buffer);
     });
 
     // save art
@@ -124,11 +142,12 @@ exports.delete = async (req, res, next) => {
       return next(new ApiError(401, 'Art not found'));
     }
 
-    // Delete old image from Cloudinary
-    await cloudinary.uploader.destroy(art.art.public_id);
-
     const deleteArt = await art.remove();
     res.json(deleteArt);
+    // Delete old image from Cloudinary
+    await cloudinary.uploader.destroy(art.art.public_id, {
+      folder: 'arts',
+    });
   } catch (error) {
     return next(
       new ApiError(500, `Error updating art with id=${req.params.id}`),

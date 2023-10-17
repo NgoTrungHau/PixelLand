@@ -27,7 +27,7 @@ const ecx = classNames.bind(editStyles);
 
 function EditArt({ art }) {
   const toggleModal = useContext(ModalToggleContext);
-  const [image, setImage] = useState('');
+  const [image, setImage] = useState(art.art.url);
   const [isPublic, setIsPublic] = useState(true);
 
   const dispatch = useDispatch();
@@ -37,13 +37,12 @@ function EditArt({ art }) {
 
   const handleArt = async (e) => {
     const file = e.target.files[0];
-
+    formik.setFieldValue('image', file);
     try {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = function () {
         setImage(reader.result);
-        formik.setFieldValue('image', reader.result);
       };
     } catch (error) {
       console.error(error);
@@ -56,12 +55,27 @@ function EditArt({ art }) {
     setImage('');
     toggleModal();
   };
-
+  const FILE_SIZE_LIMIT = 1024 * 1024; // 1MB
+  const SUPPORTED_FORMATS = [
+    'image/jpg',
+    'image/jpeg',
+    'image/gif',
+    'image/png',
+  ];
   const ArtSchema = Yup.object().shape({
     id: Yup.string(),
     title: Yup.string(),
     description: Yup.string(),
-    image: Yup.string().required('An image is required'),
+    image: Yup.mixed()
+      .required('An image is required')
+      .test(
+        'fileSize',
+        'File too large',
+        (value) => value && value.size <= FILE_SIZE_LIMIT,
+      )
+      .test('type', 'Unsupported Format', (value) => {
+        return value && SUPPORTED_FORMATS.includes(value.type);
+      }),
   });
 
   const formik = useFormik({
@@ -69,11 +83,18 @@ function EditArt({ art }) {
       id: art._id,
       title: art.title,
       description: art.description,
-      image: art.art.url,
+      image: null,
     },
     validationSchema: ArtSchema,
     onSubmit: async () => {
-      await dispatch(editArt(formik.values));
+      const formData = {
+        id: formik.values.id,
+        title: formik.values.title,
+        description: formik.values.description,
+        art: formik.values.image,
+      };
+
+      await dispatch(editArt(formData));
       toggleModal();
     },
   });
@@ -151,7 +172,7 @@ function EditArt({ art }) {
                 </label>
 
                 <Image
-                  src={image || art.art?.url}
+                  src={image}
                   alt=""
                   style={{
                     objectFit: 'cover',

@@ -41,8 +41,10 @@ const editArt = async (artData, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
     },
   };
+  console.log(artData);
   const response = await httpRequest.post(
     API_URL + artData.id,
     artData,
