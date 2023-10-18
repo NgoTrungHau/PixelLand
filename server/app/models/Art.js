@@ -30,7 +30,7 @@ const Art = new Schema(
     },
     privacy: {
       type: String,
-      enum: ['Public', 'Only me', 'Followers only', 'Subscribers only'],
+      enum: ['Public', 'Only me', 'Followers only', 'Members only'],
       required: true,
       default: 'Public',
     },

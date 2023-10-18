@@ -5,7 +5,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import ReactTextareaAutosize from 'react-textarea-autosize';
 // FontAwesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
+import {
+  faGlobe,
+  faLock,
+  faMugSaucer,
+  faPen,
+  faUsers,
+} from '@fortawesome/free-solid-svg-icons';
 // Validation form
 import { Formik, ErrorMessage, useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -21,6 +27,7 @@ import Image from '~/components/Image';
 // feartures
 import { editArt } from '~/features/arts/artSlice';
 import { ModalToggleContext } from '../../Modals/Modal';
+import Menu from '~/components/Popper/Menu';
 
 const cx = classNames.bind(styles);
 const ecx = classNames.bind(editStyles);
@@ -28,7 +35,44 @@ const ecx = classNames.bind(editStyles);
 function EditArt({ art }) {
   const toggleModal = useContext(ModalToggleContext);
   const [image, setImage] = useState(art.art.url);
-  const [isPublic, setIsPublic] = useState(true);
+  const privacyOptions = [
+    {
+      title: 'Public',
+      leftIcon: <FontAwesomeIcon icon={faGlobe}></FontAwesomeIcon>,
+      onClick: () => {
+        handlePrivacy(privacyOptions[0]);
+        formik.values.privacyOption = privacyOptions[0].title;
+      },
+    },
+    {
+      title: 'Followers only',
+      leftIcon: <FontAwesomeIcon icon={faUsers}></FontAwesomeIcon>,
+
+      onClick: () => {
+        handlePrivacy(privacyOptions[1]);
+        formik.values.privacyOption = privacyOptions[1].title;
+      },
+    },
+    {
+      title: 'Members only',
+      leftIcon: <FontAwesomeIcon icon={faMugSaucer}></FontAwesomeIcon>,
+
+      onClick: () => {
+        handlePrivacy(privacyOptions[2]);
+        formik.values.privacyOption = privacyOptions[2].title;
+      },
+    },
+    {
+      title: 'Only me',
+      leftIcon: <FontAwesomeIcon icon={faLock}></FontAwesomeIcon>,
+
+      onClick: () => {
+        handlePrivacy(privacyOptions[3]);
+        formik.values.privacyOption = privacyOptions[3].title;
+      },
+    },
+  ];
+  const [privacy, setPrivacy] = useState(privacyOptions[0]);
 
   const dispatch = useDispatch();
 
@@ -49,6 +93,9 @@ function EditArt({ art }) {
     }
   };
 
+  const handlePrivacy = (privacy) => {
+    setPrivacy(privacy);
+  };
   const handleCancel = (e) => {
     e.target.value = '';
     formik.resetForm();
@@ -66,15 +113,15 @@ function EditArt({ art }) {
     id: Yup.string(),
     title: Yup.string(),
     description: Yup.string(),
+    privacyOption: Yup.string(),
     image: Yup.mixed()
-      .required('An image is required')
-      .test(
-        'fileSize',
-        'File too large',
-        (value) => value && value.size <= FILE_SIZE_LIMIT,
+      .nullable()
+      .notRequired()
+      .test('fileSize', 'File too large', (value) =>
+        value ? value.size <= FILE_SIZE_LIMIT : true,
       )
       .test('type', 'Unsupported Format', (value) => {
-        return value && SUPPORTED_FORMATS.includes(value.type);
+        return value ? SUPPORTED_FORMATS.includes(value.type) : true;
       }),
   });
 
@@ -83,6 +130,7 @@ function EditArt({ art }) {
       id: art._id,
       title: art.title,
       description: art.description,
+      privacyOption: privacyOptions[0].title,
       image: null,
     },
     validationSchema: ArtSchema,
@@ -91,6 +139,7 @@ function EditArt({ art }) {
         id: formik.values.id,
         title: formik.values.title,
         description: formik.values.description,
+        privacy: formik.values.privacyOption,
         art: formik.values.image,
       };
 
@@ -98,6 +147,7 @@ function EditArt({ art }) {
       toggleModal();
     },
   });
+
   return (
     <>
       <div className={cx('heading')}>Edit Art</div>
@@ -106,9 +156,11 @@ function EditArt({ art }) {
           <Avatar avatar={user.avatar?.url} medium />
           <div className={ecx('user-info')}>
             <div>{user?.username}</div>
-            <p onClick={() => setIsPublic(!isPublic)}>
-              {isPublic ? 'Public' : 'Only me'}
-            </p>
+            <Menu items={privacyOptions} offset={[32, 0]}>
+              <div className={ecx('privacy')}>
+                <Button leftIcon={privacy.leftIcon}>{privacy.title}</Button>
+              </div>
+            </Menu>
           </div>
         </div>
         <Formik

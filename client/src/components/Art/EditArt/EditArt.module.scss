@@ -1,5 +1,5 @@
 .wrapper {
-  margin-top: 5px;
+  margin-top: 15px;
   max-height: 910px;
   position: relative;
   overflow-y: auto;
@@ -25,14 +25,6 @@
   cursor: pointer;
   div {
     font-size: 16px;
-  }
-  p {
-    margin: 0;
-    padding: 0 10px;
-    display: flex;
-    justify-content: center;
-    border-radius: 5px;
-    background-color: var(--gray-light);
   }
   button {
     padding: 0;
@@ -62,4 +54,50 @@
 .btn-edit {
   display: flex;
   justify-content: flex-end;
+}
+.privacy {
+  position: relative;
+  height: 25px !important;
+  width: 180px;
+  border-radius: 5px;
+  button {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 5px 10px;
+    padding-right: 30px;
+    min-height: 25px !important;
+    height: 25px !important;
+    background-color: var(--gray-light);
+
+    i svg {
+      height: 15px !important;
+      min-height: 15px !important;
+    }
+    span {
+      font-size: 14px !important;
+    }
+  }
+  button::before,
+  button::after {
+    --size: 0.5rem;
+    position: absolute;
+    content: '';
+    right: 1rem;
+    pointer-events: none;
+  }
+
+  button::before {
+    border-left: var(--size) solid transparent;
+    border-right: var(--size) solid transparent;
+    border-bottom: var(--size) solid transparent;
+    top: 40%;
+  }
+
+  button::after {
+    border-left: var(--size) solid transparent;
+    border-right: var(--size) solid transparent;
+    border-top: var(--size) solid black;
+    top: 45%;
+  }
 }

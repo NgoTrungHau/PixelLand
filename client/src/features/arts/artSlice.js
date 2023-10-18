@@ -198,9 +198,15 @@ export const artSlice = createSlice({
       .addCase(editArt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.arts = state.arts.map((art) =>
-          art._id === action.payload._id ? action.payload : art,
-        );
+        if (action.payload.privacy === 'Only me') {
+          state.arts = state.arts.filter(
+            (art) => art._id !== action.payload._id,
+          );
+        } else {
+          state.arts = state.arts.map((art) =>
+            art._id === action.payload._id ? action.payload : art,
+          );
+        }
       })
       .addCase(editArt.rejected, (state, action) => {
         state.isLoading = false;
