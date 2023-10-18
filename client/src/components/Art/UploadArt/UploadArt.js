@@ -85,7 +85,7 @@ function UploadArt() {
   ];
 
   const ArtSchema = Yup.object().shape({
-    title: Yup.string(),
+    title: Yup.string().required('Required'),
     description: Yup.string(),
     privacyOptions: Yup.string(),
     styleOption: Yup.string().required('Required'),
@@ -152,7 +152,9 @@ function UploadArt() {
                 onBlur={formik.handleBlur}
               />
             </div>
-
+            {formik.errors.title && formik.touched.title && (
+              <p className={mcx('mess-error')}>{formik.errors.title}</p>
+            )}
             <div className={mcx('form-field')}>
               <ReactTextareaAutosize
                 className={`${cx('')} form-control`}

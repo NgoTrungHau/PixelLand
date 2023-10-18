@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faGlobe,
   faLock,
-  faMugSaucer,
   faPen,
+  faUserGroup,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 // Validation form
@@ -46,7 +46,7 @@ function EditArt({ art }) {
     },
     {
       title: 'Followers only',
-      leftIcon: <FontAwesomeIcon icon={faUsers}></FontAwesomeIcon>,
+      leftIcon: <FontAwesomeIcon icon={faUserGroup}></FontAwesomeIcon>,
 
       onClick: () => {
         handlePrivacy(privacyOptions[1]);
@@ -55,7 +55,7 @@ function EditArt({ art }) {
     },
     {
       title: 'Members only',
-      leftIcon: <FontAwesomeIcon icon={faMugSaucer}></FontAwesomeIcon>,
+      leftIcon: <FontAwesomeIcon icon={faUsers}></FontAwesomeIcon>,
 
       onClick: () => {
         handlePrivacy(privacyOptions[2]);
@@ -72,7 +72,11 @@ function EditArt({ art }) {
       },
     },
   ];
-  const [privacy, setPrivacy] = useState(privacyOptions[0]);
+  const [privacy, setPrivacy] = useState(
+    privacyOptions.find((privacy) => {
+      return privacy.title === art.privacy;
+    }),
+  );
 
   const dispatch = useDispatch();
 
@@ -130,7 +134,7 @@ function EditArt({ art }) {
       id: art._id,
       title: art.title,
       description: art.description,
-      privacyOption: privacyOptions[0].title,
+      privacyOption: art.privacy,
       image: null,
     },
     validationSchema: ArtSchema,
