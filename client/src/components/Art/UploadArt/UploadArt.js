@@ -1,8 +1,7 @@
 import classNames from 'classnames/bind';
 // React
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import ReactTextareaAutosize from 'react-textarea-autosize';
 // FontAwesome
@@ -37,12 +36,13 @@ function UploadArt() {
     { key: 'Subscribers only', value: 'Subscribers only' },
     { key: 'Only me', value: 'Only me' },
   ];
-  const typeOptions = [
+  const styleOption = [
     { key: 'Select art style', value: '' },
     { key: 'Digital Painting', value: 'Digital Painting' },
     { key: 'Fan Art', value: 'Fan Art' },
     { key: 'Concept Art', value: 'Concept Art' },
     { key: 'Fantasy Art', value: 'Fantasy Art' },
+    { key: 'Aesthetic Art', value: 'Aesthetic Art' },
     { key: 'Vector Art', value: 'Vector Art' },
     { key: 'Game Art', value: 'Game Art' },
     { key: 'AI Art', value: 'AI Art' },
@@ -52,16 +52,7 @@ function UploadArt() {
 
   const dispatch = useDispatch();
 
-  const { user } = useSelector((state) => state.auth);
-  const { arts, isLoading, isError, message } = useSelector(
-    (state) => state.arts,
-  );
-
-  useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-  }, [user, arts, isError, message, dispatch]);
+  const { isLoading } = useSelector((state) => state.arts);
 
   const handleArt = async (e) => {
     const file = e.target.files[0];
@@ -97,8 +88,11 @@ function UploadArt() {
     title: Yup.string(),
     description: Yup.string(),
     privacyOptions: Yup.string(),
-    typeOptions: Yup.string().required('Required'),
-    checkTerm: Yup.boolean().required('Required'),
+    styleOption: Yup.string().required('Required'),
+    checkTerm: Yup.boolean().oneOf(
+      [true],
+      'Acceptance of terms of use is required',
+    ),
     art: Yup.mixed()
       .required('An image is required')
       .test(
@@ -115,8 +109,8 @@ function UploadArt() {
     initialValues: {
       title: '',
       description: '',
-      privacyOptions: '',
-      typeOptions: '',
+      privacyOptions: privacyOptions[0].value,
+      styleOption: '',
       checkTerm: false,
       art: null,
     },
@@ -125,8 +119,8 @@ function UploadArt() {
       const formData = new FormData();
       formData.append('title', formik.values.title);
       formData.append('description', formik.values.description);
-      formData.append('typeOptions', formik.values.typeOptions);
-      formData.append('privacyOptions', formik.values.privacyOptions);
+      formData.append('privacy', formik.values.privacyOptions);
+      formData.append('style', formik.values.styleOption);
       formData.append('art', formik.values.art);
 
       await dispatch(createArt(formData));
@@ -192,12 +186,12 @@ function UploadArt() {
             <div className={mcx('form-field')}>
               <div htmlFor="type" className={cx('custom-select')}>
                 <select
-                  id="typeOptions"
-                  name="typeOptions"
+                  id="styleOption"
+                  name="styleOption"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 >
-                  {typeOptions.map((type, i) => {
+                  {styleOption.map((type, i) => {
                     return (
                       <option key={type.value} value={type.value}>
                         {type.key}
@@ -206,8 +200,8 @@ function UploadArt() {
                   })}
                 </select>
               </div>
-              {formik.errors.typeOptions && formik.touched.typeOptions && (
-                <p className={mcx('mess-error')}>{formik.errors.typeOptions}</p>
+              {formik.errors.styleOption && formik.touched.styleOption && (
+                <p className={mcx('mess-error')}>{formik.errors.styleOption}</p>
               )}
             </div>
 
@@ -241,18 +235,7 @@ function UploadArt() {
               )}
             </div>
             <div className={mcx('form-field')}>
-              {media && (
-                <Image
-                  src={media}
-                  alt=""
-                  style={{
-                    width: 200,
-                    maxHeight: 200,
-                    objectFit: 'cover',
-                    borderRadius: 8,
-                  }}
-                />
-              )}
+              {media && <Image src={media} alt="" preview />}
             </div>
 
             <div className={cx('check-term')}>

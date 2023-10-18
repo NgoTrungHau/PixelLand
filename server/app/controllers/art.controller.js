@@ -27,6 +27,8 @@ exports.create = async (req, res, next) => {
       author: req.user.id,
       title: req.body.title,
       description: req.body.description,
+      privacy: req.body.privacy,
+      style: req.body.style,
       art: {
         public_id: result.public_id,
         url: result.secure_url,
@@ -119,9 +121,9 @@ exports.update = async (req, res, next) => {
       public_id: result.public_id,
       url: result.url,
     };
-
     art.title = req.body.title;
     art.description = req.body.description;
+    art.privacy = req.body.privacy;
 
     let savedArt = await art.save();
     savedArt = await savedArt.populate('author', 'username avatar');

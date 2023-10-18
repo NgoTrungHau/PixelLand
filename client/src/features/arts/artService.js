@@ -9,7 +9,6 @@ const createArt = async (artData, token) => {
       Authorization: `Bearer ${token}`,
     },
   };
-
   const response = await httpRequest.post(API_URL + 'create', artData, config);
 
   return response;

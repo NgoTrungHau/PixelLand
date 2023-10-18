@@ -1,3 +1,5 @@
+@import '../../GlobalStyles/GlobalStyles.scss';
+
 .wrapper {
   margin-top: 5px;
   margin-bottom: 10px;
@@ -18,53 +20,10 @@
 }
 .custom-select {
   width: 100%;
-  max-width: 100%;
-  position: relative;
 }
 
-select {
-  appearance: none;
-  /* safari */
-  -webkit-appearance: none;
-  /* other styles for aesthetics */
+.wrapper select {
   width: 100%;
-  font-size: 16px !important;
-  padding: 0.5em 3em 0.5em 1em;
-  background-color: var(--gray-light);
-  border: 1px solid transparent;
-  border-radius: 0.25rem;
-  color: #000;
-  cursor: pointer;
-
-  &:focus {
-    outline: 0;
-    border: 1px solid blue;
-  }
-}
-.custom-select::before,
-.custom-select::after {
-  --size: 0.5rem;
-  position: absolute;
-  content: '';
-  right: 1rem;
-  pointer-events: none;
-}
-
-.custom-select::before {
-  border-left: var(--size) solid transparent;
-  border-right: var(--size) solid transparent;
-  border-bottom: var(--size) solid transparent;
-  top: 40%;
-}
-
-.custom-select::after {
-  border-left: var(--size) solid transparent;
-  border-right: var(--size) solid transparent;
-  border-top: var(--size) solid black;
-  top: 45%;
-}
-.custom-select option {
-  border-radius: 0.25rem;
 }
 
 .input-img {
