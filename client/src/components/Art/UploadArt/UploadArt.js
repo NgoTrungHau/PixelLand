@@ -33,7 +33,7 @@ function UploadArt() {
   const privacyOptions = [
     { key: 'Public', value: 'Public' },
     { key: 'Followers only', value: 'Followers only' },
-    { key: 'Subscribers only', value: 'Subscribers only' },
+    { key: 'Members only', value: 'Members only' },
     { key: 'Only me', value: 'Only me' },
   ];
   const styleOption = [
@@ -76,7 +76,7 @@ function UploadArt() {
     toggleModal();
   };
 
-  const FILE_SIZE_LIMIT = 1024 * 1024; // 1MB
+  // const FILE_SIZE_LIMIT = 1024 * 1024; // 1MB
   const SUPPORTED_FORMATS = [
     'image/jpg',
     'image/jpeg',
@@ -95,11 +95,11 @@ function UploadArt() {
     ),
     art: Yup.mixed()
       .required('An image is required')
-      .test(
-        'fileSize',
-        'File too large',
-        (value) => value && value.size <= FILE_SIZE_LIMIT,
-      )
+      // .test(
+      //   'fileSize',
+      //   'File too large',
+      //   (value) => value && value.size <= FILE_SIZE_LIMIT,
+      // )
       .test('type', 'Unsupported Format', (value) => {
         return value && SUPPORTED_FORMATS.includes(value.type);
       }),

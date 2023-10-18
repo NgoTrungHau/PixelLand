@@ -52,7 +52,7 @@ exports.create = async (req, res, next) => {
 // get all arts
 exports.getArts = async (req, res, next) => {
   try {
-    const arts = await Art.find({})
+    const arts = await Art.find({ $nor: [{ privacy: 'Only me' }] })
       .sort({ createdAt: -1 })
       .populate('author', 'username avatar');
     res.json(arts);
@@ -63,7 +63,7 @@ exports.getArts = async (req, res, next) => {
 // get all auth arts
 exports.getAuthArts = async (req, res, next) => {
   try {
-    const arts = await Art.find({})
+    const arts = await Art.find({ $nor: [{ privacy: 'Only me' }] })
       .sort({ createdAt: -1 })
       .populate('author', 'username avatar');
     arts.map((art) => {
@@ -100,33 +100,38 @@ exports.update = async (req, res, next) => {
     if (!art) {
       return next(new ApiError(401, 'Art not found'));
     }
-    // Delete the old art and upload the new art
-    await cloudinary.uploader.destroy(art.art.public_id);
-    const result = await new Promise((resolve, reject) => {
-      const streamLoad = cloudinary.uploader.upload_stream(
-        { folder: 'arts' },
-        function (error, result) {
-          if (result) {
-            resolve(result);
-          } else {
-            reject(error);
-          }
-        },
-      );
-      streamLoad.end(req.file.buffer);
-    });
+    if (req.file) {
+      // Delete the old art and upload the new art
+      await cloudinary.uploader.destroy(art.art.public_id);
+      const result = await new Promise((resolve, reject) => {
+        const streamLoad = cloudinary.uploader.upload_stream(
+          { folder: 'arts' },
+          function (error, result) {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(error);
+            }
+          },
+        );
+        streamLoad.end(req.file.buffer);
+      });
+      art.art = {
+        public_id: result.public_id,
+        url: result.url,
+      };
+    }
 
     // save art
-    art.art = {
-      public_id: result.public_id,
-      url: result.url,
-    };
+
     art.title = req.body.title;
     art.description = req.body.description;
     art.privacy = req.body.privacy;
 
     let savedArt = await art.save();
-    savedArt = await savedArt.populate('author', 'username avatar');
+    if (savedArt.privacy !== 'Only me') {
+      savedArt = await savedArt.populate('author', 'username avatar');
+    }
     res.send(savedArt);
   } catch (error) {
     return next(
@@ -144,12 +149,13 @@ exports.delete = async (req, res, next) => {
       return next(new ApiError(401, 'Art not found'));
     }
 
-    const deleteArt = await art.remove();
-    res.json(deleteArt);
     // Delete old image from Cloudinary
     await cloudinary.uploader.destroy(art.art.public_id, {
       folder: 'arts',
     });
+
+    const deleteArt = await art.remove();
+    res.json(deleteArt);
   } catch (error) {
     return next(
       new ApiError(500, `Error updating art with id=${req.params.id}`),

@@ -55,7 +55,14 @@ function MenuItem({ data, onClick }) {
         leftIcon={data.leftIcon}
         rightIcon={data.rightIcon}
         to={data.to}
-        onClick={data.divider ? onClick : data.onClick}
+        onClick={
+          data.divider
+            ? onClick
+            : () => {
+                data.onClick();
+                onClick();
+              }
+        }
       >
         {data.title}
       </Button>

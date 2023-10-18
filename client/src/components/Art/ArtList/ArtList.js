@@ -6,14 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 // other
 import { Masonry } from '@mui/lab';
-import { debounce, map } from 'lodash';
+import { debounce } from 'lodash';
 
 // scss
 import styles from './ArtList.module.scss';
 // components
 import ArtItem from '../ArtItem/ArtItem';
 // features
-import { getArts, getAuthArts, reset } from '~/features/arts/artSlice';
+import { getArts, getAuthArts } from '~/features/arts/artSlice';
 import Menu from '~/components/Popper/Menu';
 
 const cx = classNames.bind(styles);

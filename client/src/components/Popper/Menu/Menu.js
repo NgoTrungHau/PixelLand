@@ -42,7 +42,6 @@ function Menu({ children, className, items = [], offset }) {
           if (item.title === 'Logout') {
             onLogout();
           }
-          console.log('sdads');
           setClicked(false);
         }}
       />
