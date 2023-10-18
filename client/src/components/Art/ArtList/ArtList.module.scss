@@ -1,3 +1,5 @@
+@import '../../GlobalStyles/GlobalStyles.scss';
+
 .wrapper {
   width: 100%;
   height: 100%;
@@ -11,19 +13,62 @@
   align-items: center;
   background-color: #fff;
 }
-.option {
+.style,
+.wrapper .custom-select {
   margin: 5px 10px;
   padding: 5px 15px;
-  height: 30px;
+  height: 35px;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   border: 1px solid transparent;
-  border-radius: 10px;
-  &:hover {
-    cursor: pointer;
-    background-color: rgb(201, 201, 201);
-  }
+  border-radius: 8px;
+  background-color: transparent;
+}
+
+.style:hover {
+  cursor: pointer;
+  background-color: var(--gray-light) !important;
+}
+.selected,
+.selected.style:hover {
+  cursor: pointer;
+  background-color: var(--cyan) !important;
+  color: var(--white) !important;
+}
+.style select {
+  padding: 5px 15px !important;
+  background-color: transparent !important;
+}
+
+.more {
+  padding: 0.5em 2em 0.5em 1em;
+}
+.more::before,
+.more::after {
+  --size: 0.5rem;
+  position: absolute;
+  content: '';
+  right: 1rem;
+  pointer-events: none;
+}
+
+.more::before {
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-bottom: var(--size) solid transparent;
+  top: 40%;
+}
+
+.more::after {
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-top: var(--size) solid black;
+  top: 45%;
+}
+.selected.more::after {
+  border-top: var(--size) solid white;
 }
 
 .masonry-wrapper {

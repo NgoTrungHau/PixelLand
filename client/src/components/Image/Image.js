@@ -1,8 +1,14 @@
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
+import classNames from 'classnames/bind';
+// React
 import { useState, forwardRef } from 'react';
+
+//
 import images from '~/assets/images';
+// scss
 import styles from './Image.module.scss';
+
+const cx = classNames.bind(styles);
 
 const Image = forwardRef(
   (
@@ -10,6 +16,7 @@ const Image = forwardRef(
       src,
       alt,
       className,
+      preview = false,
       fallback: customFallback = images.noImage,
       ...props
     },
@@ -22,7 +29,7 @@ const Image = forwardRef(
 
     return (
       <img
-        className={classNames(styles.wrapper, className)}
+        className={cx('wrapper', { [className]: className, preview })}
         ref={ref}
         src={src || fallback}
         alt={alt}
@@ -37,6 +44,7 @@ Image.propTypes = {
   src: PropTypes.string,
   alt: PropTypes.string,
   className: PropTypes.string,
+  preview: PropTypes.bool,
   fallback: PropTypes.string,
 };
 

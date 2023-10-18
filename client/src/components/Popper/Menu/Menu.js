@@ -42,6 +42,7 @@ function Menu({ children, className, items = [], offset }) {
           if (item.title === 'Logout') {
             onLogout();
           }
+          console.log('sdads');
           setClicked(false);
         }}
       />
@@ -63,7 +64,7 @@ function Menu({ children, className, items = [], offset }) {
         onClickOutside={() => setClicked(false)}
         placement="bottom-end"
         render={(attrs) => (
-          <div className={cx('menu-profile')} tabIndex="-1" {...attrs}>
+          <div className={cx('menu-popper')} tabIndex="-1" {...attrs}>
             <PopperWrapper>{renderItems()}</PopperWrapper>
           </div>
         )}
