@@ -21,7 +21,7 @@ import styles from './ArtDetail.module.scss';
 import mStyles from '~/components/Modals/Modal.module.scss';
 
 // features, function
-import { deleteArt } from '~/features/arts/artSlice';
+import { deleteArt, viewArt } from '~/features/arts/artSlice';
 import { ModalToggleContext } from '../../Modals/Modal';
 import { ArtContext } from '../ArtItem/ArtItem';
 // components
@@ -49,6 +49,7 @@ function ArtDetail({ art }) {
   const { isLoading } = useSelector((state) => state.arts);
 
   useEffect(() => {
+    dispatch(viewArt(art._id));
     if (user) {
       dispatch(getCmts(art._id));
     }

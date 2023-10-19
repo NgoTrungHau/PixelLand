@@ -72,7 +72,7 @@ function ArtItem({ key, art }) {
         <div className={cx('actions-quantity')}>
           <span>
             <FontAwesomeIcon icon={faEye} />
-            {Math.floor(Math.random() * (20000 - 1 + 1) + 1)}
+            {art.views}
           </span>
           <span>
             <FontAwesomeIcon icon={faHeart} />

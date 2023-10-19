@@ -38,7 +38,7 @@ const editCmt = async (cmtData, token) => {
   };
   console.log(cmtData);
 
-  const response = await httpRequest.post(
+  const response = await httpRequest.patch(
     API_URL + cmtData.id,
     cmtData,
     config,
