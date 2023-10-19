@@ -43,7 +43,6 @@ const editArt = async (artData, token) => {
       'Content-Type': 'multipart/form-data',
     },
   };
-  console.log(artData);
   const response = await httpRequest.patch(
     API_URL + artData.id,
     artData,

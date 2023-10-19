@@ -36,14 +36,11 @@ const editCmt = async (cmtData, token) => {
       'Content-Type': 'multipart/form-data',
     },
   };
-  console.log(cmtData);
-
   const response = await httpRequest.patch(
     API_URL + cmtData.id,
     cmtData,
     config,
   );
-  console.log(response);
 
   return response;
 };
