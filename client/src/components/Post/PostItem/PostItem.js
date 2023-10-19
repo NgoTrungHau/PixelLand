@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { deletePost } from '~/features/posts/postSlice';
 import Avatar from '~/components/Avatar';
-import styles from './Post.module.scss';
+import styles from '../Post.module.scss';
 
 const cx = classNames.bind(styles);
 

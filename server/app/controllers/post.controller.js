@@ -3,33 +3,42 @@ const Post = require('../models/Post');
 const User = require('../models/User');
 const cloudinary = require('../utils/cloudinary');
 
-exports.create = async (req, res, next) => {
-  if (!req.body?.content) {
-    return next(new ApiError(400, 'Text can not be empty'));
-  }
-  let imageUploaded;
-
-  if (req.body?.image) {
-    const result = await cloudinary.uploader.upload(req.body.image, {
-      folder: 'posts',
-      // width: 300,
-      // crop: 'scale'
-    });
-    imageUploaded = result;
-  }
-
-  const post = new Post({
-    user: req.user.id,
-    content: req.body.content,
-    image: imageUploaded
-      ? {
-          public_id: imageUploaded.public_id,
-          url: imageUploaded.secure_url,
-        }
-      : null,
-  });
-
+exports.createPost = async (req, res, next) => {
   try {
+    if (!req.body.content && !req.file) {
+      return next(new ApiError(400, 'Either content or media is required.'));
+    }
+
+    // upload image to cloudinary
+    let result;
+    if (req.file) {
+      result = await new Promise((resolve, reject) => {
+        const streamLoad = cloudinary.uploader.upload_chunked_stream(
+          { resource_type: req.body.mediaType, folder: 'posts' },
+          function (error, result) {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(error);
+            }
+          },
+        );
+        streamLoad.end(req.file.buffer);
+      });
+    }
+
+    const post = new Post({
+      user: req.user.id,
+      privacy: req.body.privacy,
+      content: req.body.content,
+      media: result
+        ? {
+            mediaType: req.body.mediaType, //either 'image' or 'video'
+            public_id: result.public_id,
+            url: result.url,
+          }
+        : null,
+    });
     const createPost = await post.save();
 
     res.json({
@@ -44,7 +53,7 @@ exports.create = async (req, res, next) => {
     return next(new ApiError(500, 'An error occurred while creating the post'));
   }
 };
-exports.findAll = async (req, res, next) => {
+exports.getPosts = async (req, res, next) => {
   try {
     const posts = await Post.find({})
       .sort({ createdAt: -1 })
@@ -56,14 +65,18 @@ exports.findAll = async (req, res, next) => {
 };
 exports.findOne = async (req, res, next) => {
   try {
-    const post = await Post.findById(req.params.id).populate(
-      'user',
-      'username avatar',
-    );
-    if (!post) {
+    const posts = await Art.find({ $nor: [{ privacy: 'Only me' }] })
+      .sort({ createdAt: -1 })
+      .populate('author', 'username avatar');
+    if (!posts) {
       return next(new ApiError(404, 'Post not found'));
     }
-    return res.json(post);
+    posts.map((post) => {
+      if (post.likes.includes(req.user._id.toString())) {
+        post._doc.liked = true;
+      }
+    });
+    return res.json(posts);
   } catch (error) {
     return next(
       new ApiError(500, `Error retrieving post with id=${req.params.id}`),

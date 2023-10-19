@@ -11,14 +11,20 @@ const Post = new Schema(
     },
     content: {
       type: String,
-      required: [true, 'Please add something'],
       maxLength: 600,
+      // validate: {
+      //   validator: function (v) {
+      //     return !v || !this.media;
+      //   },
+      //   message:
+      //     'A post cannot be associated with both an content and a media.',
+      // },
     },
     media: {
       // Media associated with a comment (either image or video)
-      type: {
+      mediaType: {
         type: String,
-        enum: ['image', 'video'], // The media can be either an image or a video
+        enum: ['image', 'video', null], // The media can be either an image or a video
       },
       public_id: {
         type: String,
@@ -27,7 +33,12 @@ const Post = new Schema(
         type: String,
       },
     },
-    public: { type: Boolean, default: true },
+    privacy: {
+      type: String,
+      enum: ['Public', 'Only me', 'Followers only', 'Members only'],
+      required: true,
+      default: 'Public',
+    },
     liked: { type: Boolean, default: false },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],

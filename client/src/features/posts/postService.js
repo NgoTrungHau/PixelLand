@@ -7,17 +7,24 @@ const createPost = async (postData, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
     },
   };
-
+  console.log(postData);
   const response = await httpRequest.post(API_URL + 'create', postData, config);
 
   return response;
 };
 
 // Get user posts
-const getPosts = async () => {
-  const response = await httpRequest.get(API_URL);
+const getPosts = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await httpRequest.get(API_URL, {}, config);
 
   return response;
 };
