@@ -1,0 +1,23 @@
+.wrapper {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+.thumb-play-btn {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  display: flex;
+  svg {
+    width: 100px !important;
+    height: 100px !important;
+    color: white;
+  }
+}

@@ -1,4 +1,6 @@
 const express = require('express');
+const multer = require('multer');
+const upload = multer();
 
 const posts = require('../controllers/post.controller');
 const { protect } = require('../middleware/authMiddleware');
@@ -6,8 +8,8 @@ const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // post
-router.route('/').get(posts.findAll);
-router.route('/create').post(protect, posts.create);
+router.route('/').get(protect, posts.getPosts);
+router.route('/create').post(upload.single('media'), protect, posts.createPost);
 router.route('/delete').delete(protect, posts.deleteAll);
 
 router

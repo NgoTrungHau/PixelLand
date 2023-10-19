@@ -30,7 +30,7 @@ function Home() {
       navigate('/');
     }
 
-    dispatch(getPosts());
+    // dispatch(getPosts());
 
     return () => {
       dispatch(reset());
