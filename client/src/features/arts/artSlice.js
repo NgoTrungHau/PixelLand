@@ -99,6 +99,26 @@ export const deleteArt = createAsyncThunk(
   },
 );
 
+// View art
+export const viewArt = createAsyncThunk(
+  'arts/viewArt',
+  async (art_id, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const response = await artService.viewArt(art_id, token);
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 // Like art
 export const likeArt = createAsyncThunk(
   'arts/likeArt',
@@ -222,6 +242,24 @@ export const artSlice = createSlice({
         state.arts = state.arts.filter((art) => art._id !== action.payload._id);
       })
       .addCase(deleteArt.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(viewArt.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(viewArt.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.arts.forEach((art) => {
+          if (art._id === action.payload._id) {
+            art.views = action.payload.views;
+            return;
+          }
+        });
+      })
+      .addCase(viewArt.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

@@ -44,7 +44,7 @@ const editArt = async (artData, token) => {
     },
   };
   console.log(artData);
-  const response = await httpRequest.post(
+  const response = await httpRequest.patch(
     API_URL + artData.id,
     artData,
     config,
@@ -63,6 +63,20 @@ const deleteArt = async (artId, token) => {
   return response;
 };
 
+// View art
+const viewArt = async (art_id, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await httpRequest.patch(
+    API_URL + 'view/' + art_id,
+    {},
+    config,
+  );
+  return response;
+};
 // Like art
 const likeArt = async (art_id, token) => {
   const config = {
@@ -99,6 +113,7 @@ const artService = {
   getAuthArts,
   editArt,
   deleteArt,
+  viewArt,
   likeArt,
   unlikeArt,
 };

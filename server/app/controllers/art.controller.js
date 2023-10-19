@@ -173,6 +173,25 @@ exports.deleteAll = async (req, res, next) => {
   }
 };
 
+// View art
+exports.viewArt = async (req, res, next) => {
+  try {
+    const art = await Art.findById(req.params.id);
+
+    if (!art) {
+      return next(new ApiError(401, 'Art not found'));
+    }
+    art.views++; // Increase views count
+    const view = await art.save(); // Save the updated art object
+
+    return res.status(200).send(view);
+  } catch (error) {
+    return next(
+      new ApiError(500, `Error retrieving art with id=${req.params.id}`),
+    );
+  }
+};
+
 // Like art
 exports.likeArt = async (req, res, next) => {
   try {

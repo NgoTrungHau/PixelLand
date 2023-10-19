@@ -21,7 +21,7 @@ router.route('/:id/unlike').patch(protect, comments.unlikeCmt);
 router
   .route('/:id')
   .get(protect, comments.getComments)
-  .post(upload.single('media'), protect, comments.updateComment)
+  .patch(upload.single('media'), protect, comments.updateComment)
   .delete(protect, comments.deleteComment);
 
 module.exports = router;
