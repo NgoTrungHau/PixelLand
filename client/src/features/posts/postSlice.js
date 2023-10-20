@@ -68,6 +68,46 @@ export const deletePost = createAsyncThunk(
   },
 );
 
+// Like post
+export const likePost = createAsyncThunk(
+  'posts/likePost',
+  async (post_id, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const response = await postService.likePost(post_id, token);
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+// unlike post
+export const unlikePost = createAsyncThunk(
+  'posts/unlikePost',
+  async (post_id, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const response = await postService.unlikePost(post_id, token);
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 export const postSlice = createSlice({
   name: 'post',
   initialState,
@@ -116,6 +156,44 @@ export const postSlice = createSlice({
         state.isSuccess = true;
       })
       .addCase(deletePost.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(likePost.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(likePost.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.posts.forEach((post) => {
+          if (post._id === action.payload._id) {
+            post.likes = action.payload.likes;
+            post.liked = action.payload.liked;
+            return;
+          }
+        });
+      })
+      .addCase(likePost.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(unlikePost.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(unlikePost.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.posts.forEach((post) => {
+          if (post._id === action.payload._id) {
+            post.likes = action.payload.likes;
+            post.liked = action.payload.liked;
+            return;
+          }
+        });
+      })
+      .addCase(unlikePost.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

@@ -41,10 +41,42 @@ const deletePost = async (postId, token) => {
   return response;
 };
 
+// Like post
+const likePost = async (post_id, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await httpRequest.patch(
+    API_URL + 'like/' + post_id,
+    {},
+    config,
+  );
+  return response;
+};
+const unlikePost = async (post_id, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await httpRequest.patch(
+    API_URL + 'unlike/' + post_id,
+    {},
+    config,
+  );
+
+  return response;
+};
+
 const postService = {
   createPost,
   getPosts,
   deletePost,
+  likePost,
+  unlikePost,
 };
 
 export default postService;

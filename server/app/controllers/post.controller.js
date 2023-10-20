@@ -70,7 +70,7 @@ exports.getPosts = async (req, res, next) => {
 };
 exports.findOne = async (req, res, next) => {
   try {
-    const posts = await Art.find({ $nor: [{ privacy: 'Only me' }] })
+    const posts = await Post.find({ $nor: [{ privacy: 'Only me' }] })
       .sort({ createdAt: -1 })
       .populate('author', 'username avatar');
     if (!posts) {
@@ -133,7 +133,9 @@ exports.delete = async (req, res, next) => {
 
     const deletePost = await post.remove();
     res.json(deletePost.id);
-    deleteAllComments(post._id, 'post');
+    if (post.comments > 0) {
+      deleteAllComments(post._id, 'post');
+    }
   } catch (error) {
     return next(
       new ApiError(500, `Error updating post with id=${req.params.id}`),
@@ -146,5 +148,47 @@ exports.deleteAll = async (req, res, next) => {
     res.json(deleteAllPosts);
   } catch (error) {
     return next(new ApiError(500, `Error deleting all user `));
+  }
+};
+// Like post
+exports.likePost = async (req, res, next) => {
+  try {
+    const like = await Post.findByIdAndUpdate(
+      { _id: req.params.id },
+      {
+        $addToSet: { likes: req.user._id },
+      },
+      { new: true },
+    );
+
+    if (!like)
+      return res.status(400).json({ error: 'This post does not exist.' });
+    return res.status(200).send(like);
+  } catch (error) {
+    return next(
+      new ApiError(500, `Error retrieving post with id=${req.params.id}`),
+    );
+  }
+};
+
+// Unlike post
+exports.unlikePost = async (req, res, next) => {
+  try {
+    const unlike = await Post.findByIdAndUpdate(
+      req.params.id,
+      {
+        $pull: { likes: req.user._id },
+      },
+      { new: true },
+    );
+
+    if (!unlike)
+      return res.status(400).json({ msg: 'This post does not exist.' });
+
+    return res.status(200).send(unlike);
+  } catch (error) {
+    return next(
+      new ApiError(500, `Error retrieving post with id=${req.params.id}`),
+    );
   }
 };

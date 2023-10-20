@@ -18,6 +18,10 @@ function MenuItem({ data, onClick }) {
         return 'edit-art';
       case 'Delete Art':
         return 'delete-art';
+      case 'Edit Post':
+        return 'edit-post';
+      case 'Delete Post':
+        return 'delete-post';
       case 'Edit Comment':
         return 'edit-cmt';
       case 'Delete Comment':

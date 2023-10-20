@@ -121,6 +121,10 @@ const Modal = forwardRef(
           return <>{cloneElement(children, { onClick: toggleModal })}</>;
         case 'create-post':
           return <>{cloneElement(btn, { onClick: toggleModal })}</>;
+        case 'edit-post':
+          return <>{cloneElement(children, { onClick: toggleModal })}</>;
+        case 'delete-post':
+          return <>{cloneElement(children, { onClick: toggleModal })}</>;
         case 'edit-cmt':
           return <>{cloneElement(children, { onClick: toggleModal })}</>;
         case 'delete-cmt':
@@ -155,6 +159,10 @@ const Modal = forwardRef(
           return deleteConfirmation();
         case 'create-post':
           return children;
+        case 'edit-post':
+          return <></>;
+        case 'delete-post':
+          return deleteConfirmation();
         case 'edit-cmt':
           return deleteConfirmation();
         case 'delete-cmt':
@@ -203,6 +211,8 @@ Modal.propTypes = {
     'edit-art',
     'delete-art',
     'create-post',
+    'edit-post',
+    'delete-post',
     'edit-cmt',
     'delete-cmt',
     'editProfile',
