@@ -331,3 +331,18 @@ exports.replyToCmt = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
+exports.deleteAllComments = async (id, type) => {
+  try {
+    const comments = await Comment.find({ [type]: id });
+
+    for (const comment of comments) {
+      if (comment.media && comment.media.public_id) {
+        await cloudinary.uploader.destroy(comment.media.public_id);
+      }
+      await Comment.deleteOne({ _id: comment._id });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};

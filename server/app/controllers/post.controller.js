@@ -125,19 +125,15 @@ exports.delete = async (req, res, next) => {
       return next(new ApiError(401, 'Post not found'));
     }
 
-    const user = await User.findById(req.user.id);
-
-    if (!user) {
-      return next(new ApiError(401, 'User not found'));
-    }
-
-    // Make sure the logged in user matches the goal user
-    if (post.user.toString() !== req.user.id) {
-      return next(new ApiError(401, 'User not authorized'));
+    if (post.media.public_id) {
+      await cloudinary.uploader.destroy(post.media.public_id, {
+        folder: 'posts',
+      });
     }
 
     const deletePost = await post.remove();
     res.json(deletePost.id);
+    deleteAllComments(post._id, 'post');
   } catch (error) {
     return next(
       new ApiError(500, `Error updating post with id=${req.params.id}`),

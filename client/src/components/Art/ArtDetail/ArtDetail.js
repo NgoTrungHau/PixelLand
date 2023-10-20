@@ -65,8 +65,8 @@ function ArtDetail({ art }) {
   const handleEdit = () => {
     toggleModal();
   };
-  const handleDelete = async () => {
-    await dispatch(deleteArt(art._id));
+  const handleDelete = () => {
+    dispatch(deleteArt(art._id));
     toggleModal();
   };
 
@@ -94,9 +94,6 @@ function ArtDetail({ art }) {
     } else {
       return [
         {
-          // leftIcon: (
-          //   <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
-          // ),
           title: 'Report',
         },
       ];

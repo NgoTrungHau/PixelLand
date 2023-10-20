@@ -1,7 +1,7 @@
 const ApiError = require('../api-error');
 const Art = require('../models/Art');
-const User = require('../models/User');
 const cloudinary = require('../utils/cloudinary');
+const { deleteAllComments } = require('../controllers/comment.controller');
 
 exports.create = async (req, res, next) => {
   try {
@@ -156,6 +156,7 @@ exports.delete = async (req, res, next) => {
 
     const deleteArt = await art.remove();
     res.json(deleteArt);
+    deleteAllComments(art._id, 'art');
   } catch (error) {
     return next(
       new ApiError(500, `Error updating art with id=${req.params.id}`),

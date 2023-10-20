@@ -70,10 +70,10 @@ export const editCmt = createAsyncThunk(
 // Delete user cmt
 export const deleteCmt = createAsyncThunk(
   'cmts/delete',
-  async (id, thunkAPI) => {
+  async (cmt, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await commentService.deleteCmt(id, token);
+      return await commentService.deleteCmt(cmt._id, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -208,21 +208,35 @@ export const cmtSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(deleteCmt.pending, (state) => {
+      .addCase(deleteCmt.pending, (state, action) => {
         state.isLoading = true;
+        if (!action.meta.arg?.parentCommentId) {
+          state.comments = state.comments.filter(
+            (cmt) => cmt._id !== action.meta.arg._id,
+          );
+        } else {
+          state.comments.forEach((cmt) => {
+            if (cmt._id === action.meta.arg.parentCommentId) {
+              cmt.replies = cmt.replies.filter(
+                (reply) => reply._id !== action.meta.arg._id,
+              );
+            }
+            return;
+          });
+        }
       })
       .addCase(deleteCmt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        if (!action.payload.parentCommentId) {
+        if (!action.meta.arg?.parentCommentId) {
           state.comments = state.comments.filter(
-            (cmt) => cmt._id !== action.payload._id,
+            (cmt) => cmt._id !== action.meta.arg._id,
           );
         } else {
           state.comments.forEach((cmt) => {
-            if (cmt._id === action.payload.parentCommentId) {
+            if (cmt._id === action.meta.arg.parentCommentId) {
               cmt.replies = cmt.replies.filter(
-                (reply) => reply._id !== action.payload._id,
+                (reply) => reply._id !== action.meta.arg._id,
               );
             }
             return;
@@ -230,8 +244,20 @@ export const cmtSlice = createSlice({
         }
       })
       .addCase(deleteCmt.rejected, (state, action) => {
+        console.log(action.meta.arg);
+
         state.isLoading = false;
         state.isError = true;
+        if (!action.meta.arg?.parentCommentId) {
+          state.comments.push(action.meta.arg);
+        } else {
+          state.comments.forEach((cmt) => {
+            if (cmt._id === action.meta.arg.parentCommentId) {
+              cmt.replies.push(action.meta.arg);
+            }
+            return;
+          });
+        }
         state.message = action.payload;
       })
       .addCase(likeCmt.pending, (state) => {

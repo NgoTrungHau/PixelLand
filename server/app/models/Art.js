@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Comment = require('../models/Comment');
 const Schema = mongoose.Schema;
 
 const Art = new Schema(
@@ -61,13 +60,5 @@ const Art = new Schema(
     versionKey: false, // You should be aware of the outcome after set to false
   },
 );
-
-Art.pre('remove', function (next) {
-  Comment.deleteMany({ art: this._id }).exec((err) => {
-    if (!err) {
-      next();
-    }
-  });
-});
 
 module.exports = mongoose.model('Art', Art);
