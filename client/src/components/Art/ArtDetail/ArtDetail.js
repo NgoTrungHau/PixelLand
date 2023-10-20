@@ -179,11 +179,11 @@ function ArtDetail({ art }) {
         </div>
 
         <div className={cx('comments')}>
-          <CommentList art={art._id} />
+          <CommentList />
         </div>
       </div>
       <div className={cx('comment-form')}>
-        {user ? <CommentForm art_id={art._id} action="create" /> : null}
+        {user ? <CommentForm art_id={art._id} action="create" modal /> : null}
       </div>
     </div>
   );

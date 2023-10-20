@@ -14,8 +14,8 @@ exports.createComment = async (req, res) => {
     let result;
     if (req.file) {
       result = await new Promise((resolve, reject) => {
-        const streamLoad = cloudinary.uploader.upload_stream(
-          { folder: 'comments' },
+        const streamLoad = cloudinary.uploader.upload_chunked_stream(
+          { resource_type: req.body.mediaType, folder: 'comments' },
           function (error, result) {
             if (result) {
               resolve(result);

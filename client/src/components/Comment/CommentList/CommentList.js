@@ -16,7 +16,7 @@ const MemoizedCmtItem = memo(({ cmt, index }) => (
   <CommentItem cmt={cmt} index={index} />
 ));
 
-function CommentList({ replies }) {
+function CommentList({ replies, postCmts }) {
   const { comments, isCmtsLoading, isSuccess, isError, message } = useSelector(
     (state) => state.comments,
   );
@@ -32,7 +32,7 @@ function CommentList({ replies }) {
       .map(() => Math.floor(Math.random() * (10 - 5) + 5) * 10),
   );
 
-  const cards_sample = Array(10)
+  const cards_sample = Array(5)
     .fill(undefined)
     .map((a, i) => (
       <div className={cx('comment-thumb-sample')} key={i}>
@@ -67,7 +67,11 @@ function CommentList({ replies }) {
 
   return (
     <div className={cx('wrapper')}>
-      {!replies
+      {postCmts
+        ? postCmts.map((cmt, index) => (
+            <MemoizedCmtItem cmt={cmt} key={cmt._id} />
+          ))
+        : !replies
         ? comments.map((cmt, index) => (
             <MemoizedCmtItem cmt={cmt} key={cmt._id} />
           ))

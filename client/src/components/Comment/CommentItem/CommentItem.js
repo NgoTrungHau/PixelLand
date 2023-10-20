@@ -35,6 +35,7 @@ import {
   likeCmt,
   unlikeCmt,
 } from '~/features/comments/commentSlice';
+import Video from '~/components/Video';
 
 const cx = classNames.bind(styles);
 
@@ -168,8 +169,15 @@ function CommentItem({ key, cmt }) {
               </Button>
             </Menu>
           </div>
+
           {cmt.media?.url && (
-            <Image className={cx('media')} src={cmt.media?.url} />
+            <div className={cx('media')}>
+              {cmt.media?.type === 'video' ? (
+                <Video src={cmt.media?.url} controls autoPlay muted loop />
+              ) : (
+                <Image src={cmt.media?.url} alt="" />
+              )}
+            </div>
           )}
           {editing && <div className={cx('editing')}>posting...</div>}
           <div className={cx('actions')}>
