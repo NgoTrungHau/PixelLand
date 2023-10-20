@@ -6,6 +6,7 @@ const initialState = {
   isError: false,
   isSuccess: false,
   isLoading: false,
+  isPostsLoading: false,
   message: '',
 };
 
@@ -89,9 +90,12 @@ export const postSlice = createSlice({
       })
       .addCase(getPosts.pending, (state) => {
         state.isLoading = true;
+        state.isPostsLoading = true;
       })
       .addCase(getPosts.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isPostsLoading = false;
+
         state.isSuccess = true;
         state.posts = action.payload;
       })

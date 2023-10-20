@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 // React
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 // Font awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlayCircle } from '@fortawesome/free-regular-svg-icons';
@@ -16,28 +16,30 @@ const cx = classNames.bind(styles);
 
 const Video = forwardRef(
   ({ src, className, controls = false, thumbnail = false, ...props }, ref) => {
-    const videoRef = useRef();
-    const handlePlay = () => {
-      videoRef.current.play();
-      controls = !controls;
+    const [isPlaying, setIsPlaying] = useState(false);
+    const videoRef = useRef(null);
+
+    const togglePlay = () => {
+      setIsPlaying(!isPlaying);
     };
+    const handlePlay = () => {
+      togglePlay();
+      videoRef.current.play();
+    };
+
     return (
       <div className={cx('wrapper', { [className]: className })} ref={ref}>
-        <Button
-          className={cx('thumb-play-btn')}
-          type="button"
-          disabled={!thumbnail}
-          onClick={handlePlay}
-        >
-          <FontAwesomeIcon icon={faPlayCircle} />
-        </Button>
+        {thumbnail && (
+          <div className={cx('thumb-play-btn')}>
+            <Button type="button" disabled={thumbnail} onClick={handlePlay}>
+              <FontAwesomeIcon icon={faPlayCircle} />
+            </Button>
+          </div>
+        )}
 
-        <video
-          ref={videoRef}
-          src={src}
-          controls={thumbnail && controls}
-          {...props}
-        />
+        <video ref={videoRef} controls={!thumbnail && controls} {...props}>
+          <source src={src} />
+        </video>
       </div>
     );
   },
