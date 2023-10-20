@@ -58,6 +58,11 @@ exports.getPosts = async (req, res, next) => {
     const posts = await Post.find({})
       .sort({ createdAt: -1 })
       .populate('user', 'username avatar');
+    posts.map((post) => {
+      if (post.likes.includes(req.user._id.toString())) {
+        post._doc.liked = true;
+      }
+    });
     res.json(posts);
   } catch (error) {
     return next(new ApiError(500, 'An error occurred while retrieving post'));

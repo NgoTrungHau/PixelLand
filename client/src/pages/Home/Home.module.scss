@@ -2,19 +2,4 @@
   width: 700px;
   display: block;
   justify-content: center;
-
-  h3 {
-    text-align: center;
-  }
-
-  .SpinIcon {
-    display: flex;
-    justify-content: center;
-  }
-}
-
-.posts {
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 5px;
 }

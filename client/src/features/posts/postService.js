@@ -10,7 +10,6 @@ const createPost = async (postData, token) => {
       'Content-Type': 'multipart/form-data',
     },
   };
-  console.log(postData);
   const response = await httpRequest.post(API_URL + 'create', postData, config);
 
   return response;
@@ -24,7 +23,7 @@ const getPosts = async (token) => {
     },
   };
 
-  const response = await httpRequest.get(API_URL, {}, config);
+  const response = await httpRequest.get(API_URL, config);
 
   return response;
 };
