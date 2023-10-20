@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import postService from './postService';
+import { createCmt, deleteCmt } from '../comments/commentSlice';
 
 const initialState = {
   posts: [],
@@ -104,18 +105,60 @@ export const postSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(deletePost.pending, (state) => {
+      .addCase(deletePost.pending, (state, action) => {
         state.isLoading = true;
+        state.posts = state.posts.filter(
+          (post) => post._id !== action.meta.arg,
+        );
       })
       .addCase(deletePost.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.posts = state.posts.filter((post) => post._id !== action.payload);
       })
       .addCase(deletePost.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      // comments
+      .addCase(createCmt.fulfilled, (state, action) => {
+        const newComment = action.payload;
+
+        // find the correct post object by its id
+        const postIndex = state.posts.findIndex(
+          (post) => post._id === newComment.post,
+        );
+
+        // If the post exists, push the comment id into its comments array
+        if (postIndex !== -1) {
+          state.posts[postIndex].comments.push(newComment._id);
+        }
+      })
+      .addCase(deleteCmt.pending, (state, action) => {
+        const deleteComment = action.meta.arg;
+
+        // find the correct post object by its id
+        const postIndex = state.posts.findIndex(
+          (post) => post._id === deleteComment.post,
+        );
+
+        // If the post exists, push the comment id into its comments array
+        if (postIndex !== -1) {
+          state.posts[postIndex].comments.pop(deleteComment._id);
+        }
+      })
+      .addCase(deleteCmt.rejected, (state, action) => {
+        const deleteComment = action.meta.arg;
+
+        // find the correct post object by its id
+        const postIndex = state.posts.findIndex(
+          (post) => post._id === deleteComment.post,
+        );
+
+        // If the post exists, push the comment id into its comments array
+        if (postIndex !== -1) {
+          state.posts[postIndex].comments.push(deleteComment._id);
+        }
       });
   },
 });

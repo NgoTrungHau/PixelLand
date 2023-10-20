@@ -233,13 +233,13 @@ export const artSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(deleteArt.pending, (state) => {
+      .addCase(deleteArt.pending, (state, action) => {
         state.isLoading = true;
+        state.arts = state.arts.filter((art) => art._id !== action.meta.arg);
       })
       .addCase(deleteArt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.arts = state.arts.filter((art) => art._id !== action.payload._id);
       })
       .addCase(deleteArt.rejected, (state, action) => {
         state.isLoading = false;
@@ -302,9 +302,8 @@ export const artSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
+      // comments
       .addCase(createCmt.fulfilled, (state, action) => {
-        // action.payload should include the new comment object
-        // which also contains the id (_id) of the art which the comment belongs to (art)
         const newComment = action.payload;
 
         // find the correct art object by its id
@@ -317,19 +316,34 @@ export const artSlice = createSlice({
           state.arts[artIndex].comments.push(newComment._id);
         }
       })
-      .addCase(deleteCmt.fulfilled, (state, action) => {
-        // action.payload should include the new comment object
-        // which also contains the id (_id) of the art which the comment belongs to (art)
-        const newComment = action.payload;
+      .addCase(deleteCmt.pending, (state, action) => {
+        const deleteComment = action.meta.arg;
 
-        // find the correct art object by its id
-        const artIndex = state.arts.findIndex(
-          (art) => art._id === newComment.art,
-        );
+        let artIndex;
+        if (!deleteComment?.parentCommentId) {
+          // find the correct art object by its id
+          artIndex = state.arts.findIndex(
+            (art) => art._id === deleteComment.art,
+          );
+          // If the art exists, push the comment id into its comments array
+          if (artIndex !== -1) {
+            state.arts[artIndex].comments.pop(deleteComment._id);
+          }
+        }
+      })
+      .addCase(deleteCmt.rejected, (state, action) => {
+        const deleteComment = action.meta.arg;
 
-        // If the art exists, push the comment id into its comments array
-        if (artIndex !== -1) {
-          state.arts[artIndex].comments.pop(newComment._id);
+        let artIndex;
+        if (!deleteComment?.parentCommentId) {
+          // find the correct art object by its id
+          artIndex = state.arts.findIndex(
+            (art) => art._id === deleteComment.art,
+          );
+          // If the art exists, push the comment id into its comments array
+          if (artIndex !== -1) {
+            state.arts[artIndex].comments.pop(deleteComment._id);
+          }
         }
       });
   },

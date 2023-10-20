@@ -111,7 +111,8 @@
 .replies {
   align-items: center;
   width: 100%;
-  .reply button {
+  .reply .actions button,
+  .reply .reply-length button {
     span {
       font-size: 12px !important;
     }

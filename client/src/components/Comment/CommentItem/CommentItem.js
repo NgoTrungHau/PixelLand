@@ -81,11 +81,14 @@ function CommentItem({ key, cmt }) {
     setIsReply(!isReply);
     showReplies();
   };
+  const cancelReply = () => {
+    setIsReply(!isReply);
+  };
   const showReplies = () => {
     setShowReply(true);
   };
-  const handleDelete = async () => {
-    await dispatch(deleteCmt(cmt._id));
+  const handleDelete = () => {
+    dispatch(deleteCmt(cmt));
   };
 
   if (!cmt) {
@@ -201,27 +204,34 @@ function CommentItem({ key, cmt }) {
             </div>
           </div>
         </div>
-        <div className={cx('replies')}>
-          {cmt.replies.length > 0 && (
-            <div className={cx('reply')} onClick={showReplies}>
-              {showReply ? (
-                <CommentList replies={cmt.replies} />
-              ) : (
-                <Button leftIcon={<FontAwesomeIcon icon={faArrowRightLong} />}>
-                  {cmt.replies.length + ' replies'}
-                </Button>
-              )}
-            </div>
-          )}
-          {isReply && (
-            <div>
-              <CommentForm cmt={cmt} action="reply" onClick={handleReply} />
-              <div className={cx('cancel-btn')}>
-                <Button onClick={handleReply}>Cancel</Button>
+        {(cmt.replies.length > 0 || isReply) && (
+          <div className={cx('replies')}>
+            {cmt.replies.length > 0 && (
+              <div className={cx('reply')} onClick={showReplies}>
+                {showReply ? (
+                  <CommentList replies={cmt.replies} />
+                ) : (
+                  <div className={cx('reply-length')}>
+                    <Button
+                      leftIcon={<FontAwesomeIcon icon={faArrowRightLong} />}
+                    >
+                      {cmt.replies.length + ' replies'}
+                    </Button>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
-        </div>
+            )}
+
+            {isReply && (
+              <div>
+                <CommentForm cmt={cmt} action="reply" onClick={handleReply} />
+                <div className={cx('cancel-btn')}>
+                  <Button onClick={cancelReply}>Cancel</Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
