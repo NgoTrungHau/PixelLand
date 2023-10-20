@@ -19,19 +19,27 @@ import Avatar from '~/components/Avatar';
 import Image from '~/components/Image';
 // features
 import { createCmt, editCmt, replyCmt } from '~/features/comments/commentSlice';
+import Video from '~/components/Video';
 
 const cx = classNames.bind(styles);
 
-function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
+function CommentForm({
+  art_id,
+  post_id,
+  action,
+  cmt,
+  modal = false,
+  onClick = () => {},
+}) {
   const [media, setMedia] = useState(action === 'edit' ? cmt?.media?.url : '');
   const [isHover, setIsHover] = useState(false);
-  const imgRef = useRef();
+  const mediaRef = useRef();
 
   const { user } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
 
-  const handleImage = async (e) => {
+  const handleMedia = async (e) => {
     const file = e.target.files[0];
     formik.setFieldValue('media', file);
     let mediaType;
@@ -40,23 +48,29 @@ function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
     } else if (file.type.startsWith('video')) {
       mediaType = 'video';
     }
+    formik.setFieldValue('mediaType', mediaType);
     try {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = function () {
         setMedia(reader.result);
-        formik.setFieldValue('mediaType', mediaType);
       };
     } catch (error) {
       console.error(error);
     }
+    e.target.value = '';
   };
-  const FILE_SIZE_LIMIT = 1024 * 1024; // 1MB
+  // const FILE_SIZE_LIMIT = 1024 * 1024; // 1MB
   const SUPPORTED_FORMATS = [
     'image/jpg',
     'image/jpeg',
     'image/gif',
     'image/png',
+    'video/mp4',
+    'video/mpeg',
+    'video/avi',
+    'video/quicktime', // .mov files
+    'video/x-ms-wmv', // .wmv files
   ];
   const CommentSchema = Yup.object().shape({
     id: Yup.string(),
@@ -68,9 +82,9 @@ function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
     media: Yup.mixed()
       .nullable()
       .notRequired()
-      .test('fileSize', 'File too large', (value) =>
-        value ? value.size <= FILE_SIZE_LIMIT : true,
-      )
+      // .test('fileSize', 'File too large', (value) =>
+      //   value ? value.size <= FILE_SIZE_LIMIT : true,
+      // )
       .test('type', 'Unsupported Format', (value) => {
         return value ? SUPPORTED_FORMATS.includes(value.type) : true;
       }),
@@ -107,7 +121,7 @@ function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
         dispatch(replyCmt(formData));
       }
       formik.resetForm();
-      imgRef.current.value = '';
+      mediaRef.current.value = '';
       setMedia('');
       onClick();
     },
@@ -115,7 +129,7 @@ function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
 
   return (
     <div
-      className={cx('wrapper')}
+      className={cx('wrapper', modal && 'modal-wrapper')}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >
@@ -161,29 +175,33 @@ function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
                     </Button>
                   )}
                 </div>
-                <div className={cx('img-input-icon')}>
-                  <label htmlFor={`imgInput-${action}`}>
+                <div className={cx('media-input-icon')}>
+                  <label htmlFor={`mediaInput-${action}`}>
                     <FontAwesomeIcon icon={faImage} />
                     <input
                       type="file"
-                      id={`imgInput-${action}`}
-                      ref={imgRef}
-                      className={cx('img-thumb')}
+                      id={`mediaInput-${action}`}
+                      ref={mediaRef}
+                      className={cx('media-thumb')}
                       accept="image/*,video/*,.gif"
-                      onChange={handleImage}
+                      onChange={handleMedia}
                       style={{ display: 'none' }}
                     />
                   </label>
                 </div>
               </div>
               {media && (
-                <div className={cx('img-thumb')}>
+                <div className={cx('media-thumb', modal && 'media-modal')}>
                   <Button
                     type="button"
-                    className={cx('remove-img')}
+                    className={cx(
+                      formik.values.mediaType === 'video'
+                        ? 'remove-video'
+                        : 'remove-media',
+                    )}
                     onClick={(e) => {
                       e.preventDefault();
-                      imgRef.current.value = '';
+                      mediaRef.current.value = '';
                       formik.setFieldValue('media', null);
                       formik.setFieldValue('mediaType', '');
                       setMedia('');
@@ -191,7 +209,11 @@ function CommentForm({ art_id, post_id, action, cmt, onClick = () => {} }) {
                   >
                     <FontAwesomeIcon icon={faXmark} />
                   </Button>
-                  <Image src={media} alt="" />
+                  {formik.values.mediaType === 'image' ? (
+                    <Image src={media} alt="" />
+                  ) : (
+                    <Video src={media} thumbnail cmt={modal} />
+                  )}
                 </div>
               )}
             </div>
@@ -206,6 +228,7 @@ CommentForm.propTypes = {
   art_id: PropTypes.string,
   post_id: PropTypes.string,
   cmt: PropTypes.object,
+  modal: PropTypes.bool,
   action: PropTypes.oneOf(['create', 'edit', 'reply']),
   onClick: PropTypes.func,
 };

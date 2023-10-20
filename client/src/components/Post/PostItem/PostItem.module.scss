@@ -116,6 +116,7 @@
 .views {
   margin: 5px 0;
   display: flex;
+  grid-template-columns: 1fr 100px;
   justify-content: space-between;
   align-items: center;
   width: 100%;

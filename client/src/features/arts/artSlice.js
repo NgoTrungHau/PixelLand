@@ -104,8 +104,8 @@ export const viewArt = createAsyncThunk(
   'arts/viewArt',
   async (art_id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
-      const response = await artService.viewArt(art_id, token);
+      // const token = thunkAPI.getState().auth.user.token;
+      const response = await artService.viewArt(art_id);
       return response;
     } catch (error) {
       const message =

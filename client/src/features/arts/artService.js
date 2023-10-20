@@ -63,17 +63,13 @@ const deleteArt = async (artId, token) => {
 };
 
 // View art
-const viewArt = async (art_id, token) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  const response = await httpRequest.patch(
-    API_URL + 'view/' + art_id,
-    {},
-    config,
-  );
+const viewArt = async (art_id) => {
+  // const config = {
+  //   headers: {
+  //     Authorization: `Bearer ${token}`,
+  //   },
+  // };
+  const response = await httpRequest.patch(API_URL + 'view/' + art_id);
   return response;
 };
 // Like art

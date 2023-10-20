@@ -32,6 +32,7 @@ import CommentForm from '~/components/Comment/CommentForm/CommentForm';
 // features
 import { ModalToggleContext } from '../../Modals/Modal';
 import { deletePost, likePost, unlikePost } from '~/features/posts/postSlice';
+import { getCmts } from '~/features/comments/commentSlice';
 
 const cx = classNames.bind(styles);
 
@@ -46,9 +47,13 @@ function PostItem({ post }) {
   const { user } = useSelector((state) => state.auth);
   const { isLoading } = useSelector((state) => state.posts);
 
+  const getPostCmts = () => {
+    dispatch(getCmts(post._id));
+  };
   const toggleShowMore = () => {
     setShowMore(!showMore);
   };
+
   const handleLike = () => {
     if (!user) {
       toast.error('Not logged in yet!');
@@ -167,7 +172,10 @@ function PostItem({ post }) {
           </Button>
         </div>
         <div className={cx('action')}>
-          <Button leftIcon={<FontAwesomeIcon icon={faMessage} />}>
+          <Button
+            leftIcon={<FontAwesomeIcon icon={faMessage} />}
+            onClick={getPostCmts}
+          >
             Comment
           </Button>
         </div>
@@ -178,7 +186,7 @@ function PostItem({ post }) {
 
       {post.comments.length > 0 && (
         <div className={cx('comments')}>
-          <CommentList post={post._id} />
+          <CommentList />
         </div>
       )}
       <div className={cx('comment-form')}>

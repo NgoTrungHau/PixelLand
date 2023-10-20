@@ -211,7 +211,7 @@ function PostForm() {
                       document.getElementById('mediaInput').click();
                     }}
                   >
-                    Edit
+                    Change
                   </Button>
                   <Button
                     type="button"
