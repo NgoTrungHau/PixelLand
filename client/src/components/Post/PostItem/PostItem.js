@@ -1,14 +1,9 @@
 import classNames from 'classnames/bind';
+// React
+import { useContext, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
-
-import { deletePost } from '~/features/posts/postSlice';
-import Avatar from '~/components/Avatar';
-import styles from './PostItem.module.scss';
-import Menu from '~/components/Popper/Menu';
-import Button from '~/components/Button';
-import { ModalToggleContext } from '../../Modals/Modal';
-
+import { toast } from 'react-toastify';
+// Font awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faEllipsisVertical,
@@ -21,18 +16,27 @@ import {
   faTrashCan,
 } from '@fortawesome/free-regular-svg-icons';
 import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
+// other
+import moment from 'moment';
 
-import { useContext, useState } from 'react';
+// scss
+import styles from './PostItem.module.scss';
+// components
+import Avatar from '~/components/Avatar';
+import Menu from '~/components/Popper/Menu';
+import Button from '~/components/Button';
 import Image from '~/components/Image';
-import { toast } from 'react-toastify';
-import CommentList from '~/components/Comment/CommentList';
 import Video from '~/components/Video';
+import CommentList from '~/components/Comment/CommentList';
 import CommentForm from '~/components/Comment/CommentForm/CommentForm';
+// features
+import { ModalToggleContext } from '../../Modals/Modal';
+import { deletePost, likePost, unlikePost } from '~/features/posts/postSlice';
 
 const cx = classNames.bind(styles);
 
 function PostItem({ post }) {
-  const { isLiked, setIsLiked } = useState(post.liked);
+  const [isLiked, setIsLiked] = useState(post.liked);
 
   const [showMore, setShowMore] = useState(false); // new state
 
@@ -51,10 +55,10 @@ function PostItem({ post }) {
       return;
     }
     if (!isLiked) {
-      // dispatch(likeArt(art._id));
+      dispatch(likePost(post._id));
       setIsLiked(true);
     } else {
-      // dispatch(unlikeArt(art._id));
+      dispatch(unlikePost(post._id));
       setIsLiked(false);
     }
   };
@@ -72,7 +76,7 @@ function PostItem({ post }) {
         {
           leftIcon: <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>,
           title: 'Edit',
-          action: 'Edit Art',
+          action: 'Edit Post',
           modal: true,
           post: post,
           onClick: handleEdit,
@@ -80,7 +84,7 @@ function PostItem({ post }) {
         {
           leftIcon: <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>,
           title: 'Delete',
-          action: 'Delete Art',
+          action: 'Delete Post',
           content: 'Do you really want to delete this post?',
           isLoading: isLoading,
           modal: true,
@@ -137,12 +141,16 @@ function PostItem({ post }) {
           </p>
         )}
       </div>
-      {post.likes?.length > 0 && post.comments?.length > 0 && (
+      {
         <div className={cx('views')}>
-          <div className={cx('view')}>{post.likes?.length} like</div>
-          <div className={cx('view')}>{post.comments?.length} comments</div>
+          {post.likes?.length > 0 && (
+            <div className={cx('view')}>{post.likes?.length} likes</div>
+          )}
+          {post.comments?.length > 0 && (
+            <div className={cx('view')}>{post.comments?.length} comments</div>
+          )}
         </div>
-      )}
+      }
       <div className={cx('actions')}>
         <div className={cx('action')} onClick={handleLike}>
           <Button

@@ -1,9 +1,9 @@
 import classNames from 'classnames/bind';
 import { useSelector } from 'react-redux';
 
-import PostForm from '~/components/Post/PostForm';
 import PostList from '~/components/Post/PostList';
 import styles from './Home.module.scss';
+import CreatePost from '~/components/Post/PostButton/CreatePost';
 
 const cx = classNames.bind(styles);
 
@@ -16,7 +16,7 @@ function Home() {
 
   return (
     <div className={cx('wrapper')}>
-      <PostForm />
+      <CreatePost />
       <PostList />
     </div>
   );

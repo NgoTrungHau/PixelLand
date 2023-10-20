@@ -10,6 +10,8 @@ const router = express.Router();
 // post
 router.route('/').get(protect, posts.getPosts);
 router.route('/create').post(upload.single('media'), protect, posts.createPost);
+router.route('/like/:id').patch(protect, posts.likePost);
+router.route('/unlike/:id').patch(protect, posts.unlikePost);
 router.route('/delete').delete(protect, posts.deleteAll);
 
 router

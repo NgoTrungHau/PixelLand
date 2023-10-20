@@ -31,6 +31,7 @@
 }
 .head,
 .post-detail .content,
+.views,
 .comments {
   padding: 0 15px !important;
 }
@@ -114,15 +115,13 @@
 }
 .views {
   margin: 5px 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
 }
 .view {
   display: flex;
-  align-items: center;
-  justify-content: center;
   height: 20px;
   font-size: 12px;
   cursor: pointer;

@@ -25,7 +25,6 @@ import mStyles from '~/components/Modals/Modal.module.scss';
 import Button from '~/components/Button';
 import Avatar from '~/components/Avatar';
 import Image from '~/components/Image';
-import Modal from '~/components/Modals/Modal';
 import Menu from '~/components/Popper/Menu';
 import Video from '~/components/Video';
 import SpinIcon from '~/components/SpinIcon';
@@ -161,125 +160,117 @@ function PostForm() {
   });
 
   return (
-    <div className={cx('wrapper')}>
-      <Avatar className={cx('avatar')} avatar={user.avatar?.url} medium />
-      <Modal
-        modalType="create-post"
-        sz="small"
-        btn={<div className={cx('input-btn')}>Write your post</div>}
-      >
-        <div className={mcx('heading')}>Create Post</div>
-        <div className={cx('user-info')}>
-          <Avatar className={cx('avatar')} avatar={user.avatar?.url} medium />
-          <div className={cx('info')}>
-            <div>{user.username}</div>
-            <Menu items={privacyOptions} offset={[32, 0]}>
-              <div className={cx('privacy')}>
-                <Button leftIcon={privacy.leftIcon}>{privacy.title}</Button>
-              </div>
-            </Menu>
-          </div>
+    <>
+      <div className={mcx('heading')}>Create Post</div>
+      <div className={cx('user-info')}>
+        <Avatar className={cx('avatar')} avatar={user.avatar?.url} medium />
+        <div className={cx('info')}>
+          <div>{user.username}</div>
+          <Menu items={privacyOptions} offset={[32, 0]}>
+            <div className={cx('privacy')}>
+              <Button leftIcon={privacy.leftIcon}>{privacy.title}</Button>
+            </div>
+          </Menu>
         </div>
-        <Formik
-          initialValues={formik.initialValues}
-          validationSchema={PostSchema}
-          onSubmit={formik.handleSubmit}
-        >
-          <form className={cx('form')} onSubmit={formik.handleSubmit}>
-            <div className={cx('post-form')}>
-              <div className={cx('content-media')}>
-                <div className={cx('input-post')}>
-                  <ReactTextareaAutosize
-                    minRows={4} // minimum number of rows
-                    id="content"
-                    name="content"
-                    value={formik.values.content}
-                    placeholder="Write your post"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        formik.handleSubmit();
-                      }
-                    }}
-                  />
-                </div>
-
-                {media && (
-                  <div className={cx('media-thumb')}>
-                    <Button
-                      grayLight
-                      type="button"
-                      className={cx('edit-media')}
-                      leftIcon={<FontAwesomeIcon icon={faPen} />}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        document.getElementById('mediaInput').click();
-                      }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      type="button"
-                      className={cx('remove-media')}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        mediaRef.current.value = '';
-                        formik.setFieldValue('media', null);
-                        formik.setFieldValue('mediaType', '');
-                        setMedia('');
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faXmark} />
-                    </Button>
-                    {formik.values.mediaType === 'image' ? (
-                      <Image src={media} alt="" />
-                    ) : (
-                      <Video src={media} thumbnail />
-                    )}
-                  </div>
-                )}
+      </div>
+      <Formik
+        initialValues={formik.initialValues}
+        validationSchema={PostSchema}
+        onSubmit={formik.handleSubmit}
+      >
+        <form className={cx('form')} onSubmit={formik.handleSubmit}>
+          <div className={cx('post-form')}>
+            <div className={cx('content-media')}>
+              <div className={cx('input-post')}>
+                <ReactTextareaAutosize
+                  minRows={4} // minimum number of rows
+                  id="content"
+                  name="content"
+                  value={formik.values.content}
+                  placeholder="Write your post"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      formik.handleSubmit();
+                    }
+                  }}
+                />
               </div>
-              <div className={cx('btn')}>
-                <div className={cx('img-input-icon')}>
-                  <label htmlFor={`mediaInput`}>
-                    <FontAwesomeIcon icon={faImage} />
-                    <input
-                      type="file"
-                      id="mediaInput"
-                      ref={mediaRef}
-                      className={cx('media-thumb')}
-                      accept="image/*,video/*,.gif"
-                      onChange={handleMedia}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
-                </div>
-                <div
-                  className={cx(
-                    'btn-post',
-                    (formik.values.content || formik.values.media) &&
-                      'can-post',
+
+              {media && (
+                <div className={cx('media-thumb')}>
+                  <Button
+                    grayLight
+                    type="button"
+                    className={cx('edit-media')}
+                    leftIcon={<FontAwesomeIcon icon={faPen} />}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('mediaInput').click();
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    type="button"
+                    className={cx('remove-media')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      mediaRef.current.value = '';
+                      formik.setFieldValue('media', null);
+                      formik.setFieldValue('mediaType', '');
+                      setMedia('');
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faXmark} />
+                  </Button>
+                  {formik.values.mediaType === 'image' ? (
+                    <Image src={media} alt="" />
+                  ) : (
+                    <Video src={media} thumbnail />
                   )}
-                >
-                  {
-                    <Button
-                      className={cx('post-post')}
-                      type="submit"
-                      sz="md"
-                      disabled={!formik.values.content && !formik.values.media}
-                    >
-                      {isLoading ? <SpinIcon /> : 'Post'}
-                    </Button>
-                  }
                 </div>
+              )}
+            </div>
+            <div className={cx('btn')}>
+              <div className={cx('img-input-icon')}>
+                <label htmlFor={`mediaInput`}>
+                  <FontAwesomeIcon icon={faImage} />
+                  <input
+                    type="file"
+                    id="mediaInput"
+                    ref={mediaRef}
+                    className={cx('media-thumb')}
+                    accept="image/*,video/*,.gif"
+                    onChange={handleMedia}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+              </div>
+              <div
+                className={cx(
+                  'btn-post',
+                  (formik.values.content || formik.values.media) && 'can-post',
+                )}
+              >
+                {
+                  <Button
+                    className={cx('post-post')}
+                    type="submit"
+                    sz="md"
+                    disabled={!formik.values.content && !formik.values.media}
+                  >
+                    {isLoading ? <SpinIcon /> : 'Post'}
+                  </Button>
+                }
               </div>
             </div>
-          </form>
-        </Formik>
-      </Modal>
-    </div>
+          </div>
+        </form>
+      </Formik>
+    </>
   );
 }
 

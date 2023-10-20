@@ -148,7 +148,7 @@ function ArtDetail({ art }) {
           </div>
         </div>
         <div className={cx('views')}>
-          <div className={cx('view')}>{art.likes?.length} like</div>
+          <div className={cx('view')}>{art.likes?.length} likes</div>
           <div className={cx('view')}>{art.comments?.length} comments</div>
         </div>
         <div className={cx('actions')}>
