@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 // React
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 // Font awesome
@@ -32,7 +32,7 @@ import CommentForm from '~/components/Comment/CommentForm/CommentForm';
 // features
 import { ModalToggleContext } from '../../Modals/Modal';
 import { deletePost, likePost, unlikePost } from '~/features/posts/postSlice';
-import { getCmts } from '~/features/comments/commentSlice';
+import { getCmts, reset } from '~/features/comments/commentSlice';
 
 const cx = classNames.bind(styles);
 
@@ -46,6 +46,12 @@ function PostItem({ post }) {
 
   const { user } = useSelector((state) => state.auth);
   const { isLoading } = useSelector((state) => state.posts);
+
+  useEffect(() => {
+    return () => {
+      dispatch(reset());
+    };
+  }, [post._id, dispatch]);
 
   const getPostCmts = () => {
     dispatch(getCmts(post._id));

@@ -20,7 +20,7 @@ function CreatePost() {
       <Modal
         modalType="create-post"
         sz="small"
-        btn={<div className={cx('input-btn')}>Write your post</div>}
+        btn={<div className={cx('input-btn')}>Create your post</div>}
       >
         <PostForm />
       </Modal>

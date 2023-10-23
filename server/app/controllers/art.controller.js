@@ -52,7 +52,9 @@ exports.create = async (req, res, next) => {
 // get all arts
 exports.getArts = async (req, res, next) => {
   try {
-    const arts = await Art.find({ $nor: [{ privacy: 'Only me' }] })
+    const arts = await Art.find({
+      privacy: 'Public',
+    })
       .sort({ createdAt: -1 })
       .populate('author', 'username avatar');
     res.json(arts);
@@ -63,11 +65,35 @@ exports.getArts = async (req, res, next) => {
 // get all auth arts
 exports.getAuthArts = async (req, res, next) => {
   try {
-    const arts = await Art.find({ $nor: [{ privacy: 'Only me' }] })
+    const allArts = await Art.find()
       .sort({ createdAt: -1 })
       .populate('author', 'username avatar');
-    arts.map((art) => {
-      if (art.likes.includes(req.params.id.toString())) {
+
+    // Filter out arts with varied privacy settings except the ones from the request user
+    const arts = allArts.filter((art) => {
+      const userIsAuthor =
+        art.author._id.toString() === req.user._id.toString();
+      if (userIsAuthor) return true;
+
+      switch (art.privacy) {
+        case 'Public':
+          return true;
+        case 'Only me':
+          return false;
+        // case 'Followers only':
+        //     // You'll replace `checkIfUserIsFollower` function with real implementation
+        //     return checkIfUserIsFollower(art.author._id, req.user._id);
+        // case 'Members only':
+        //     // You'll replace `checkIfUserIsMember` function with real implementation
+        //     return checkIfUserIsMember(art.author._id, req.user._id);
+        default:
+          return false;
+      }
+    });
+
+    // If the art was liked by the request user, assign true to the liked field
+    arts.forEach((art) => {
+      if (art.likes.includes(req.user._id.toString())) {
         art._doc.liked = true;
       }
     });
@@ -129,9 +155,7 @@ exports.update = async (req, res, next) => {
     art.privacy = req.body.privacy;
 
     let savedArt = await art.save();
-    if (savedArt.privacy !== 'Only me') {
-      savedArt = await savedArt.populate('author', 'username avatar');
-    }
+    savedArt = await savedArt.populate('author', 'username avatar');
     res.send(savedArt);
   } catch (error) {
     return next(

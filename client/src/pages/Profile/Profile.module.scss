@@ -6,6 +6,13 @@
   justify-content: center;
   width: 100%;
 }
+.content {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 60px;
+  padding: 0 20%;
+  height: 100%;
+}
 
 .detail {
   width: 100%;
@@ -19,4 +26,9 @@
     font-weight: 600;
     font-family: var(--font-family2);
   }
+}
+.post {
+  width: 100%;
+  min-width: 686px;
+  height: 100%;
 }

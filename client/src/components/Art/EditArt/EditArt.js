@@ -140,6 +140,7 @@ function EditArt({ art }) {
     validationSchema: ArtSchema,
     onSubmit: async () => {
       const formData = {
+        user: user._id,
         id: formik.values.id,
         title: formik.values.title,
         description: formik.values.description,

@@ -98,7 +98,7 @@ function CommentForm({
       post: post_id || cmt?.post,
       content: action === 'edit' ? cmt?.content : '',
       media: null,
-      mediaType: action === 'edit' ? cmt?.media?.mediaType : '',
+      mediaType: action === 'edit' ? cmt?.media?.type : '',
     },
     validationSchema: CommentSchema,
     onSubmit: () => {
