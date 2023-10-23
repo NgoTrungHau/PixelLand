@@ -1,17 +1,19 @@
 import classNames from 'classnames/bind';
-import { useParams } from 'react-router';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router';
 
-import styles from './Profile.module.scss';
+import CreatePost from '~/components/Post/PostButton/CreatePost';
 import Info from '~/components/Profile/Info';
-import PostForm from '~/components/Post/PostForm';
 import { getUser } from '~/features/profile/profileSlice';
+import styles from './Profile.module.scss';
+import PostList from '~/components/Post/PostList';
 
 const cx = classNames.bind(styles);
 
 function Profile() {
   const { id } = useParams();
+  const { user } = useSelector((state) => state.auth);
   const { auth, profile } = useSelector((state) => state);
   const dispatch = useDispatch();
 
@@ -41,15 +43,16 @@ function Profile() {
     <div className={cx('profile')}>
       <Info id={id} isAuth={isAuth} profile={userInfo} dispatch={dispatch} />
       <div className={cx('container')}>
-        <div className="row">
-          <div className="col-sm-12 col-md-3 col-lg-3 ">
+        <div className={cx('content')}>
+          <div className={cx('about')}>
             <div className={cx('detail')}>
               <h2>About</h2>
               <p>{userInfo.bio}</p>
             </div>
           </div>
-          <div className="col-sm-12 col-md-10 col-lg-9">
-            <PostForm />
+          <div className={cx('post')}>
+            <CreatePost />
+            <PostList user_id={user._id} />
           </div>
         </div>
       </div>

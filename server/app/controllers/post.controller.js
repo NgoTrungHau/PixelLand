@@ -55,24 +55,46 @@ exports.createPost = async (req, res, next) => {
 };
 exports.getPosts = async (req, res, next) => {
   try {
-    const posts = await Post.find({})
+    const allPosts = await Post.find()
       .sort({ createdAt: -1 })
       .populate('user', 'username avatar');
+
+    // Filter out posts with varied privacy settings except the ones from the request user
+    const posts = allPosts.filter((post) => {
+      const userIsAuthor = post.user._id.toString() === req.user._id.toString();
+      if (userIsAuthor) return true;
+
+      switch (post.privacy) {
+        case 'Public':
+          return true;
+        case 'Only me':
+          return false;
+        // case 'Followers only':
+        //     // You'll replace `checkIfUserIsFollower` function with real implementation
+        //     return checkIfUserIsFollower(post.user._id, req.user._id);
+        // case 'Members only':
+        //     // You'll replace `checkIfUserIsMember` function with real implementation
+        //     return checkIfUserIsMember(post.user._id, req.user._id);
+        default:
+          return false;
+      }
+    });
     posts.map((post) => {
       if (post.likes.includes(req.user._id.toString())) {
         post._doc.liked = true;
       }
     });
+
     res.json(posts);
   } catch (error) {
-    return next(new ApiError(500, 'An error occurred while retrieving post'));
+    return next(new ApiError(500, 'An error occurred while retrieving posts'));
   }
 };
 exports.findOne = async (req, res, next) => {
   try {
     const posts = await Post.find({ $nor: [{ privacy: 'Only me' }] })
       .sort({ createdAt: -1 })
-      .populate('author', 'username avatar');
+      .populate('user', 'username avatar');
     if (!posts) {
       return next(new ApiError(404, 'Post not found'));
     }

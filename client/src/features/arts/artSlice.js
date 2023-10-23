@@ -218,7 +218,12 @@ export const artSlice = createSlice({
       .addCase(editArt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        if (action.payload.privacy === 'Only me') {
+        console.log(action.meta.arg);
+        console.log(action.payload.author._id);
+        if (
+          action.payload.privacy === 'Only me' &&
+          action.meta.arg.user !== action.payload.author._id
+        ) {
           state.arts = state.arts.filter(
             (art) => art._id !== action.payload._id,
           );
