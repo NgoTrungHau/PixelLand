@@ -28,6 +28,22 @@ const getPosts = async (token) => {
   return response;
 };
 
+// Edit user art
+const editPost = async (postData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  };
+  const response = await httpRequest.patch(
+    API_URL + postData.id,
+    postData,
+    config,
+  );
+  return response;
+};
+
 // Delete user post
 const deletePost = async (postId, token) => {
   const config = {
@@ -74,6 +90,7 @@ const unlikePost = async (post_id, token) => {
 const postService = {
   createPost,
   getPosts,
+  editPost,
   deletePost,
   likePost,
   unlikePost,

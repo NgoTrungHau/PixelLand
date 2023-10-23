@@ -49,6 +49,25 @@ export const getPosts = createAsyncThunk(
   },
 );
 
+// Edit user post
+export const editPost = createAsyncThunk(
+  'posts/edit',
+  async (postData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await postService.editPost(postData, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 // Delete user post
 export const deletePost = createAsyncThunk(
   'posts/delete',
@@ -141,6 +160,32 @@ export const postSlice = createSlice({
         state.posts = action.payload;
       })
       .addCase(getPosts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(editPost.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editPost.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        console.log(action.meta.arg);
+        console.log(action.payload.user._id);
+        if (
+          action.payload.privacy === 'Only me' &&
+          action.meta.arg.user !== action.payload.user._id
+        ) {
+          state.posts = state.posts.filter(
+            (post) => post._id !== action.payload._id,
+          );
+        } else {
+          state.posts = state.posts.map((post) =>
+            post._id === action.payload._id ? action.payload : post,
+          );
+        }
+      })
+      .addCase(editPost.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

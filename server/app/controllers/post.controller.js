@@ -53,6 +53,7 @@ exports.createPost = async (req, res, next) => {
     return next(new ApiError(500, 'An error occurred while creating the post'));
   }
 };
+
 exports.getPosts = async (req, res, next) => {
   try {
     const allPosts = await Post.find()
@@ -90,6 +91,7 @@ exports.getPosts = async (req, res, next) => {
     return next(new ApiError(500, 'An error occurred while retrieving posts'));
   }
 };
+
 exports.findOne = async (req, res, next) => {
   try {
     const posts = await Post.find({ $nor: [{ privacy: 'Only me' }] })
@@ -110,35 +112,58 @@ exports.findOne = async (req, res, next) => {
     );
   }
 };
+
+// Update post
 exports.update = async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id);
-
     if (!post) {
       return next(new ApiError(401, 'Post not found'));
     }
-
-    const user = await User.findById(req.user.id);
-
-    if (!user) {
-      return next(new ApiError(401, 'User not found'));
+    if (!req.body.media && post.media.url) {
+      await cloudinary.uploader.destroy(post.media.public_id);
+      post.media = null;
+    }
+    if (req.file) {
+      // Delete the old post and upload the new post
+      if (post.media.url) {
+        await cloudinary.uploader.destroy(post.media.public_id);
+      }
+      const result = await new Promise((resolve, reject) => {
+        const streamLoad = cloudinary.uploader.upload_chunked_stream(
+          { resource_type: req.body.mediaType, folder: 'posts' },
+          function (error, result) {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(error);
+            }
+          },
+        );
+        streamLoad.end(req.file.buffer);
+      });
+      post.media = {
+        mediaType: req.body.mediaType,
+        public_id: result.public_id,
+        url: result.url,
+      };
     }
 
-    // Make sure the logged in user matches the goal user
-    if (post.user.toString() !== req.user.id) {
-      return next(new ApiError(401, 'User not authorized'));
-    }
+    // save post
 
-    const updatePost = await Post.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.json(updatePost);
+    post.content = req.body.content;
+    post.privacy = req.body.privacy;
+
+    let savedPost = await post.save();
+    savedPost = await savedPost.populate('user', 'username avatar');
+    res.send(savedPost);
   } catch (error) {
     return next(
       new ApiError(500, `Error updating post with id=${req.params.id}`),
     );
   }
 };
+
 exports.delete = async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id);
