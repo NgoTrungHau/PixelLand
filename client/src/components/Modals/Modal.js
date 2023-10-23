@@ -1,3 +1,11 @@
+import {
+  faArrowRightToBracket,
+  faArrowUpFromBracket,
+  faPen,
+  faUser,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 import {
@@ -7,25 +15,18 @@ import {
   useEffect,
   useState,
 } from 'react';
-import {
-  faArrowRightToBracket,
-  faArrowUpFromBracket,
-  faXmark,
-  faUser,
-  faPen,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import styles from './Modal.module.scss';
-import Button from '../Button';
-import { UploadArt } from '../Art';
-import LoginForm from './Login';
-import SignUpForm from './SignUp';
-import EditProfileForm from './EditProfile';
-import ArtDetail from '../Art/ArtDetail';
 import { createPortal } from 'react-dom';
+import { UploadArt } from '../Art';
+import ArtDetail from '../Art/ArtDetail';
 import EditArt from '../Art/EditArt/EditArt';
+import Button from '../Button';
+import PostForm from '../Post/PostForm';
 import SpinIcon from '../SpinIcon';
+import EditProfileForm from './EditProfile';
+import LoginForm from './Login';
+import styles from './Modal.module.scss';
+import SignUpForm from './SignUp';
 
 export const ModalToggleContext = createContext(() => {});
 
@@ -160,7 +161,7 @@ const Modal = forwardRef(
         case 'create-post':
           return children;
         case 'edit-post':
-          return <></>;
+          return <PostForm post={data.post} />;
         case 'delete-post':
           return deleteConfirmation();
         case 'edit-cmt':

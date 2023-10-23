@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 // React
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ReactTextareaAutosize from 'react-textarea-autosize';
 // Font awesome
@@ -30,13 +30,13 @@ import Video from '~/components/Video';
 import SpinIcon from '~/components/SpinIcon';
 // features
 import { ModalToggleContext } from '../../Modals/Modal';
-import { createPost } from '~/features/posts/postSlice';
+import { createPost, editPost } from '~/features/posts/postSlice';
 
 const cx = classNames.bind(styles);
 const mcx = classNames.bind(mStyles);
 
-function PostForm() {
-  const [media, setMedia] = useState('');
+function PostForm({ post }) {
+  const [media, setMedia] = useState(post?.media?.url || '');
   const mediaRef = useRef();
   const toggleModal = useContext(ModalToggleContext);
   const privacyOptions = [
@@ -121,6 +121,7 @@ function PostForm() {
     'video/x-ms-wmv', // .wmv files
   ];
   const PostSchema = Yup.object().shape({
+    id: Yup.string(),
     privacyOption: Yup.string(),
     content: Yup.string(),
     mediaType: Yup.string(),
@@ -130,28 +131,47 @@ function PostForm() {
       // .test('fileSize', 'File too large', (value) =>
       //   value ? value.size <= FILE_SIZE_LIMIT : true,
       // )
-      .test('type', 'Unsupported Format', (value) => {
-        return value ? SUPPORTED_FORMATS.includes(value.type) : true;
+      // .test('type', 'Unsupported Format', (value) => {
+      //   return value ? SUPPORTED_FORMATS.includes(value.type) : true;
+      // })
+      .test('media', 'Invalid media', (value) => {
+        // If value is a string, test it with a simple URL regex, or use a url validator.
+        // If value is a file, check if the type is valid
+        if (typeof value === 'string') {
+          // using a super simple url regex
+          return /^(ftp|http|https):\/\/[^ "]+$/.test(value);
+        } else if (value instanceof File) {
+          return SUPPORTED_FORMATS.includes(value.type);
+        }
+
+        // If the value is neither a valid URL string nor a File object
+        return true;
       }),
   });
 
   const formik = useFormik({
     initialValues: {
-      privacyOption: privacyOptions[0].title,
-      content: '',
-      media: null,
-      mediaType: '',
+      id: post?._id || '',
+      privacyOption: post?.privacy || privacyOptions[0].title,
+      content: post?.content || '',
+      media: post?.media?.url || null,
+      mediaType: post?.media?.mediaType || '',
     },
     validationSchema: PostSchema,
     onSubmit: async () => {
       const formData = {
+        id: formik.values?.id,
+        user: user._id,
         privacy: formik.values?.privacyOption,
         content: formik.values?.content,
         mediaType: formik.values?.mediaType,
         media: formik.values?.media,
       };
-      // console.log(formik.values);
-      await dispatch(createPost(formData));
+      if (post) {
+        await dispatch(editPost(formData));
+      } else {
+        await dispatch(createPost(formData));
+      }
       toggleModal();
       formik.resetForm();
       mediaRef.current.value = '';
@@ -161,7 +181,7 @@ function PostForm() {
 
   return (
     <>
-      <div className={mcx('heading')}>Create Post</div>
+      <div className={mcx('heading')}>{post ? 'Edit' : 'Create'} Post</div>
       <div className={cx('user-info')}>
         <Avatar className={cx('avatar')} avatar={user.avatar?.url} medium />
         <div className={cx('info')}>

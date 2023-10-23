@@ -17,7 +17,7 @@ router.route('/delete').delete(protect, posts.deleteAll);
 router
   .route('/:id')
   .get(posts.findOne)
-  .post(protect, posts.update)
+  .patch(upload.single('media'), protect, posts.update)
   .delete(protect, posts.delete);
 
 module.exports = router;
