@@ -37,8 +37,15 @@ const Video = forwardRef(
       videoRef.current.play();
     };
 
+    console.log(thumbnail);
+
     return (
-      <div className={cx('wrapper', { [className]: className })} ref={ref}>
+      <div
+        className={cx('wrapper', cmt && 'modal-wrapper', {
+          [className]: className,
+        })}
+        ref={ref}
+      >
         {thumbnail && (
           <div className={cx('thumb-play-btn', cmt && 'cmt-thumb')}>
             <Button type="button" disabled={thumbnail} onClick={handlePlay}>

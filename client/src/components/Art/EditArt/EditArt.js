@@ -87,11 +87,8 @@ function EditArt({ art }) {
     const file = e.target.files[0];
     formik.setFieldValue('image', file);
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = function () {
-        setImage(reader.result);
-      };
+      const url = URL.createObjectURL(file);
+      setImage(url);
     } catch (error) {
       console.error(error);
     }
