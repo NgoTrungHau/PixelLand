@@ -9,6 +9,10 @@
     object-fit: cover;
   }
 }
+.modal-wrapper {
+  width: auto !important;
+  height: auto !important;
+}
 .thumb-play-btn {
   position: absolute;
   top: 50%;
@@ -29,6 +33,5 @@
   svg {
     width: 50px !important;
     height: 50px !important;
-    color: white;
   }
 }

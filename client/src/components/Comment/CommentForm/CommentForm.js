@@ -50,11 +50,8 @@ function CommentForm({
     }
     formik.setFieldValue('mediaType', mediaType);
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = function () {
-        setMedia(reader.result);
-      };
+      const url = URL.createObjectURL(file);
+      setMedia(url);
     } catch (error) {
       console.error(error);
     }
@@ -212,7 +209,7 @@ function CommentForm({
                   {formik.values.mediaType === 'image' ? (
                     <Image src={media} alt="" />
                   ) : (
-                    <Video src={media} thumbnail cmt={modal} />
+                    <Video key={media} src={media} thumbnail cmt={modal} />
                   )}
                 </div>
               )}

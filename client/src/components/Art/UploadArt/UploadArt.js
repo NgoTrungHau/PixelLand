@@ -59,11 +59,8 @@ function UploadArt() {
     formik.setFieldValue('art', file);
 
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = function () {
-        setMedia(reader.result);
-      };
+      const url = URL.createObjectURL(file);
+      setMedia(url);
     } catch (error) {
       console.error(error);
     }

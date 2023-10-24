@@ -1,10 +1,9 @@
 import classNames from 'classnames/bind';
 // React
-import { useContext, useEffect, useRef, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useContext, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ReactTextareaAutosize from 'react-textarea-autosize';
 // Font awesome
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faGlobe,
   faImage,
@@ -14,23 +13,24 @@ import {
   faUsers,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // Validation
-import * as Yup from 'yup';
 import { Formik, useFormik } from 'formik';
+import * as Yup from 'yup';
 
 // scss
-import styles from './PostForm.module.scss';
 import mStyles from '~/components/Modals/Modal.module.scss';
+import styles from './PostForm.module.scss';
 // components
-import Button from '~/components/Button';
 import Avatar from '~/components/Avatar';
+import Button from '~/components/Button';
 import Image from '~/components/Image';
 import Menu from '~/components/Popper/Menu';
-import Video from '~/components/Video';
 import SpinIcon from '~/components/SpinIcon';
+import Video from '~/components/Video';
 // features
-import { ModalToggleContext } from '../../Modals/Modal';
 import { createPost, editPost } from '~/features/posts/postSlice';
+import { ModalToggleContext } from '../../Modals/Modal';
 
 const cx = classNames.bind(styles);
 const mcx = classNames.bind(mStyles);
@@ -94,11 +94,8 @@ function PostForm({ post }) {
     }
     formik.setFieldValue('mediaType', mediaType);
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = function () {
-        setMedia(reader.result);
-      };
+      const url = URL.createObjectURL(file);
+      setMedia(url);
     } catch (error) {
       console.error(error);
     }
@@ -249,7 +246,7 @@ function PostForm({ post }) {
                   {formik.values.mediaType === 'image' ? (
                     <Image src={media} alt="" />
                   ) : (
-                    <Video src={media} thumbnail />
+                    <Video key={media} src={media} thumbnail />
                   )}
                 </div>
               )}
@@ -282,7 +279,7 @@ function PostForm({ post }) {
                     sz="md"
                     disabled={!formik.values.content && !formik.values.media}
                   >
-                    {isLoading ? <SpinIcon /> : 'Post'}
+                    {isLoading ? <SpinIcon /> : post ? 'Save' : 'Post'}
                   </Button>
                 }
               </div>
