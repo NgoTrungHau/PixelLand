@@ -37,8 +37,6 @@ const Video = forwardRef(
       videoRef.current.play();
     };
 
-    console.log(thumbnail);
-
     return (
       <div
         className={cx('wrapper', cmt && 'modal-wrapper', {
