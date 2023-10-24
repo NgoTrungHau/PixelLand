@@ -27,6 +27,7 @@ import EditProfileForm from './EditProfile';
 import LoginForm from './Login';
 import styles from './Modal.module.scss';
 import SignUpForm from './SignUp';
+import PostDetail from '../Post/PostDetail';
 
 export const ModalToggleContext = createContext(() => {});
 
@@ -120,6 +121,8 @@ const Modal = forwardRef(
           return <>{cloneElement(children, { onClick: toggleModal })}</>;
         case 'delete-art':
           return <>{cloneElement(children, { onClick: toggleModal })}</>;
+        case 'post-detail':
+          return <>{cloneElement(children, { onClick: toggleModal })}</>;
         case 'create-post':
           return <>{cloneElement(btn, { onClick: toggleModal })}</>;
         case 'edit-post':
@@ -158,6 +161,8 @@ const Modal = forwardRef(
           return <EditArt art={data.art} />;
         case 'delete-art':
           return deleteConfirmation();
+        case 'post-detail':
+          return <PostDetail post={data} />;
         case 'create-post':
           return children;
         case 'edit-post':
@@ -211,6 +216,7 @@ Modal.propTypes = {
     'art-detail',
     'edit-art',
     'delete-art',
+    'post-detail',
     'create-post',
     'edit-post',
     'delete-post',

@@ -1,26 +1,29 @@
+// classname
 import classNames from 'classnames/bind';
-// React
-import { createContext, useContext, useState } from 'react';
+// react
+import { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-// Font awesome
-import {
-  faHeart,
-  faMessage,
-  faTrashCan,
-} from '@fortawesome/free-regular-svg-icons';
+// Icon
+import { faHeart, faMessage } from '@fortawesome/free-regular-svg-icons';
 import {
   faEllipsisVertical,
   faPen,
   faRepeat,
+  faTrashCan,
   faHeart as fullHeart,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // other
 import moment from 'moment';
 
-// scss
-import styles from './PostItem.module.scss';
+// css
+import mStyles from '~/components/Modals/Modal.module.scss';
+import styles from './PostDetail.module.scss';
+
+// features, function
+import { deletePost } from '~/features/posts/postSlice';
+import { ModalToggleContext } from '../../Modals/Modal';
+import { PostContext } from '../PostItem/PostItem';
 // components
 import Avatar from '~/components/Avatar';
 import Button from '~/components/Button';
@@ -28,48 +31,42 @@ import CommentForm from '~/components/Comment/CommentForm/CommentForm';
 import CommentList from '~/components/Comment/CommentList';
 import Image from '~/components/Image';
 import Menu from '~/components/Popper/Menu';
+import { getCmts, reset } from '~/features/comments/commentSlice';
 import Video from '~/components/Video';
-// features
-import { deletePost, likePost, unlikePost } from '~/features/posts/postSlice';
-import Modal, { ModalToggleContext } from '../../Modals/Modal';
 
 const cx = classNames.bind(styles);
+const mcx = classNames.bind(mStyles);
 
-export const PostContext = createContext();
-
-function PostItem({ post }) {
-  const [isLiked, setIsLiked] = useState(post.liked);
-
+function PostDetail({ post }) {
+  const { isLiked, handleLike } = useContext(PostContext);
+  const [isHover, setIsHover] = useState(false);
   const [showMore, setShowMore] = useState(false); // new state
 
-  const dispatch = useDispatch();
   const toggleModal = useContext(ModalToggleContext);
+  const dispatch = useDispatch();
 
+  // get data from redux reducer
   const { user } = useSelector((state) => state.auth);
   const { isLoading } = useSelector((state) => state.posts);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(getCmts(post._id));
+    }
+    return () => {
+      dispatch(reset());
+    };
+  }, [post._id, dispatch, user]);
 
   const toggleShowMore = () => {
     setShowMore(!showMore);
   };
 
-  const handleLike = () => {
-    if (!user) {
-      toast.error('Not logged in yet!');
-      return;
-    }
-    if (!isLiked) {
-      dispatch(likePost(post._id));
-      setIsLiked(true);
-    } else {
-      dispatch(unlikePost(post._id));
-      setIsLiked(false);
-    }
-  };
   const handleEdit = () => {
     toggleModal();
   };
-  const handleDelete = async () => {
-    await dispatch(deletePost(post._id));
+  const handleDelete = () => {
+    dispatch(deletePost(post._id));
     toggleModal();
   };
 
@@ -104,12 +101,24 @@ function PostItem({ post }) {
   };
 
   return (
-    <PostContext.Provider value={{ isLiked, handleLike }}>
-      <div className={cx('wrapper')}>
+    <div className={cx('wrapper')}>
+      <div className={mcx('heading')}></div>
+      <div
+        className={cx('detail', {
+          'scroll-show': isHover,
+          'scroll-hide': !isHover,
+        })}
+        onMouseEnter={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}
+      >
         <div className={cx('head')}>
-          <div className={cx('user')}>
-            <Avatar avatar={post.user.avatar?.url} medium />
-            <div className={cx('user-info')}>
+          <div className={cx('author')}>
+            <Avatar
+              className={cx('avt')}
+              avatar={post.user.avatar?.url}
+              medium
+            />
+            <div className={cx('author-info')}>
               <div>{post.user?.username}</div>
               <p>{moment(post.createdAt).fromNow()}</p>
             </div>
@@ -121,7 +130,20 @@ function PostItem({ post }) {
           </Menu>
         </div>
         <div className={cx('post-detail')}>
-          {post.media?.url && (
+          <div className={cx('title')}>{post.title}</div>
+          <p className={cx('content')}>
+            {showMore
+              ? post?.content
+              : post?.content?.length > 200
+              ? `${post?.content?.substring(0, 200)}...`
+              : post?.content}
+            {post?.content?.length > 200 && (
+              <Button onClick={toggleShowMore}>
+                {showMore ? 'See less' : 'See more'}
+              </Button>
+            )}
+          </p>
+          {post?.media?.url && (
             <div className={cx('media-post')}>
               {post.media?.mediaType === 'image' ? (
                 <Image src={post.media?.url} alt="" />
@@ -130,35 +152,11 @@ function PostItem({ post }) {
               )}
             </div>
           )}
-          {post?.content && (
-            <p className={cx('content')}>
-              {showMore
-                ? post.content
-                : post.content.length > 200
-                ? `${post.content.substring(0, 200)}...`
-                : post.content}
-              {post.content.length > 200 && (
-                <Button onClick={toggleShowMore}>
-                  {showMore ? 'See less' : 'See more'}
-                </Button>
-              )}
-            </p>
-          )}
         </div>
-        {
-          <div className={cx('views')}>
-            {post.likes?.length > 0 && (
-              <div className={cx('view')}>{post.likes?.length} likes</div>
-            )}
-            {post.comments?.length > 0 && (
-              <Modal modalType="post-detail" data={post} sz="medium">
-                <div className={cx('view')}>
-                  {post.comments?.length} comments
-                </div>
-              </Modal>
-            )}
-          </div>
-        }
+        <div className={cx('views')}>
+          <div className={cx('view')}>{post.likes?.length} likes</div>
+          <div className={cx('view')}>{post.comments?.length} comments</div>
+        </div>
         <div className={cx('actions')}>
           <div className={cx('action')} onClick={handleLike}>
             <Button
@@ -175,11 +173,9 @@ function PostItem({ post }) {
             </Button>
           </div>
           <div className={cx('action')}>
-            <Modal modalType="post-detail" data={post} sz="medium">
-              <Button leftIcon={<FontAwesomeIcon icon={faMessage} />}>
-                Comment
-              </Button>
-            </Modal>
+            <Button leftIcon={<FontAwesomeIcon icon={faMessage} />}>
+              Comment
+            </Button>
           </div>
           <div className={cx('action')}>
             <Button leftIcon={<FontAwesomeIcon icon={faRepeat} />}>
@@ -188,17 +184,15 @@ function PostItem({ post }) {
           </div>
         </div>
 
-        {post.comments.length > 0 && (
-          <div className={cx('comments')}>
-            <CommentList />
-          </div>
-        )}
-        <div className={cx('comment-form')}>
-          {user ? <CommentForm post_id={post._id} action="create" /> : null}
+        <div className={cx('comments')}>
+          <CommentList />
         </div>
       </div>
-    </PostContext.Provider>
+      <div className={cx('comment-form')}>
+        {user ? <CommentForm post_id={post._id} action="create" modal /> : null}
+      </div>
+    </div>
   );
 }
 
-export default PostItem;
+export default PostDetail;
