@@ -10,8 +10,8 @@ exports.create = async (req, res, next) => {
     }
     // upload image to cloudinary
     const result = await new Promise((resolve, reject) => {
-      const streamLoad = cloudinary.uploader.upload_stream(
-        { folder: 'arts' },
+      const streamLoad = cloudinary.uploader.upload_chunked_stream(
+        { resource_type: 'image', folder: 'arts' },
         function (error, result) {
           if (result) {
             resolve(result);
@@ -45,6 +45,8 @@ exports.create = async (req, res, next) => {
       },
     });
   } catch (error) {
+    console.log(error);
+
     return next(new ApiError(500, 'An error occurred while creating the art'));
   }
 };
@@ -65,8 +67,12 @@ exports.getArts = async (req, res, next) => {
 // get all auth arts
 exports.getAuthArts = async (req, res, next) => {
   try {
+    const { start, newArtOffset, limit } = req.query;
+
     const allArts = await Art.find()
       .sort({ createdAt: -1 })
+      .skip(Number(start) * Number(limit) + Number(newArtOffset))
+      .limit(Number(limit))
       .populate('author', 'username avatar');
 
     // Filter out arts with varied privacy settings except the ones from the request user
@@ -158,6 +164,7 @@ exports.update = async (req, res, next) => {
     savedArt = await savedArt.populate('author', 'username avatar');
     res.send(savedArt);
   } catch (error) {
+    console.log(error);
     return next(
       new ApiError(500, `Error updating art with id=${req.params.id}`),
     );

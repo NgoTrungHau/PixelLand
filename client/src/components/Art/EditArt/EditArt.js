@@ -103,7 +103,7 @@ function EditArt({ art }) {
     setImage('');
     toggleModal();
   };
-  const FILE_SIZE_LIMIT = 1024 * 1024; // 1MB
+  const FILE_SIZE_LIMIT = 10240 * 1024; // 1MB
   const SUPPORTED_FORMATS = [
     'image/jpg',
     'image/jpeg',

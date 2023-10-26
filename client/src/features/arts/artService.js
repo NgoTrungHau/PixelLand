@@ -21,11 +21,12 @@ const getArts = async () => {
   return response;
 };
 // Get user arts
-const getAuthArts = async (auth) => {
+const getAuthArts = async (auth, newArtOffset) => {
   const config = {
     headers: {
       Authorization: `Bearer ${auth.token}`,
     },
+    params: { start: auth.page, newArtOffset: newArtOffset, limit: 10 },
   };
 
   const response = await httpRequest.get(

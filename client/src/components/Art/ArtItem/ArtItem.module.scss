@@ -35,6 +35,20 @@
     );
     transition: 0.2s ease-in-out;
   }
+  .isGif {
+    position: absolute;
+    margin: 0;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    border-radius: 6px;
+    font-size: 16px;
+    color: var(--white);
+    background-color: rgba(0, 0, 0, 0.5);
+  }
 
   .item-detail {
     display: grid;

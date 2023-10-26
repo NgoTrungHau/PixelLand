@@ -67,17 +67,20 @@ function CommentList({ replies, postCmts }) {
 
   return (
     <div className={cx('wrapper')}>
-      {postCmts
-        ? postCmts.map((cmt, index) => (
-            <MemoizedCmtItem cmt={cmt} key={cmt._id} />
-          ))
-        : !replies
-        ? comments.map((cmt, index) => (
-            <MemoizedCmtItem cmt={cmt} key={cmt._id} />
-          ))
-        : replies.map((reply, index) => (
-            <MemoizedCmtItem cmt={reply} key={reply._id} />
-          ))}
+      {postCmts ? (
+        <MemoizedCmtItem
+          cmt={postCmts[postCmts.length - 1]}
+          key={postCmts[postCmts.length - 1]?._id}
+        />
+      ) : !replies ? (
+        comments.map((cmt, index) => (
+          <MemoizedCmtItem cmt={cmt} key={cmt._id} />
+        ))
+      ) : (
+        replies.map((reply, index) => (
+          <MemoizedCmtItem cmt={reply} key={reply._id} />
+        ))
+      )}
     </div>
   );
 }

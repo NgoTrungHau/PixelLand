@@ -1,13 +1,13 @@
-import { Fragment, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Fragment } from 'react';
+import { useSelector } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useSelector } from 'react-redux';
 
+import DefaultLayout, { HeaderOnly } from '~/layouts';
+import Gallery from '~/pages/Gallery';
 import { publicRoutes } from '~/routes';
 import { scrollToTop as ScrollToTop } from './hooks';
-import Gallery from '~/pages/Gallery';
-import DefaultLayout, { HeaderOnly } from '~/layouts';
 
 function App() {
   const { user } = useSelector((state) => state.auth);
@@ -28,9 +28,7 @@ function App() {
 
           if (!user) {
             Layout = HeaderOnly;
-            {
-              Page = Gallery;
-            }
+            Page = Gallery;
           }
 
           return (

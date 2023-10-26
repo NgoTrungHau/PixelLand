@@ -40,7 +40,7 @@ import Video from '~/components/Video';
 const cx = classNames.bind(styles);
 
 function CommentItem({ key, cmt }) {
-  const [isLiked, setIsLiked] = useState(cmt.liked);
+  const [isLiked, setIsLiked] = useState(cmt?.liked);
   const [isEdit, setIsEdit] = useState(false);
   const [editing, setEditing] = useState(false);
   const [isReply, setIsReply] = useState(false);

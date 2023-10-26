@@ -1,17 +1,17 @@
 import classNames from 'classnames/bind';
+// React
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
+// scss
 import styles from './PostList.module.scss';
+// components
 import PostItem from '~/components/Post/PostItem';
-import { getPosts, reset } from '~/features/posts/postSlice';
-import SpinIcon from '~/components/SpinIcon';
+import { reset } from '~/features/posts/postSlice';
 
 const cx = classNames.bind(styles);
 
 function PostList() {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
@@ -42,36 +42,29 @@ function PostList() {
     if (isError) {
       console.log(message);
     }
+    return () => {
+      dispatch(reset());
+    };
+  }, [isError, message, dispatch]);
 
-    if (!user) {
-      navigate('/');
-    }
-    dispatch(getPosts());
-    // return () => {
-    //   dispatch(reset());
-    // };
-  }, [user, navigate, isError, message, dispatch]);
   if (!user) {
     return null;
   }
   return (
-    <div className={cx('wrapper')}>
-      {isPostsLoading ? (
-        cards_sample
-      ) : (
+    <>
+      <div className={cx('wrapper')}>
         <section className={cx('content')}>
-          {posts.length > 0 ? (
+          {posts.length > 0 && (
             <div className={cx('posts')}>
               {posts.map((post) => (
                 <PostItem key={post._id} post={post} />
               ))}
             </div>
-          ) : (
-            <h3>There are no posts</h3>
           )}
         </section>
-      )}
-    </div>
+      </div>
+      {isPostsLoading && cards_sample}
+    </>
   );
 }
 

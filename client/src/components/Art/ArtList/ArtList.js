@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 // React
-import { useEffect, useState, useCallback, memo } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -13,14 +13,14 @@ import styles from './ArtList.module.scss';
 // components
 import ArtItem from '../ArtItem/ArtItem';
 // features
-import { getArts, getAuthArts } from '~/features/arts/artSlice';
 import Menu from '~/components/Popper/Menu';
+import { reset } from '~/features/arts/artSlice';
 
 const cx = classNames.bind(styles);
 
 const MemoizedArtItem = memo(({ art, index }) => <ArtItem art={art} />);
 
-function ArtList() {
+function ArtList({ page }) {
   const [isArtsReady, setIsArtsReady] = useState(false);
   const [filteredArts, setFilteredArts] = useState([]);
   const [selectedStyle, setSelectedStyle] = useState('Explore');
@@ -41,12 +41,11 @@ function ArtList() {
   const displayedStyles = styleOptions.slice(0, 6);
   const dropdownStyles = styleOptions.slice(6);
 
-  const { arts, isArtsLoading, isSuccess, isError, message } = useSelector(
+  const { arts, isArtsLoading, isError, message } = useSelector(
     (state) => state.arts,
   );
-  const { user } = useSelector((state) => state.auth);
 
-  const cards_sample = Array(12)
+  const cards_sample = Array(8)
     .fill(undefined)
     .map((a, i) => <div className={cx('card-thumb-sample')} key={i}></div>);
 
@@ -60,22 +59,13 @@ function ArtList() {
 
   // useEffect
   useEffect(() => {
-    if (user) {
-      dispatch(getAuthArts({ user_id: user._id, token: user.token }));
-    }
-    if (!user) {
-      dispatch(getArts());
-    }
-  }, [user, dispatch, navigate]);
-
-  useEffect(() => {
     if (isError && message) {
       toast.error(message);
     }
-    if (isSuccess && message) {
-      toast.success(message);
-    }
-  }, [navigate, message, isError, isSuccess, dispatch]);
+    return () => {
+      dispatch(reset());
+    };
+  }, [message, isError, dispatch]);
   useEffect(() => {
     if (selectedStyle === 'Explore') {
       setFilteredArts(arts);
@@ -132,13 +122,16 @@ function ArtList() {
         )}
       </div>
 
-      <Masonry className={cx('masonry-wrapper')} columns={4} spacing={2}>
-        {!isArtsReady
-          ? cards_sample
-          : filteredArts.map((art, index) => (
-              <MemoizedArtItem art={art} key={art._id} />
-            ))}
-      </Masonry>
+      <div className={cx('masonry-wrapper')}>
+        <Masonry columns={4} spacing={2}>
+          {!isArtsReady
+            ? cards_sample
+            : filteredArts.map((art, index) => (
+                <MemoizedArtItem art={art} key={art._id} />
+              ))}
+          {isArtsLoading && cards_sample}
+        </Masonry>
+      </div>
     </div>
   );
 }

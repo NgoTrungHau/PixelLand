@@ -108,7 +108,7 @@ function PostItem({ post }) {
       <div className={cx('wrapper')}>
         <div className={cx('head')}>
           <div className={cx('user')}>
-            <Avatar avatar={post.user.avatar?.url} medium />
+            <Avatar avatar={post.user?.avatar?.url} medium />
             <div className={cx('user-info')}>
               <div>{post.user?.username}</div>
               <p>{moment(post.createdAt).fromNow()}</p>
@@ -133,11 +133,11 @@ function PostItem({ post }) {
           {post?.content && (
             <p className={cx('content')}>
               {showMore
-                ? post.content
-                : post.content.length > 200
-                ? `${post.content.substring(0, 200)}...`
-                : post.content}
-              {post.content.length > 200 && (
+                ? post?.content
+                : post?.content?.length > 200
+                ? `${post?.content.substring(0, 200)}...`
+                : post?.content}
+              {post?.content?.length > 200 && (
                 <Button onClick={toggleShowMore}>
                   {showMore ? 'See less' : 'See more'}
                 </Button>
@@ -188,9 +188,14 @@ function PostItem({ post }) {
           </div>
         </div>
 
-        {post.comments.length > 0 && (
+        {post?.comments?.length > 0 && (
+          <Modal modalType="post-detail" data={post} sz="medium">
+            <Button className={cx('view-more-cmts')}>View more comments</Button>
+          </Modal>
+        )}
+        {post?.comments?.length > 0 && (
           <div className={cx('comments')}>
-            <CommentList />
+            <CommentList postCmts={post?.comments} />
           </div>
         )}
         <div className={cx('comment-form')}>

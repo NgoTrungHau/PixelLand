@@ -105,7 +105,7 @@ function PostForm({ post }) {
     setPrivacy(privacy);
   };
 
-  // const FILE_SIZE_LIMIT = 1024 * 1024; // 1MB
+  const FILE_SIZE_LIMIT = 10240 * 1024; // 1MB
   const SUPPORTED_FORMATS = [
     'image/jpg',
     'image/jpeg',
@@ -125,9 +125,9 @@ function PostForm({ post }) {
     media: Yup.mixed()
       .nullable()
       .notRequired()
-      // .test('fileSize', 'File too large', (value) =>
-      //   value ? value.size <= FILE_SIZE_LIMIT : true,
-      // )
+      .test('fileSize', 'File too large', (value) =>
+        value ? value.size <= FILE_SIZE_LIMIT : true,
+      )
       // .test('type', 'Unsupported Format', (value) => {
       //   return value ? SUPPORTED_FORMATS.includes(value.type) : true;
       // })
@@ -247,6 +247,9 @@ function PostForm({ post }) {
                     <Image src={media} alt="" />
                   ) : (
                     <Video key={media} src={media} thumbnail />
+                  )}
+                  {formik.errors.media && formik.touched.media && (
+                    <p className={mcx('mess-error')}>{formik.errors.media}</p>
                   )}
                 </div>
               )}

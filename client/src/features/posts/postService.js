@@ -16,13 +16,13 @@ const createPost = async (postData, token) => {
 };
 
 // Get user posts
-const getPosts = async (token) => {
+const getPosts = async (page, newPostOffset, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    params: { start: page, newPostOffset: newPostOffset, limit: 4 },
   };
-
   const response = await httpRequest.get(API_URL, config);
 
   return response;

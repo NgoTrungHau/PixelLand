@@ -4,6 +4,7 @@ import { createCmt, deleteCmt } from '../comments/commentSlice';
 
 const initialState = {
   arts: [],
+  newArtOffset: 0,
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -48,7 +49,9 @@ export const getAuthArts = createAsyncThunk(
   'arts/getAll_auth',
   async (auth, thunkAPI) => {
     try {
-      return await artService.getAuthArts(auth);
+      const newArtOffset = thunkAPI.getState().arts.newArtOffset;
+
+      return await artService.getAuthArts(auth, newArtOffset);
     } catch (error) {
       const message =
         (error.response &&
@@ -174,6 +177,7 @@ export const artSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.arts.unshift(action.payload);
+        state.newArtOffset++;
       })
       .addCase(createArt.rejected, (state, action) => {
         state.isLoading = false;
@@ -204,7 +208,11 @@ export const artSlice = createSlice({
         state.isLoading = false;
         state.isArtsLoading = false;
         state.isSuccess = true;
-        state.arts = action.payload;
+        if (action.meta.arg.page > 0) {
+          state.arts = [...state.arts, ...action.payload];
+        } else {
+          state.arts = action.payload;
+        }
       })
       .addCase(getAuthArts.rejected, (state, action) => {
         state.isLoading = false;
@@ -243,6 +251,7 @@ export const artSlice = createSlice({
       .addCase(deleteArt.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
+        state.newArtOffset--;
       })
       .addCase(deleteArt.rejected, (state, action) => {
         state.isLoading = false;

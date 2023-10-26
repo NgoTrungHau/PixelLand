@@ -4,6 +4,7 @@ import { createCmt, deleteCmt } from '../comments/commentSlice';
 
 const initialState = {
   posts: [],
+  newPostOffset: 0,
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -33,10 +34,12 @@ export const createPost = createAsyncThunk(
 // Get user posts
 export const getPosts = createAsyncThunk(
   'posts/getAll',
-  async (_, thunkAPI) => {
+  async (page, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await postService.getPosts(token);
+      const bonus = thunkAPI.getState().posts.newPostOffset;
+
+      return await postService.getPosts(page, bonus, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -142,6 +145,7 @@ export const postSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.posts.unshift(action.payload);
+        state.newPostOffset++;
       })
       .addCase(createPost.rejected, (state, action) => {
         state.isLoading = false;
@@ -155,9 +159,12 @@ export const postSlice = createSlice({
       .addCase(getPosts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isPostsLoading = false;
-
         state.isSuccess = true;
-        state.posts = action.payload;
+        if (action.meta.arg > 0) {
+          state.posts = [...state.posts, ...action.payload];
+        } else {
+          state.posts = action.payload;
+        }
       })
       .addCase(getPosts.rejected, (state, action) => {
         state.isLoading = false;
@@ -199,6 +206,7 @@ export const postSlice = createSlice({
       .addCase(deletePost.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
+        state.newPostOffset--;
       })
       .addCase(deletePost.rejected, (state, action) => {
         state.isLoading = false;
@@ -254,7 +262,7 @@ export const postSlice = createSlice({
 
         // If the post exists, push the comment id into its comments array
         if (postIndex !== -1) {
-          state.posts[postIndex].comments.push(newComment._id);
+          state.posts[postIndex].comments.push(newComment);
         }
       })
       .addCase(deleteCmt.pending, (state, action) => {

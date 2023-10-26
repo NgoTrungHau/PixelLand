@@ -54,7 +54,9 @@ const Modal = forwardRef(
       } else if (!isChild) {
         body.style.overflowY = 'auto';
         body.style.position = 'static';
-        window.scrollTo(0, scrollPosition);
+        if (scrollPosition !== 0) {
+          window.scrollTo(0, scrollPosition);
+        }
       }
     }, [modal, isChild]);
 
