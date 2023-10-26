@@ -1,6 +1,6 @@
 const ApiError = require('../api-error');
 const Post = require('../models/Post');
-const User = require('../models/User');
+const Comment = require('../models/Comment');
 const cloudinary = require('../utils/cloudinary');
 
 exports.createPost = async (req, res, next) => {
@@ -56,12 +56,29 @@ exports.createPost = async (req, res, next) => {
 
 exports.getPosts = async (req, res, next) => {
   try {
+    const { start, newPostOffset, limit = 4 } = req.query;
     const allPosts = await Post.find()
       .sort({ createdAt: -1 })
+      .skip(Number(start) * Number(limit) + Number(newPostOffset))
+      .limit(Number(limit))
       .populate('user', 'username avatar');
+    const data = allPosts.map((post) => post.toObject()); // convert all posts to JavaScript objects
+
+    const modifiedPosts = await Promise.all(
+      data.map(async (post) => {
+        if (post.comments.length > 0) {
+          const lastComment = await Comment.findById(
+            post.comments.slice(-1)[0],
+          ).populate('commentedBy', 'username avatar');
+          post.comments = post.comments.map((comment) => comment.toString());
+          post.comments[post.comments.length - 1] = lastComment;
+        }
+        return post;
+      }),
+    );
 
     // Filter out posts with varied privacy settings except the ones from the request user
-    const posts = allPosts.filter((post) => {
+    const posts = modifiedPosts.filter((post) => {
       const userIsAuthor = post.user._id.toString() === req.user._id.toString();
       if (userIsAuthor) return true;
 
@@ -80,14 +97,20 @@ exports.getPosts = async (req, res, next) => {
           return false;
       }
     });
-    posts.map((post) => {
-      if (post.likes.includes(req.user._id.toString())) {
-        post._doc.liked = true;
+
+    // Update liked status for posts and comments
+    posts.forEach((post) => {
+      post.liked = post.likes.includes(req.user._id.toString());
+      if (post.comments.length > 0) {
+        post.comments[post.comments.length - 1]._doc.liked = post.comments[
+          post.comments.length - 1
+        ].likedBy.includes(req.user._id.toString());
       }
     });
 
     res.json(posts);
   } catch (error) {
+    console.error(error); // Log the error to console for debugging
     return next(new ApiError(500, 'An error occurred while retrieving posts'));
   }
 };
@@ -121,13 +144,17 @@ exports.update = async (req, res, next) => {
       return next(new ApiError(401, 'Post not found'));
     }
     if (!req.body.media && post.media.url) {
-      await cloudinary.uploader.destroy(post.media.public_id);
+      await cloudinary.uploader.destroy(post.media.public_id, {
+        folder: 'posts',
+      });
       post.media = null;
     }
     if (req.file) {
       // Delete the old post and upload the new post
       if (post.media.url) {
-        await cloudinary.uploader.destroy(post.media.public_id);
+        await cloudinary.uploader.destroy(post.media.public_id, {
+          folder: 'posts',
+        });
       }
       const result = await new Promise((resolve, reject) => {
         const streamLoad = cloudinary.uploader.upload_chunked_stream(

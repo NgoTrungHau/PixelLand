@@ -73,7 +73,7 @@ function UploadArt() {
     toggleModal();
   };
 
-  // const FILE_SIZE_LIMIT = 1024 * 1024; // 1MB
+  const FILE_SIZE_LIMIT = 10240 * 1024; //
   const SUPPORTED_FORMATS = [
     'image/jpg',
     'image/jpeg',
@@ -92,11 +92,11 @@ function UploadArt() {
     ),
     art: Yup.mixed()
       .required('An image is required')
-      // .test(
-      //   'fileSize',
-      //   'File too large',
-      //   (value) => value && value.size <= FILE_SIZE_LIMIT,
-      // )
+      .test(
+        'fileSize',
+        'File too large',
+        (value) => value && value.size <= FILE_SIZE_LIMIT,
+      )
       .test('type', 'Unsupported Format', (value) => {
         return value && SUPPORTED_FORMATS.includes(value.type);
       }),
@@ -229,12 +229,12 @@ function UploadArt() {
                   hidden
                 />
               </label>
-              {formik.errors.art && formik.touched.art && (
-                <p className={mcx('mess-error')}>{formik.errors.art}</p>
-              )}
             </div>
             <div className={mcx('form-field')}>
               {media && <Image src={media} alt="" preview />}
+              {formik.errors.art && formik.touched.art && (
+                <p className={mcx('mess-error')}>{formik.errors.art}</p>
+              )}
             </div>
 
             <div className={cx('check-term')}>

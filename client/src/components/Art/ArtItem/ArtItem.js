@@ -26,6 +26,7 @@ export const ArtContext = createContext();
 function ArtItem({ key, art }) {
   const [cardHover, setCardHover] = useState(false);
   const [isLiked, setIsLiked] = useState(art.liked);
+  const isGif = art?.art?.url.toLowerCase().endsWith('.gif');
 
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -65,6 +66,7 @@ function ArtItem({ key, art }) {
                 cardHover ? 'item-show' : 'item-hide',
               )}
             ></div>
+            {isGif && <div className={cx('isGif')}>GIF</div>}
           </div>
         </Modal>
       </ArtContext.Provider>
