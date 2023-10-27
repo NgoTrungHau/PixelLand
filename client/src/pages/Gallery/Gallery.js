@@ -5,7 +5,7 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { ArtList } from '~/components/Art/';
 import styles from './Gallery.module.scss';
 import Button from '~/components/Button';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getArts, getAuthArts } from '~/features/arts/artSlice';
 
@@ -13,10 +13,11 @@ const cx = classNames.bind(styles);
 
 function Gallery() {
   const [page, setPage] = useState(0);
+  const loadingArtsRef = useRef(false); // reference for API call status
 
   const dispatch = useDispatch();
 
-  const { user } = useSelector((state) => state.auth);
+  const { user, hasCheckedUser } = useSelector((state) => state.auth);
   const { isArtsLoading } = useSelector((state) => state.arts);
 
   useEffect(() => {
@@ -35,18 +36,25 @@ function Gallery() {
   }, [isArtsLoading]);
   // useEffect
   useEffect(() => {
-    if (user) {
-      dispatch(
-        getAuthArts({ user_id: user._id, token: user.token, page: page }),
-      );
+    if (hasCheckedUser && !loadingArtsRef.current) {
+      loadingArtsRef.current = true; // set loading to true before API call
+      if (user) {
+        dispatch(
+          getAuthArts({
+            user_id: user._id,
+            token: user.tokens.access_token,
+            page: page,
+          }),
+        ).then(() => {
+          loadingArtsRef.current = false; // set loading to false after API call
+        });
+      } else {
+        dispatch(getArts(page)).then(() => {
+          loadingArtsRef.current = false; // set loading to false after API call
+        });
+      }
     }
-    if (!user) {
-      dispatch(getArts());
-    }
-  }, [page, user, dispatch]);
-  if (!user) {
-    return null;
-  }
+  }, [page, hasCheckedUser, user, dispatch]);
 
   return (
     <div className={cx('wrapper')}>

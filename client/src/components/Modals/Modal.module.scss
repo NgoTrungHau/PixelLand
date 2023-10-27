@@ -77,7 +77,8 @@
 }
 .heading {
   display: flex;
-  height: 50px;
+  flex-direction: column;
+  min-height: 50px;
   border-bottom: 1px solid var(--gray);
   text-align: center !important;
   justify-content: center !important;
@@ -117,6 +118,8 @@
 }
 
 input[type='text'],
+input[type='email'],
+input[type='password'],
 textarea {
   width: 100%;
   font-size: 16px !important;

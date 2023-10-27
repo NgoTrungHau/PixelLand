@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 // React
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // scss
 import styles from './Home.module.scss';
@@ -15,10 +15,11 @@ const cx = classNames.bind(styles);
 
 function Home() {
   const [page, setPage] = useState(0);
+  const loadingPostsRef = useRef(false); // reference for API call status
 
   const dispatch = useDispatch();
 
-  const { user } = useSelector((state) => state.auth);
+  const { user, hasCheckedUser } = useSelector((state) => state.auth);
   const { isPostsLoading } = useSelector((state) => state.posts);
 
   useEffect(() => {
@@ -36,8 +37,16 @@ function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isPostsLoading]);
   useEffect(() => {
-    dispatch(getPosts(page));
-  }, [page, dispatch]);
+    if (hasCheckedUser && !loadingPostsRef.current) {
+      loadingPostsRef.current = true; // set loading to true before API call
+
+      if (user) {
+        dispatch(getPosts(page)).then(() => {
+          loadingPostsRef.current = false; // set loading to false after API call
+        });
+      }
+    }
+  }, [page, hasCheckedUser, user, dispatch]);
 
   if (!user) {
     return null;

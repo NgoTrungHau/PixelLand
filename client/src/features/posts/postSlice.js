@@ -17,7 +17,7 @@ export const createPost = createAsyncThunk(
   'posts/create',
   async (postData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await postService.createPost(postData, token);
     } catch (error) {
       const message =
@@ -36,7 +36,7 @@ export const getPosts = createAsyncThunk(
   'posts/getAll',
   async (page, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       const bonus = thunkAPI.getState().posts.newPostOffset;
 
       return await postService.getPosts(page, bonus, token);
@@ -57,7 +57,7 @@ export const editPost = createAsyncThunk(
   'posts/edit',
   async (postData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await postService.editPost(postData, token);
     } catch (error) {
       const message =
@@ -76,7 +76,7 @@ export const deletePost = createAsyncThunk(
   'posts/delete',
   async (id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await postService.deletePost(id, token);
     } catch (error) {
       const message =
@@ -95,7 +95,7 @@ export const likePost = createAsyncThunk(
   'posts/likePost',
   async (post_id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       const response = await postService.likePost(post_id, token);
       return response;
     } catch (error) {
@@ -115,7 +115,7 @@ export const unlikePost = createAsyncThunk(
   'posts/unlikePost',
   async (post_id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       const response = await postService.unlikePost(post_id, token);
       return response;
     } catch (error) {
@@ -134,7 +134,16 @@ export const postSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: (state) => {
+      // Keep the value of isPostsLoading before resetting
+      const isPostsLoading = state.isPostsLoading;
+
+      // Reset state
+      Object.assign(state, initialState);
+
+      // Restore isPostsLoading
+      state.isPostsLoading = isPostsLoading;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -169,6 +178,7 @@ export const postSlice = createSlice({
       .addCase(getPosts.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
+        state.isPostsLoading = false;
         state.message = action.payload;
       })
       .addCase(editPost.pending, (state) => {

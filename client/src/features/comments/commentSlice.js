@@ -15,7 +15,7 @@ export const createCmt = createAsyncThunk(
   'cmts/create',
   async (cmtData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await commentService.createCmt(cmtData, token);
     } catch (error) {
       const message =
@@ -34,7 +34,7 @@ export const getCmts = createAsyncThunk(
   'cmts/getAll_auth',
   async (art_id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await commentService.getCmts(art_id, token);
     } catch (error) {
       const message =
@@ -53,7 +53,7 @@ export const editCmt = createAsyncThunk(
   'cmts/edit',
   async (cmtData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await commentService.editCmt(cmtData, token);
     } catch (error) {
       const message =
@@ -72,7 +72,7 @@ export const deleteCmt = createAsyncThunk(
   'cmts/delete',
   async (cmt, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await commentService.deleteCmt(cmt._id, token);
     } catch (error) {
       const message =
@@ -91,7 +91,7 @@ export const likeCmt = createAsyncThunk(
   'cmts/likeCmt',
   async (cmt_id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       const response = await commentService.likeCmt(cmt_id, token);
       return response;
     } catch (error) {
@@ -111,7 +111,7 @@ export const unlikeCmt = createAsyncThunk(
   'cmts/unlikeCmt',
   async (cmt_id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       const response = await commentService.unlikeCmt(cmt_id, token);
       return response;
     } catch (error) {
@@ -129,7 +129,7 @@ export const replyCmt = createAsyncThunk(
   'cmts/reply',
   async (replyData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       const response = await commentService.replyCmt(replyData, token);
       return response;
     } catch (error) {
@@ -148,7 +148,16 @@ export const cmtSlice = createSlice({
   name: 'cmt',
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: (state) => {
+      // Keep the value of isCmtsLoading before resetting
+      const isCmtsLoading = state.isCmtsLoading;
+
+      // Reset state
+      Object.assign(state, initialState);
+
+      // Restore isCmtsLoading
+      state.isCmtsLoading = isCmtsLoading;
+    },
   },
   extraReducers: (builder) => {
     builder

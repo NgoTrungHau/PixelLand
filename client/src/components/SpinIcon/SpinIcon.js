@@ -7,11 +7,11 @@ import styles from './SpinIcon.module.scss';
 
 const cx = classNames.bind(styles);
 
-function SpinIcon({ type }) {
+function SpinIcon({ type, full = false }) {
   return type ? (
     <FontAwesomeIcon className={cx({ type })} icon={faSpinner} />
   ) : (
-    <div className={cx('spin-icon')}>
+    <div className={cx('spin-icon', full && 'full')}>
       <FontAwesomeIcon className={cx('loading')} icon={faSpinner} />
     </div>
   );
@@ -19,6 +19,7 @@ function SpinIcon({ type }) {
 
 SpinIcon.propTypes = {
   type: PropTypes.string,
+  full: PropTypes.bool,
 };
 
 export default SpinIcon;

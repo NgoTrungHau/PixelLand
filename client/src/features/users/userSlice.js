@@ -14,7 +14,7 @@ export const createUser = createAsyncThunk(
   'users/create',
   async (userData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await userService.createUser(userData, token);
     } catch (error) {
       const message =
@@ -51,7 +51,7 @@ export const deleteUser = createAsyncThunk(
   'users/delete',
   async (id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await userService.deleteUser(id, token);
     } catch (error) {
       const message =

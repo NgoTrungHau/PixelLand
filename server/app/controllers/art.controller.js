@@ -54,10 +54,13 @@ exports.create = async (req, res, next) => {
 // get all arts
 exports.getArts = async (req, res, next) => {
   try {
+    const { start, limit } = req.query;
     const arts = await Art.find({
       privacy: 'Public',
     })
       .sort({ createdAt: -1 })
+      .skip(Number(start) * Number(limit))
+      .limit(Number(limit))
       .populate('author', 'username avatar');
     res.json(arts);
   } catch (error) {

@@ -7,54 +7,64 @@ const User = require('../models/User');
 
 // Register
 exports.register = async (req, res, next) => {
-  const { username, email, password } = req.body;
-
-  if (!username || !email || !password) {
-    return next(new ApiError(400, 'Please add all fields'));
-  }
-
-  const exists = await User.findOne({ email: email });
-
-  if (exists) {
-    return next(new ApiError(400, 'User already exists'));
-  }
-
-  // hash password
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  // create user
-  const user = new User({
-    username,
-    email,
-    password: hashedPassword,
-  });
-  const refresh_token = generateToken(user._id);
-  const access_token = generateToken(user._id);
-
-  user.update({
-    $set: { refresh_token: refresh_token },
-  });
-
   try {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+      return next(new ApiError(400, 'Please add all fields'));
+    }
+
+    const exists = await User.findOne({ email: email });
+
+    if (exists) {
+      return next(new ApiError(400, 'User already exists'));
+    }
+
+    // hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // create user
+    const user = new User({
+      username,
+      email,
+      password: hashedPassword,
+    });
+    const refresh_token = generateRefreshToken(user._id);
+    const access_token = generateAccessToken(user._id);
+    const tokens = {
+      refresh_token,
+      access_token,
+    };
+    user.refresh_token = refresh_token;
+
     const createUser = await user.save();
     res.json({
-      token: refresh_token,
+      tokens,
       ...createUser._doc,
       password: '',
     });
   } catch (error) {
+    console.log(error);
     return next(new ApiError(400, 'Invalid user data'));
   }
 };
 
-// Login
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '1d',
+// generateToken function for access token
+const generateAccessToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_ACCESS_SECRET, {
+    expiresIn: '6m',
   });
 };
 
+// generateToken function for refresh token
+const generateRefreshToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: '1w',
+  });
+};
+
+// Login
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -77,25 +87,82 @@ exports.login = async (req, res, next) => {
       return next(new ApiError(400, 'Entered wrong password'));
     }
 
-    const refresh_token = generateToken(user._id);
-    const access_token = generateToken(user._id);
-
-    user.update({
-      $set: { refresh_token: refresh_token },
-    });
-
-    if (user && isPasswordValid) {
+    const refresh_token = generateRefreshToken(user._id);
+    const access_token = generateAccessToken(user._id);
+    const tokens = {
+      refresh_token,
+      access_token,
+    };
+    user.refresh_token = refresh_token;
+    const savedUser = await user.save();
+    if (savedUser && isPasswordValid) {
       return res.json({
-        token: refresh_token,
-        ...user._doc,
+        tokens,
+        ...savedUser._doc,
         password: '',
       });
     }
   } catch (error) {
+    console.log(error);
     return next(new ApiError(400, `Invalid credentials`));
   }
 };
 
+exports.refreshToken = async (req, res, next) => {
+  try {
+    const refToken = req.user.refresh_token;
+
+    if (!refToken) {
+      throw new Error('Refresh token missing');
+    }
+
+    // Verify the refresh token
+    jwt.verify(
+      refToken,
+      process.env.JWT_REFRESH_SECRET,
+      function (err, decoded) {
+        if (err) {
+          // Refresh token expired or invalid, send failure response
+          return res
+            .status(400)
+            .json({ msg: 'Token expired, please log in again' });
+        }
+
+        // If successful, generate a new access token
+        const accessToken = generateAccessToken(req.user._id);
+        res.json({
+          accessToken,
+        });
+      },
+    );
+  } catch (error) {
+    next(new ApiError(400, 'Invalid refresh token'));
+  }
+};
+
+// get user data
+exports.getUser = async (req, res, next) => {
+  try {
+    const { refresh_token, access_token } = req.body;
+    if (!refresh_token) {
+      throw new Error('Refresh token missing');
+    }
+    if (!access_token) {
+      throw new Error('Access token missing');
+    }
+    const user = await User.findOne({ refresh_token: refresh_token }).exec();
+    res.json({
+      ...user._doc,
+      tokens: {
+        refresh_token,
+        access_token,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    next(new ApiError(400, 'Invalid refresh token'));
+  }
+};
 // get user data
 exports.getMe = async (req, res) => {
   res.status(200).json(req.user);
