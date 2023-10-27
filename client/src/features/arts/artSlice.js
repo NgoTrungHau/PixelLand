@@ -17,7 +17,7 @@ export const createArt = createAsyncThunk(
   'arts/create',
   async (artData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await artService.createArt(artData, token);
     } catch (error) {
       const message =
@@ -32,17 +32,22 @@ export const createArt = createAsyncThunk(
 );
 
 // Get user arts
-export const getArts = createAsyncThunk('arts/getAll', async (thunkAPI) => {
-  try {
-    return await artService.getArts();
-  } catch (error) {
-    const message =
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString();
-    return thunkAPI.rejectWithValue(message);
-  }
-});
+export const getArts = createAsyncThunk(
+  'arts/getAll',
+  async (page, thunkAPI) => {
+    try {
+      return await artService.getArts(page);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
 
 // Get user arts
 export const getAuthArts = createAsyncThunk(
@@ -69,7 +74,7 @@ export const editArt = createAsyncThunk(
   'arts/edit',
   async (artData, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await artService.editArt(artData, token);
     } catch (error) {
       const message =
@@ -88,7 +93,7 @@ export const deleteArt = createAsyncThunk(
   'arts/delete',
   async (id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       return await artService.deleteArt(id, token);
     } catch (error) {
       const message =
@@ -107,7 +112,7 @@ export const viewArt = createAsyncThunk(
   'arts/viewArt',
   async (art_id, thunkAPI) => {
     try {
-      // const token = thunkAPI.getState().auth.user.token;
+      // const token = thunkAPI.getState().auth.user.tokens.access_token;
       const response = await artService.viewArt(art_id);
       return response;
     } catch (error) {
@@ -127,7 +132,7 @@ export const likeArt = createAsyncThunk(
   'arts/likeArt',
   async (art_id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       const response = await artService.likeArt(art_id, token);
       return response;
     } catch (error) {
@@ -147,7 +152,7 @@ export const unlikeArt = createAsyncThunk(
   'arts/unlikeArt',
   async (art_id, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
       const response = await artService.unlikeArt(art_id, token);
       return response;
     } catch (error) {
@@ -192,7 +197,11 @@ export const artSlice = createSlice({
         state.isLoading = false;
         state.isArtsLoading = false;
         state.isSuccess = true;
-        state.arts = action.payload;
+        if (action.meta.arg > 0) {
+          state.arts = [...state.arts, ...action.payload];
+        } else {
+          state.arts = action.payload;
+        }
       })
       .addCase(getArts.rejected, (state, action) => {
         state.isLoading = false;

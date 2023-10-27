@@ -1,7 +1,7 @@
 // classname
 import classNames from 'classnames/bind';
 // react
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Icon
 import { faHeart, faMessage } from '@fortawesome/free-regular-svg-icons';
@@ -41,22 +41,29 @@ function PostDetail({ post }) {
   const { isLiked, handleLike } = useContext(PostContext);
   const [isHover, setIsHover] = useState(false);
   const [showMore, setShowMore] = useState(false); // new state
+  const loadingCmtsRef = useRef(false); // reference for API call status
 
   const toggleModal = useContext(ModalToggleContext);
   const dispatch = useDispatch();
 
   // get data from redux reducer
-  const { user } = useSelector((state) => state.auth);
+  const { user, hasCheckedUser } = useSelector((state) => state.auth);
   const { isLoading } = useSelector((state) => state.posts);
 
   useEffect(() => {
-    if (user) {
-      dispatch(getCmts(post._id));
+    if (hasCheckedUser && !loadingCmtsRef.current) {
+      loadingCmtsRef.current = true; // set loading to true before API call
+
+      if (user) {
+        dispatch(getCmts(post._id)).then(() => {
+          loadingCmtsRef.current = false; // set loading to false after API call
+        });
+      }
     }
     return () => {
       dispatch(reset());
     };
-  }, [post._id, dispatch, user]);
+  }, [post._id, dispatch, user, hasCheckedUser]);
 
   const toggleShowMore = () => {
     setShowMore(!showMore);

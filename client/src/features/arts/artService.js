@@ -15,8 +15,11 @@ const createArt = async (artData, token) => {
 };
 
 // Get user arts
-const getArts = async () => {
-  const response = await httpRequest.get(API_URL);
+const getArts = async (page) => {
+  const config = {
+    params: { start: page, limit: 10 },
+  };
+  const response = await httpRequest.get(API_URL, config);
 
   return response;
 };

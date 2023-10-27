@@ -1,7 +1,7 @@
 // classname
 import classNames from 'classnames/bind';
 // react
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 // Icon
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -40,23 +40,31 @@ function ArtDetail({ art }) {
   const { isLiked, handleLike } = useContext(ArtContext);
   const [isHover, setIsHover] = useState(false);
   const [showMore, setShowMore] = useState(false); // new state
+  const loadingCmtsRef = useRef(false); // reference for API call status
 
   const toggleModal = useContext(ModalToggleContext);
   const dispatch = useDispatch();
 
   // get data from redux reducer
-  const { user } = useSelector((state) => state.auth);
+  const { user, hasCheckedUser } = useSelector((state) => state.auth);
   const { isLoading } = useSelector((state) => state.arts);
 
   useEffect(() => {
     dispatch(viewArt(art._id));
-    if (user) {
-      dispatch(getCmts(art._id));
+
+    if (hasCheckedUser && !loadingCmtsRef.current) {
+      loadingCmtsRef.current = true; // set loading to true before API call
+
+      if (user) {
+        dispatch(getCmts(art._id)).then(() => {
+          loadingCmtsRef.current = false; // set loading to false after API call
+        });
+      }
     }
     return () => {
       dispatch(reset());
     };
-  }, [art._id, dispatch, user]);
+  }, [art._id, dispatch, user, hasCheckedUser]);
 
   const toggleShowMore = () => {
     setShowMore(!showMore);

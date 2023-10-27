@@ -1,39 +1,33 @@
 import classNames from 'classnames/bind';
-import { useContext, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+// React
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+// form validation
+import { Formik, useFormik } from 'formik';
+import * as Yup from 'yup';
+
+//scss
+import mstyles from '../Modal.module.scss';
+import styles from './SignUp.module.scss';
+// components
 import Button from '~/components/Button';
-import styles from '../Modal.module.scss';
+// features
+import SpinIcon from '~/components/SpinIcon';
 import { register, reset } from '~/features/auth/authSlice';
-import { ModalToggleContext } from '../../Modals/Modal';
 
 const cx = classNames.bind(styles);
+const mcx = classNames.bind(mstyles);
 
 function SignUpForm() {
-  const toggleModal = useContext(ModalToggleContext);
-
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    password2: '',
-  });
-
-  const { username, email, password, password2 } = formData;
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, isError, isSuccess, message } = useSelector(
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth,
   );
 
   useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-
     if (isSuccess || user) {
       navigate('/');
     }
@@ -41,112 +35,139 @@ function SignUpForm() {
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
-  const handleFormData = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  const SignUpSchema = Yup.object().shape({
+    username: Yup.string().required('Required'),
+    email: Yup.string().required('Required'),
+    password: Yup.string().required('Required'),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref('password'), null], "Passwords don't match.") // The error message is shown if the values don't match
+      .required('Required'),
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (password !== password2) {
-      toast.error('Passwords do not match');
-    } else {
-      const userData = {
-        username,
-        email,
-        password,
-      };
-
-      dispatch(register(userData));
-    }
-  };
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+    validationSchema: SignUpSchema,
+    onSubmit: async () => {
+      console.log(formik.values);
+      await dispatch(register(formik.values));
+      formik.resetForm();
+    },
+  });
 
   return (
-    <div className={cx('wrapper')}>
-      <div className="heading">
+    <>
+      <div className={mcx('heading')}>
         <h2>Create an account</h2>
-        <p>Become part of pixel art community</p>
+        <p>Become part of art community</p>
       </div>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label
-            className="d-flex justify-content-left"
-            htmlFor="auth-username-signup"
-          >
-            Username:
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            value={username}
-            id="username"
-            name="username"
-            placeholder="Username"
-            onChange={handleFormData}
-          />
-        </div>
-        <div className="form-group">
-          <label
-            className="d-flex justify-content-left"
-            htmlFor="auth-username-signup"
-          >
-            Email:
-          </label>
-          <input
-            type="email"
-            className="form-control"
-            id="email"
-            name="email"
-            value={email}
-            placeholder="Email"
-            onChange={handleFormData}
-          />
-        </div>
-        <div className="form-group">
-          <label
-            className="d-flex justify-content-left"
-            htmlFor="auth-username-signup"
-          >
-            Password:
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="password"
-            name="password"
-            value={password}
-            placeholder="Password"
-            onChange={handleFormData}
-          />
-        </div>
-        <div className="form-group">
-          <label
-            className="d-flex justify-content-left"
-            htmlFor="auth-username-signup"
-          >
-            Comfirm password:
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="password2"
-            name="password2"
-            value={password2}
-            placeholder="Comfirm"
-            onChange={handleFormData}
-          />
-        </div>
-
-        <div className="form-group">
-          <Button primary type="submit">
-            Create account
-          </Button>
-        </div>
-      </form>
-    </div>
+      <div className={cx('wrapper')}>
+        <Formik
+          initialValues={formik.initialValues}
+          validationSchema={SignUpSchema}
+          onSubmit={formik.handleSubmit}
+        >
+          <form onSubmit={formik.handleSubmit}>
+            <div className={mcx('form-field')}>
+              <label
+                className="d-flex justify-content-left"
+                htmlFor="auth-username-signup"
+              >
+                Username:
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                value={formik.values.username}
+                id="username"
+                name="username"
+                placeholder="Username"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+            </div>
+            {formik.errors.username && formik.touched.username && (
+              <p className={mcx('mess-error')}>{formik.errors.username}</p>
+            )}
+            <div className={mcx('form-field')}>
+              <label
+                className="d-flex justify-content-left"
+                htmlFor="auth-username-signup"
+              >
+                Email:
+              </label>
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                name="email"
+                value={formik.values.email}
+                placeholder="Email"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+            </div>
+            {formik.errors.email && formik.touched.email && (
+              <p className={mcx('mess-error')}>{formik.errors.email}</p>
+            )}
+            <div className={mcx('form-field')}>
+              <label
+                className="d-flex justify-content-left"
+                htmlFor="auth-username-signup"
+              >
+                Password:
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                name="password"
+                value={formik.values.password}
+                placeholder="Password"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+            </div>
+            {formik.errors.password && formik.touched.password && (
+              <p className={mcx('mess-error')}>{formik.errors.password}</p>
+            )}
+            <div className={mcx('form-field')}>
+              <label
+                className="d-flex justify-content-left"
+                htmlFor="auth-username-signup"
+              >
+                Comfirm password:
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formik.values.confirmPassword}
+                placeholder="Comfirm"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+            </div>
+            {formik.errors.confirmPassword &&
+              formik.touched.confirmPassword && (
+                <p className={mcx('mess-error')}>
+                  {formik.errors.confirmPassword}
+                </p>
+              )}
+            <div className={cx('btn-submit')}>
+              <Button primary type="submit">
+                {isLoading ? <SpinIcon /> : 'Create account'}
+              </Button>
+            </div>
+          </form>
+        </Formik>
+      </div>
+    </>
   );
 }
 

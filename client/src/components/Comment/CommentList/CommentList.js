@@ -61,12 +61,11 @@ function CommentList({ replies, postCmts }) {
     }
   }, [navigate, isSuccess, isError, message, dispatch]);
 
-  if (isCmtsLoading && comments.length === 0) {
-    return <div className={cx('wrapper')}>{cards_sample}</div>;
-  }
-
   return (
     <div className={cx('wrapper')}>
+      {isCmtsLoading && comments.length === 0 && (
+        <div className={cx('wrapper')}>{cards_sample}</div>
+      )}
       {postCmts ? (
         <MemoizedCmtItem
           cmt={postCmts[postCmts.length - 1]}

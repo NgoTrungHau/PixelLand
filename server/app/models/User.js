@@ -8,7 +8,6 @@ const User = new Schema(
       required: [true, 'Please add a name'],
       trim: true,
       maxlength: 25,
-      unique: true,
     },
     email: {
       type: String,
@@ -18,7 +17,7 @@ const User = new Schema(
     },
     password: { type: String, required: [true, 'Please add a password'] },
     role: { type: String, default: 'user' },
-    refresh_token: { type: String, required: [true, ''], default: '' },
+    refresh_token: { type: String, default: '' },
     bio: { type: String, maxLength: 600, default: 'Hello' },
     avatar: {
       public_id: {

@@ -7,6 +7,14 @@
 .loading {
   animation: spinner 0.5s linear infinite;
 }
+.full {
+  width: 100vw;
+  height: 100vh;
+  svg {
+    width: 30px;
+    height: 30px;
+  }
+}
 
 @keyframes spinner {
   from {
