@@ -9,6 +9,7 @@ const router = express.Router();
 
 // post
 router.route('/').get(protect, posts.getPosts);
+router.route('/user/:id').get(protect, posts.getUserPosts);
 router.route('/create').post(upload.single('media'), protect, posts.createPost);
 router.route('/like/:id').patch(protect, posts.likePost);
 router.route('/unlike/:id').patch(protect, posts.unlikePost);

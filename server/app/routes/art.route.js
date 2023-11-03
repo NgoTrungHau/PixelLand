@@ -8,7 +8,8 @@ const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.route('/').get(arts.getArts);
-router.route('/auth/:id').get(protect, arts.getAuthArts);
+router.route('/auth').get(protect, arts.getAuthArts);
+router.route('/author/:id').get(protect, arts.getUserArts);
 router.route('/create').post(upload.single('art'), protect, arts.create);
 router.route('/view/:id').patch(arts.viewArt);
 router.route('/like/:id').patch(protect, arts.likeArt);

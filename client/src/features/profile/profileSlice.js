@@ -2,8 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import profileService from './profileService';
 
 const initialState = {
-  user: {},
-  posts: [],
+  profile: {},
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -41,7 +40,7 @@ export const profileSlice = createSlice({
       .addCase(getUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.user = action.payload;
+        state.profile = action.payload;
       })
       .addCase(getUser.rejected, (state, action) => {
         state.isLoading = false;

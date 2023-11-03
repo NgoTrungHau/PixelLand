@@ -41,7 +41,6 @@ function Gallery() {
       if (user) {
         dispatch(
           getAuthArts({
-            user_id: user._id,
             token: user.tokens.access_token,
             page: page,
           }),

@@ -9,7 +9,6 @@ import Gallery from '~/pages/Gallery';
 import Search from '~/pages/Search';
 import Profile from '~/pages/Profile';
 import Following from '~/pages/Following';
-import MyGallery from '~/pages/MyGallery';
 
 //Public routes
 const publicRoutes = [
@@ -19,7 +18,6 @@ const publicRoutes = [
   { path: config.routes.search, component: Search },
   { path: config.routes.profile, component: Profile, layout: HeaderOnly },
   { path: config.routes.following, component: Following },
-  { path: config.routes.mygallery, component: MyGallery },
 ];
 
 const privateRoutes = [];

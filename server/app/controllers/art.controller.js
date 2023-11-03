@@ -112,6 +112,51 @@ exports.getAuthArts = async (req, res, next) => {
     return next(new ApiError(500, 'An error occurred while retrieving art'));
   }
 };
+// get all user arts
+exports.getUserArts = async (req, res, next) => {
+  try {
+    const { start, newArtOffset, limit } = req.query;
+
+    const allArts = await Art.find({ author: req.params.id })
+      .sort({ createdAt: -1 })
+      .skip(Number(start) * Number(limit) + Number(newArtOffset))
+      .limit(Number(limit))
+      .populate('author', 'username avatar');
+
+    // Filter out arts with varied privacy settings except the ones from the request user
+    const arts = allArts.filter((art) => {
+      const userIsAuthor =
+        art.author._id.toString() === req.user._id.toString();
+      if (userIsAuthor) return true;
+
+      switch (art.privacy) {
+        case 'Public':
+          return true;
+        case 'Only me':
+          return false;
+        // case 'Followers only':
+        //     // You'll replace `checkIfUserIsFollower` function with real implementation
+        //     return checkIfUserIsFollower(art.author._id, req.user._id);
+        // case 'Members only':
+        //     // You'll replace `checkIfUserIsMember` function with real implementation
+        //     return checkIfUserIsMember(art.author._id, req.user._id);
+        default:
+          return false;
+      }
+    });
+
+    // If the art was liked by the request user, assign true to the liked field
+    arts.forEach((art) => {
+      if (art.likes.includes(req.user._id.toString())) {
+        art._doc.liked = true;
+      }
+    });
+
+    res.json(arts);
+  } catch (error) {
+    return next(new ApiError(500, 'An error occurred while retrieving art'));
+  }
+};
 
 // get art
 exports.findOne = async (req, res, next) => {

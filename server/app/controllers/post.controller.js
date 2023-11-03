@@ -114,6 +114,66 @@ exports.getPosts = async (req, res, next) => {
     return next(new ApiError(500, 'An error occurred while retrieving posts'));
   }
 };
+exports.getUserPosts = async (req, res, next) => {
+  try {
+    const { start, newPostOffset, limit = 4 } = req.query;
+    const allPosts = await Post.find({ user: req.params.id })
+      .sort({ createdAt: -1 })
+      .skip(Number(start) * Number(limit) + Number(newPostOffset))
+      .limit(Number(limit))
+      .populate('user', 'username avatar');
+    const data = allPosts.map((post) => post.toObject()); // convert all posts to JavaScript objects
+
+    const modifiedPosts = await Promise.all(
+      data.map(async (post) => {
+        if (post.comments.length > 0) {
+          const lastComment = await Comment.findById(
+            post.comments.slice(-1)[0],
+          ).populate('commentedBy', 'username avatar');
+          post.comments = post.comments.map((comment) => comment.toString());
+          post.comments[post.comments.length - 1] = lastComment;
+        }
+        return post;
+      }),
+    );
+
+    // Filter out posts with varied privacy settings except the ones from the request user
+    const posts = modifiedPosts.filter((post) => {
+      const userIsAuthor = post.user._id.toString() === req.user._id.toString();
+      if (userIsAuthor) return true;
+
+      switch (post.privacy) {
+        case 'Public':
+          return true;
+        case 'Only me':
+          return false;
+        // case 'Followers only':
+        //     // You'll replace `checkIfUserIsFollower` function with real implementation
+        //     return checkIfUserIsFollower(post.user._id, req.user._id);
+        // case 'Members only':
+        //     // You'll replace `checkIfUserIsMember` function with real implementation
+        //     return checkIfUserIsMember(post.user._id, req.user._id);
+        default:
+          return false;
+      }
+    });
+
+    // Update liked status for posts and comments
+    posts.forEach((post) => {
+      post.liked = post.likes.includes(req.user._id.toString());
+      if (post.comments.length > 0) {
+        post.comments[post.comments.length - 1]._doc.liked = post.comments[
+          post.comments.length - 1
+        ].likedBy.includes(req.user._id.toString());
+      }
+    });
+
+    res.json(posts);
+  } catch (error) {
+    console.error(error); // Log the error to console for debugging
+    return next(new ApiError(500, 'An error occurred while retrieving posts'));
+  }
+};
 
 exports.findOne = async (req, res, next) => {
   try {
