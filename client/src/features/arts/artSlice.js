@@ -31,7 +31,7 @@ export const createArt = createAsyncThunk(
   },
 );
 
-// Get user arts
+// Get arts
 export const getArts = createAsyncThunk(
   'arts/getAll',
   async (page, thunkAPI) => {
@@ -49,7 +49,7 @@ export const getArts = createAsyncThunk(
   },
 );
 
-// Get user arts
+// Get auth arts
 export const getAuthArts = createAsyncThunk(
   'arts/getAll_auth',
   async (auth, thunkAPI) => {
@@ -57,6 +57,27 @@ export const getAuthArts = createAsyncThunk(
       const newArtOffset = thunkAPI.getState().arts.newArtOffset;
 
       return await artService.getAuthArts(auth, newArtOffset);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+// Get user arts
+export const getUserArts = createAsyncThunk(
+  'arts/getUserArts',
+  async (auth, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
+
+      const newArtOffset = thunkAPI.getState().arts.newArtOffset;
+
+      return await artService.getUserArts(auth, token, newArtOffset);
     } catch (error) {
       const message =
         (error.response &&
@@ -224,6 +245,26 @@ export const artSlice = createSlice({
         }
       })
       .addCase(getAuthArts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isArtsLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(getUserArts.pending, (state) => {
+        state.isLoading = true;
+        state.isArtsLoading = true;
+      })
+      .addCase(getUserArts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isArtsLoading = false;
+        state.isSuccess = true;
+        if (action.meta.arg.page > 0) {
+          state.arts = [...state.arts, ...action.payload];
+        } else {
+          state.arts = action.payload;
+        }
+      })
+      .addCase(getUserArts.rejected, (state, action) => {
         state.isLoading = false;
         state.isArtsLoading = false;
         state.isError = true;

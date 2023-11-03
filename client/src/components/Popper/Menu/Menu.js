@@ -17,7 +17,7 @@ import { logout, reset } from '~/features/auth/authSlice';
 
 const cx = classNames.bind(styles);
 
-function Menu({ children, className, items = [], offset }) {
+function Menu({ children, className, items = [], offset, bottom }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -61,7 +61,15 @@ function Menu({ children, className, items = [], offset }) {
         offset={offset}
         visible={isClicked}
         onClickOutside={() => setClicked(false)}
-        placement="bottom-end"
+        placement={bottom ? bottom : 'bottom-end'}
+        popperOptions={{
+          modifiers: [
+            {
+              name: 'flip',
+              enabled: false,
+            },
+          ],
+        }}
         render={(attrs) => (
           <div className={cx('menu-popper')} tabIndex="-1" {...attrs}>
             <PopperWrapper>{renderItems()}</PopperWrapper>
@@ -79,6 +87,7 @@ Menu.propTypes = {
   classNames: PropTypes.string,
   items: PropTypes.array,
   hideOnClick: PropTypes.bool,
+  bottom: PropTypes.string,
 };
 
 export default Menu;

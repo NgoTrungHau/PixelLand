@@ -15,7 +15,7 @@ const createPost = async (postData, token) => {
   return response;
 };
 
-// Get user posts
+// Get posts
 const getPosts = async (page, newPostOffset, token) => {
   const config = {
     headers: {
@@ -24,6 +24,21 @@ const getPosts = async (page, newPostOffset, token) => {
     params: { start: page, newPostOffset: newPostOffset, limit: 4 },
   };
   const response = await httpRequest.get(API_URL, config);
+
+  return response;
+};
+// Get user posts
+const getUserPosts = async (auth, newPostOffset, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { start: auth.page, newPostOffset: newPostOffset, limit: 4 },
+  };
+  const response = await httpRequest.get(
+    API_URL + 'user/' + auth.profile_id,
+    config,
+  );
 
   return response;
 };
@@ -90,6 +105,7 @@ const unlikePost = async (post_id, token) => {
 const postService = {
   createPost,
   getPosts,
+  getUserPosts,
   editPost,
   deletePost,
   likePost,

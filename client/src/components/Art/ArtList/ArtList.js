@@ -20,13 +20,13 @@ const cx = classNames.bind(styles);
 
 const MemoizedArtItem = memo(({ art, index }) => <ArtItem art={art} />);
 
-function ArtList({ page }) {
+function ArtList({ profile }) {
   const [isArtsReady, setIsArtsReady] = useState(false);
   const [filteredArts, setFilteredArts] = useState([]);
-  const [selectedStyle, setSelectedStyle] = useState('Explore');
+  const [selectedStyle, setSelectedStyle] = useState('All');
 
   const styleOptions = [
-    'Explore',
+    'All',
     'Digital Painting',
     'Fan Art',
     'Fantasy Art',
@@ -67,7 +67,7 @@ function ArtList({ page }) {
     };
   }, [message, isError, dispatch]);
   useEffect(() => {
-    if (selectedStyle === 'Explore') {
+    if (selectedStyle === 'All') {
       setFilteredArts(arts);
     } else {
       setFilteredArts(arts.filter((art) => art.style === selectedStyle));
@@ -82,8 +82,8 @@ function ArtList({ page }) {
     setSelectedStyle(style);
   };
 
-  const renderStyles = () => {
-    return dropdownStyles.map((style) => {
+  const renderStyles = (styles) => {
+    return styles.map((style) => {
       return {
         title: style,
         onClick: () => {
@@ -95,8 +95,8 @@ function ArtList({ page }) {
 
   return (
     <div className={cx('wrapper')}>
-      <div className={cx('art-options')}>
-        {!isArtsLoading && (
+      {!profile ? (
+        <div className={cx('art-options')}>
           <>
             {displayedStyles.map((style, index) => (
               <div
@@ -108,7 +108,7 @@ function ArtList({ page }) {
               </div>
             ))}
             <div>
-              <Menu items={renderStyles()} offset={[0, 0]}>
+              <Menu items={renderStyles(dropdownStyles)} offset={[0, 0]}>
                 <div
                   className={cx('style', 'more', {
                     selected: dropdownStyles.includes(selectedStyle),
@@ -119,8 +119,18 @@ function ArtList({ page }) {
               </Menu>
             </div>
           </>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className={cx('art-options-profile')}>
+          <Menu
+            items={renderStyles(styleOptions)}
+            offset={[0, 0]}
+            bottom="bottom-start"
+          >
+            <div className={cx('style', 'more')}>{selectedStyle}</div>
+          </Menu>
+        </div>
+      )}
 
       <div className={cx('masonry-wrapper')}>
         <Masonry columns={4} spacing={2}>

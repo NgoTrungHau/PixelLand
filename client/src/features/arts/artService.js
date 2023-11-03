@@ -32,8 +32,19 @@ const getAuthArts = async (auth, newArtOffset) => {
     params: { start: auth.page, newArtOffset: newArtOffset, limit: 10 },
   };
 
+  const response = await httpRequest.get(API_URL + 'auth', config);
+  return response;
+};
+// Get user arts
+const getUserArts = async (auth, token, newArtOffset) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { start: auth.page, newArtOffset: newArtOffset, limit: 10 },
+  };
   const response = await httpRequest.get(
-    API_URL + 'auth/' + auth.user_id,
+    API_URL + 'author/' + auth.profile_id,
     config,
   );
   return response;
@@ -110,6 +121,7 @@ const artService = {
   createArt,
   getArts,
   getAuthArts,
+  getUserArts,
   editArt,
   deleteArt,
   viewArt,

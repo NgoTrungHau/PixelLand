@@ -16,7 +16,11 @@ const User = new Schema(
       unique: [true, 'Email already in use'],
     },
     password: { type: String, required: [true, 'Please add a password'] },
-    role: { type: String, default: 'user' },
+    role: {
+      type: String,
+      default: 'user',
+      enum: ['user', 'admin'],
+    },
     refresh_token: { type: String, default: '' },
     bio: { type: String, maxLength: 600, default: 'Hello' },
     avatar: {

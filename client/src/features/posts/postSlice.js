@@ -31,7 +31,7 @@ export const createPost = createAsyncThunk(
   },
 );
 
-// Get user posts
+// Get posts
 export const getPosts = createAsyncThunk(
   'posts/getAll',
   async (page, thunkAPI) => {
@@ -40,6 +40,26 @@ export const getPosts = createAsyncThunk(
       const bonus = thunkAPI.getState().posts.newPostOffset;
 
       return await postService.getPosts(page, bonus, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+// Get user posts
+export const getUserPosts = createAsyncThunk(
+  'posts/getUserPosts',
+  async (auth, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
+      const bonus = thunkAPI.getState().posts.newPostOffset;
+
+      return await postService.getUserPosts(auth, bonus, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -176,6 +196,26 @@ export const postSlice = createSlice({
         }
       })
       .addCase(getPosts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isPostsLoading = false;
+        state.message = action.payload;
+      })
+      .addCase(getUserPosts.pending, (state) => {
+        state.isLoading = true;
+        state.isPostsLoading = true;
+      })
+      .addCase(getUserPosts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isPostsLoading = false;
+        state.isSuccess = true;
+        if (action.meta.arg.page > 0) {
+          state.posts = [...state.posts, ...action.payload];
+        } else {
+          state.posts = action.payload;
+        }
+      })
+      .addCase(getUserPosts.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.isPostsLoading = false;

@@ -36,9 +36,6 @@ function ProfileHeader({ id, isAuth, profile }) {
         <div className={cx('info-user')}>
           <div className={cx('info')}>
             <h1>{profile.username}</h1>
-            {!profile?.contributor && (
-              <div className={cx('supporters')}>Supporter</div>
-            )}
             {profile?.followers?.length > 0 && (
               <div className={cx('supporters')}>
                 {profile.followers.length + ' Supporters'}
@@ -101,12 +98,12 @@ function ProfileHeader({ id, isAuth, profile }) {
         >
           Gallery
         </Link>
-        {/* <Link
+        <Link
           to={`/${id}/posts`}
           className={cx('tab', currentPath === `/${id}/posts` && 'tab-active')}
         >
           Posts
-        </Link> */}
+        </Link>
         <Link
           to={`/${id}/shop`}
           className={cx('tab', currentPath === `/${id}/shop` && 'tab-active')}
