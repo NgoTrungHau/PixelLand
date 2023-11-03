@@ -18,10 +18,7 @@ const Button = forwardRef(
       type,
       disabled,
       navlink = false,
-      primary = false,
-      white = false,
-      gray = false,
-      grayLight = false,
+      btnType,
       login = false,
       signup = false,
       upload = false,
@@ -39,12 +36,8 @@ const Button = forwardRef(
     ref,
   ) => {
     let CompBut = 'button';
-    let classN = cx('wrapper', sz, {
+    let classN = cx('wrapper', sz, btnType, {
       [className]: className,
-      primary,
-      white,
-      gray,
-      grayLight,
       login,
       signup,
       upload,
@@ -62,12 +55,8 @@ const Button = forwardRef(
       if (navlink) {
         CompBut = NavLink;
         classN = (nav) =>
-          cx('wrapper', sz, {
+          cx('wrapper', sz, btnType, {
             [className]: className,
-            primary,
-            white,
-            gray,
-            grayLight,
             rounded,
             up,
             active: nav.isActive,
@@ -98,12 +87,16 @@ Button.propTypes = {
   href: PropTypes.string,
   disabled: PropTypes.bool,
   navlink: PropTypes.bool,
-  primary: PropTypes.bool,
-  white: PropTypes.bool,
-  gray: PropTypes.bool,
-  login: PropTypes.bool,
-  signup: PropTypes.bool,
-  upload: PropTypes.bool,
+  btnType: PropTypes.oneOf([
+    'primary',
+    'white',
+    'gray',
+    'gray-light',
+    'red',
+    'login',
+    'signup',
+    'upload',
+  ]),
   up: PropTypes.bool,
   rounded: PropTypes.bool,
   type: PropTypes.string,

@@ -37,7 +37,7 @@ function MenuItem({ data, onClick }) {
         <Modal modalType={renderModalType()} sz="small" data={data} isChild>
           <Button
             className={cx('full', classes)}
-            white
+            btnType="white"
             image={data.image}
             leftIcon={data.leftIcon}
             rightIcon={data.rightIcon}
@@ -54,7 +54,7 @@ function MenuItem({ data, onClick }) {
       {data.divider && <div className={cx('divider')}></div>}
       <Button
         className={classes}
-        white
+        btnType="white"
         image={data.image}
         leftIcon={data.leftIcon}
         rightIcon={data.rightIcon}

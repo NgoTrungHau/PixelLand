@@ -202,7 +202,7 @@ function EditArt({ art }) {
               <div className={ecx('image-thumb')}>
                 <label htmlFor="image" className={ecx('change-art')}>
                   <Button
-                    grayLight
+                    btnType="gray-light"
                     type="button"
                     leftIcon={<FontAwesomeIcon icon={faPen} />}
                     onClick={(e) => {
@@ -242,10 +242,10 @@ function EditArt({ art }) {
               )}
             </div>
             <div className={ecx('btn-edit')}>
-              <Button grayLight type="button" onClick={handleCancel}>
+              <Button btnType="gray-light" type="button" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button primary type="submit">
+              <Button btnType="primary" type="submit">
                 {isLoading ? <SpinIcon /> : 'Save'}
               </Button>
             </div>

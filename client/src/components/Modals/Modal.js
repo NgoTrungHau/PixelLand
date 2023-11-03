@@ -66,11 +66,11 @@ const Modal = forwardRef(
           <div className={cx('heading')}>{data.action}</div>
           <div className={cx('confirmation')}>{data.content}</div>
           <div className={cx('confirm-btn')}>
-            <Button gray onClick={toggleModal} sz="md">
+            <Button btnType="gray" onClick={toggleModal} sz="md">
               Cancel
             </Button>
             <Button
-              primary
+              btnType="primary"
               onClick={async () => {
                 await data.onClick();
                 toggleModal();
@@ -88,7 +88,7 @@ const Modal = forwardRef(
         case 'signup':
           return (
             <Button
-              signup
+              btnType="signup"
               up
               leftIcon={<FontAwesomeIcon icon={faUser} />}
               onClick={toggleModal}
@@ -99,7 +99,7 @@ const Modal = forwardRef(
         case 'login':
           return (
             <Button
-              login
+              btnType="login"
               up
               leftIcon={<FontAwesomeIcon icon={faArrowRightToBracket} />}
               onClick={toggleModal}
@@ -110,7 +110,7 @@ const Modal = forwardRef(
         case 'upload':
           return (
             <Button
-              upload
+              btnType="upload"
               up
               type="button"
               leftIcon={<FontAwesomeIcon icon={faArrowUpFromBracket} />}
@@ -138,7 +138,8 @@ const Modal = forwardRef(
         case 'editProfile':
           return (
             <Button
-              gray
+              btnType="gray-light"
+              sz="lg"
               leftIcon={<FontAwesomeIcon icon={faPen} />}
               onClick={toggleModal}
             >

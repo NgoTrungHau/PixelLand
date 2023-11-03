@@ -2,7 +2,6 @@
   position: relative;
   display: grid;
   grid-template-columns: 40px 1fr;
-  margin: 10px 0;
   padding: 15px;
   width: 100%;
   word-wrap: break-word;
@@ -11,6 +10,7 @@
   background-clip: border-box;
   background-color: var(--white);
   cursor: default;
+  box-shadow: var(--shadow-reg-0);
 
   button {
     max-height: 40px !important;

@@ -102,7 +102,7 @@ function LoginForm() {
               ></input>
             </div>
             <div className={cx('btn-submit')}>
-              <Button primary type="submit">
+              <Button btnType="primary" type="submit">
                 {isLoading ? <SpinIcon /> : 'Login'}
               </Button>
             </div>

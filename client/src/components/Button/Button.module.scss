@@ -85,6 +85,21 @@
     background-color: rgb(221, 221, 221);
   }
 }
+.gray-light {
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-font);
+  background-color: var(--gray-light);
+  &:hover {
+    background-color: rgb(221, 221, 221);
+  }
+}
+.red {
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  background-color: var(--red02);
+}
 .white {
   font-size: 16px;
   padding: 6px 15px;

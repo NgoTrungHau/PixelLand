@@ -1,19 +1,19 @@
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { Route, Routes, useParams } from 'react-router-dom';
 
 import CreatePost from '~/components/Post/PostButton/CreatePost';
-import Info from '~/components/Profile/Info';
+import PostList from '~/components/Post/PostList';
+import ProfileHeader from '~/components/Profile/ProfileHeader';
 import { getUser } from '~/features/profile/profileSlice';
 import styles from './Profile.module.scss';
-import PostList from '~/components/Post/PostList';
 
 const cx = classNames.bind(styles);
 
 function Profile() {
   const { id } = useParams();
-  const { user } = useSelector((state) => state.auth);
+
   const { auth, profile } = useSelector((state) => state);
   const dispatch = useDispatch();
 
@@ -40,20 +40,33 @@ function Profile() {
   }, [profile.user, id, auth.user]);
 
   return (
-    <div className={cx('profile')}>
-      <Info id={id} isAuth={isAuth} profile={userInfo} dispatch={dispatch} />
+    <div className={cx('wrapper')}>
+      <ProfileHeader id={id} isAuth={isAuth} profile={userInfo} />
       <div className={cx('container')}>
         <div className={cx('content')}>
-          <div className={cx('about')}>
-            <div className={cx('detail')}>
-              <h2>About</h2>
-              <p>{userInfo.bio}</p>
-            </div>
-          </div>
-          <div className={cx('post')}>
-            <CreatePost />
-            <PostList user_id={user._id} />
-          </div>
+          <Routes>
+            <Route
+              index
+              element={
+                <>
+                  <div className={cx('about')}>
+                    <div className={cx('detail')}>
+                      <h2>About</h2>
+                      <p>{userInfo.bio}</p>
+                    </div>
+                  </div>
+                  <div className={cx('creator-content')}>
+                    <CreatePost />
+                    <PostList />
+                  </div>
+                </>
+              }
+            />
+            {/* <Route path="membership" element={<div>Membership</div>} /> */}
+            <Route path="gallery" element={<div>Gallery</div>} />
+            {/* <Route path="posts" element={<div>Posts</div>} /> */}
+            <Route path="shop" element={<div>Shop</div>} />
+          </Routes>
         </div>
       </div>
     </div>

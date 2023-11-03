@@ -160,7 +160,7 @@ function SignUpForm() {
                 </p>
               )}
             <div className={cx('btn-submit')}>
-              <Button primary type="submit">
+              <Button btnType="primary" type="submit">
                 {isLoading ? <SpinIcon /> : 'Create account'}
               </Button>
             </div>
