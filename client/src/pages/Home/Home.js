@@ -54,7 +54,9 @@ function Home() {
 
   return (
     <div className={cx('wrapper')}>
-      <CreatePost />
+      <div className={cx('create-post')}>
+        <CreatePost />
+      </div>
       <PostList />
     </div>
   );

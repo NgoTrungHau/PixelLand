@@ -4,7 +4,7 @@ const routes = {
   digital: '/digitalart',
   artDetail: '/art/:id',
   search: '/search',
-  profile: '/profile/:id',
+  profile: '/:id/*',
   following: '/following',
   mygallery: '/mygallery',
   upload: '/upload',

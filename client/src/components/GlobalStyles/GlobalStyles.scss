@@ -8,6 +8,7 @@
   --purple: #9561e2;
   --pink: #f66d9b;
   --red: #ff315a;
+  --red02: #ff5f5f;
   --orange: #ff5722;
   --yellow: #ffc107;
   --green: #38c172;
@@ -36,6 +37,10 @@
   --default-layout-header-height: 60px;
   --default-layout-width: 1440px;
   --default-layout-horizontal-spacer: 20px;
+
+  // box-shadow
+  --shadow-reg-0: 0px 0px 2px rgba(0, 0, 0, 0.15),
+    0px 2px 5px rgba(0, 0, 0, 0.05), 0px 8px 40px rgba(0, 0, 0, 0.04);
 }
 
 * {

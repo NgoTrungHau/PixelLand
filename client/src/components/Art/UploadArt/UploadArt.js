@@ -207,7 +207,7 @@ function UploadArt() {
             <div className={mcx('form-field')}>
               <label htmlFor="art" className={cx('input-img')}>
                 <Button
-                  grayLight
+                  btnType="gray-light"
                   type="button"
                   leftIcon={<FontAwesomeIcon icon={faImage} />}
                   onClick={(e) => {
@@ -253,10 +253,10 @@ function UploadArt() {
               </label>
             </div>
             <div className="d-flex justify-content-end">
-              <Button grayLight type="button" onClick={handleCancel}>
+              <Button btnType="gray-light" type="button" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button primary type="submit">
+              <Button btnType="primary" type="submit">
                 {isLoading ? <SpinIcon /> : 'Upload'}
               </Button>
             </div>

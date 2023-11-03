@@ -188,7 +188,7 @@ function EditProfileForm() {
           </div>
 
           <div className="form-group">
-            <Button primary type="submit">
+            <Button btnType="primary" type="submit">
               Save
             </Button>
           </div>

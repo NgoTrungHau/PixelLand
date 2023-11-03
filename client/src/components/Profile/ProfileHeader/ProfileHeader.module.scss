@@ -1,0 +1,101 @@
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  width: 100%;
+  background-color: var(--white);
+}
+.profile-background,
+.profile-user,
+.tab-profile {
+  width: 1200px;
+}
+.profile-background {
+  height: 65%;
+  z-index: 1;
+}
+.back-ground {
+  width: 100%;
+  height: 100%;
+  background-color: var(--gray);
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  img {
+    width: 100%;
+    height: 100%;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+}
+.profile-user {
+  display: flex;
+  // margin-top: -20px;
+  padding-left: 2%;
+  padding-bottom: 10px;
+  justify-content: center;
+  align-items: flex-end;
+  height: 25%;
+
+  .avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 150px;
+    background-color: var(--gray);
+    border: 5px solid var(--white);
+    border-radius: 16px !important;
+    z-index: 2;
+  }
+  .info-user {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    width: 100%;
+    height: 100%;
+    .info {
+      margin-left: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+  .followers,
+  .supporters {
+    font-size: 16px;
+    font-family: var(--font-family2);
+  }
+  .profile-btns {
+    display: flex;
+    justify-content: space-around;
+    button {
+      border-radius: 50px !important;
+      + div {
+        margin-left: 10px;
+      }
+    }
+  }
+}
+
+.tab-profile {
+  display: flex;
+  align-items: flex-end;
+  height: 10%;
+  .tab {
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 3px solid transparent;
+    &:hover {
+      color: var(--red02);
+      cursor: pointer;
+    }
+  }
+  .tab-active {
+    color: var(--red02);
+    border-bottom: 3px solid var(--red02);
+  }
+}

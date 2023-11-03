@@ -16,7 +16,6 @@ const publicRoutes = [
   { path: config.routes.home, component: Home },
   { path: config.routes.gallery, component: Gallery, layout: HeaderOnly },
   { path: config.routes.digital, component: Gallery },
-  // { path: config.routes.artDetail, component: ArtDetail, layout: HeaderOnly },
   { path: config.routes.search, component: Search },
   { path: config.routes.profile, component: Profile, layout: HeaderOnly },
   { path: config.routes.following, component: Following },

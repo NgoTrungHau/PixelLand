@@ -36,7 +36,7 @@ function Sidebar() {
         />
         <MenuItem
           title={user.username}
-          to={`/profile/${user._id}`}
+          to={`/${user._id}`}
           image={user.avatar?.url}
         />
         <MenuItem

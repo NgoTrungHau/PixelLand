@@ -41,7 +41,7 @@ function Header() {
       {
         image: user.avatar?.url,
         title: 'Profile',
-        to: `/profile/${user._id}`,
+        to: `/${user._id}`,
       },
       {
         rightIcon: <FontAwesomeIcon icon={faImage}></FontAwesomeIcon>,
@@ -92,7 +92,7 @@ function Header() {
           </div>
           <div className={cx('center-header')}>
             <Button
-              white
+              btnType="white"
               navlink
               to={config.routes.home}
               leftIcon={<FontAwesomeIcon icon={faHouse} />}
@@ -100,7 +100,7 @@ function Header() {
               Home
             </Button>
             <Button
-              white
+              btnType="white"
               navlink
               to={config.routes.gallery}
               leftIcon={<FontAwesomeIcon icon={faImages} />}
@@ -108,14 +108,14 @@ function Header() {
               Gallery
             </Button>
             <Button
-              white
+              btnType="white"
               to={config.routes.gallery}
               leftIcon={<FontAwesomeIcon icon={faBook} />}
             >
               Courses
             </Button>
             <Button
-              white
+              btnType="white"
               to={config.routes.gallery}
               leftIcon={<FontAwesomeIcon icon={faTag} />}
             >
@@ -135,7 +135,7 @@ function Header() {
                     placement="bottom"
                   >
                     <Button
-                      white
+                      btnType="white"
                       leftIcon={<FontAwesomeIcon icon={faMessage} />}
                     ></Button>
                   </Tippy>
@@ -146,7 +146,7 @@ function Header() {
                     placement="bottom"
                   >
                     <Button
-                      white
+                      btnType="white"
                       leftIcon={<FontAwesomeIcon icon={faBell} />}
                     ></Button>
                   </Tippy>

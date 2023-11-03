@@ -219,7 +219,7 @@ function PostForm({ post }) {
               {media && (
                 <div className={cx('media-thumb')}>
                   <Button
-                    grayLight
+                    btnType="gray-light"
                     type="button"
                     className={cx('edit-media')}
                     leftIcon={<FontAwesomeIcon icon={faPen} />}
