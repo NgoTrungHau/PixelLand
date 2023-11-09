@@ -22,7 +22,7 @@ const User = new Schema(
       enum: ['user', 'admin'],
     },
     refresh_token: { type: String, default: '' },
-    bio: { type: String, maxLength: 600, default: 'Hello' },
+    description: { type: String, maxLength: 600, default: 'Hello' },
     avatar: {
       public_id: {
         type: String,

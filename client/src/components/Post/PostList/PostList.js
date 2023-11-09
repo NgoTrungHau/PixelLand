@@ -1,19 +1,17 @@
 import classNames from 'classnames/bind';
 // React
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 // scss
 import styles from './PostList.module.scss';
 // components
+import { toast } from 'react-toastify';
 import PostItem from '~/components/Post/PostItem';
-import { reset } from '~/features/posts/postSlice';
 
 const cx = classNames.bind(styles);
 
 function PostList() {
-  const dispatch = useDispatch();
-
   const { user } = useSelector((state) => state.auth);
 
   const { posts, isPostsLoading, isError, message } = useSelector(
@@ -39,13 +37,10 @@ function PostList() {
       </div>
     ));
   useEffect(() => {
-    if (isError) {
-      console.log(message);
+    if (isError && message) {
+      toast.error(message);
     }
-    return () => {
-      dispatch(reset());
-    };
-  }, [isError, message, dispatch]);
+  }, [isError, message]);
 
   if (!user) {
     return null;

@@ -1,4 +1,6 @@
 const express = require('express');
+const multer = require('multer');
+const upload = multer();
 const users = require('../controllers/user.controller');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -15,7 +17,14 @@ router.route('/me').get(protect, users.getMe);
 router
   .route('/:id')
   .get(users.findOne)
-  .post(protect, users.update)
+  .post(
+    upload.fields([
+      { name: 'avatar', maxCount: 1 },
+      { name: 'background', maxCount: 1 },
+    ]),
+    protect,
+    users.update,
+  )
   .delete(protect, users.delete);
 
 module.exports = router;

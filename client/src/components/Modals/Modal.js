@@ -1,3 +1,6 @@
+import classNames from 'classnames/bind';
+import PropTypes from 'prop-types';
+// font awesome
 import {
   faArrowRightToBracket,
   faArrowUpFromBracket,
@@ -6,8 +9,7 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import classNames from 'classnames/bind';
-import PropTypes from 'prop-types';
+// react
 import {
   cloneElement,
   createContext,
@@ -15,19 +17,19 @@ import {
   useEffect,
   useState,
 } from 'react';
-
 import { createPortal } from 'react-dom';
-import { UploadArt } from '../Art';
+
+import UploadArt from '../Art/UploadArt/UploadArt';
 import ArtDetail from '../Art/ArtDetail';
 import EditArt from '../Art/EditArt/EditArt';
 import Button from '../Button';
+import PostDetail from '../Post/PostDetail';
 import PostForm from '../Post/PostForm';
+import EditProfileForm from '../Profile/EditProfile';
 import SpinIcon from '../SpinIcon';
-import EditProfileForm from './EditProfile';
 import LoginForm from './Login';
 import styles from './Modal.module.scss';
 import SignUpForm from './SignUp';
-import PostDetail from '../Post/PostDetail';
 
 export const ModalToggleContext = createContext(() => {});
 
