@@ -213,49 +213,75 @@ exports.update = async (req, res, next) => {
       return next(new ApiError(404, 'User not found'));
     }
 
-    let { username, avatar, background, bio } = req.body;
+    let { username, description } = req.body;
 
-    if (avatar) {
-      const avatarResult = await cloudinary.uploader.upload(req.body.avatar, {
-        folder: 'avatarUser',
+    // Check if avatar file is provided
+    if (req.files.avatar) {
+      // Delete the old avatar
+      if (user.avatar.url) {
+        await cloudinary.uploader.destroy(user.avatar.public_id, {
+          folder: `profile/${user.username}/avatar`,
+        });
+      }
+      // Upload the avatar file to Cloudinary
+      const avatarResult = await new Promise((resolve, reject) => {
+        const streamLoad = cloudinary.uploader.upload_chunked_stream(
+          { folder: `profile/${user.username}/avatar` },
+          function (error, result) {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(error);
+            }
+          },
+        );
+        streamLoad.end(req.files.avatar[0].buffer);
       });
-      avatar = avatarResult;
-    }
-    if (background) {
-      const backgroundResult = await cloudinary.uploader.upload(
-        req.body.background,
-        {
-          folder: 'backgroundUser',
-        },
-      );
-      background = backgroundResult;
+      // update user's avatar
+      user.avatar = {
+        public_id: avatarResult.public_id,
+        url: avatarResult.secure_url,
+      };
     }
 
-    await User.findByIdAndUpdate(
-      { _id: req.user._id },
-      {
-        $set: {
-          username,
-          avatar: avatar
-            ? {
-                public_id: avatar.public_id,
-                url: avatar.secure_url,
-              }
-            : user.avatar,
-          background: background
-            ? {
-                public_id: background.public_id,
-                url: background.secure_url,
-              }
-            : user.background,
-          bio,
-        },
-      },
-    );
+    // Check if background file is provided
+    if (req.files.background) {
+      // Delete the old background
+      if (user.background.url) {
+        await cloudinary.uploader.destroy(user.background.public_id, {
+          folder: `profile/${user.username}/background`,
+        });
+      }
+      // Upload the background file to Cloudinary
+      const backgroundResult = await new Promise((resolve, reject) => {
+        const streamLoad = cloudinary.uploader.upload_chunked_stream(
+          { folder: `profile/${user.username}/background` },
+          function (error, result) {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(error);
+            }
+          },
+        );
+        streamLoad.end(req.files.background[0].buffer);
+      });
+      // update user's background
+      user.background = {
+        public_id: backgroundResult.public_id,
+        url: backgroundResult.secure_url,
+      };
+    }
 
-    const updateUser = await User.findById(req.params.id);
-    res.json(updateUser);
+    // Update the user's data
+    user.username = username;
+    user.description = description;
+
+    const savedProfile = await user.save();
+
+    res.json(savedProfile);
   } catch (error) {
+    console.log(error);
     return next(
       new ApiError(500, `Error updating user with id=${req.params.id}`),
     );

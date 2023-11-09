@@ -98,18 +98,18 @@ function ProfileHeader({ id, isAuth, profile }) {
         >
           Gallery
         </Link>
-        <Link
+        {/* <Link
           to={`/${id}/posts`}
           className={cx('tab', currentPath === `/${id}/posts` && 'tab-active')}
         >
           Posts
-        </Link>
-        <Link
+        </Link> */}
+        {/* <Link
           to={`/${id}/shop`}
           className={cx('tab', currentPath === `/${id}/shop` && 'tab-active')}
         >
           Shop
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

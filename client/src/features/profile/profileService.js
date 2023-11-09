@@ -21,9 +21,29 @@ const getUser = async (userId) => {
   return response;
 };
 
+// Edit profile data
+const editProfile = async (token, userData) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  };
+  console.log('service ', userData);
+  const response = await httpRequest.post(
+    API_URL + userData.id,
+    userData,
+    config,
+  );
+  console.log(response);
+
+  return response;
+};
+
 const userService = {
   deleteUser,
   getUser,
+  editProfile,
 };
 
 export default userService;

@@ -14,7 +14,6 @@ import styles from './ArtList.module.scss';
 import ArtItem from '../ArtItem/ArtItem';
 // features
 import Menu from '~/components/Popper/Menu';
-import { reset } from '~/features/arts/artSlice';
 
 const cx = classNames.bind(styles);
 
@@ -62,10 +61,7 @@ function ArtList({ profile }) {
     if (isError && message) {
       toast.error(message);
     }
-    return () => {
-      dispatch(reset());
-    };
-  }, [message, isError, dispatch]);
+  }, [message, isError]);
   useEffect(() => {
     if (selectedStyle === 'All') {
       setFilteredArts(arts);

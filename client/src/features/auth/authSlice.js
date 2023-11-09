@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from './authService';
+import { editProfile } from '../profile/profileSlice';
 
 const initialState = {
   user: null,
@@ -111,31 +112,6 @@ export const getMe = createAsyncThunk('auth/getMe', async (_, thunkAPI) => {
   }
 });
 
-// Edit profile
-export const editProfile = createAsyncThunk(
-  'auth/editProfile',
-  async (userData, thunkAPI) => {
-    try {
-      const state = thunkAPI.getState();
-      if (state.auth.isLoadingUser) return; // add this
-      const user = thunkAPI.getState().auth.user;
-      return await authService.editProfile(
-        user.tokens.access_token,
-        user._id,
-        userData,
-      );
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
-  },
-);
-
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -227,31 +203,14 @@ export const authSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(editProfile.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(editProfile.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
         state.user = {
           ...state.user,
           username: action.payload.username,
           avatar: action.payload.avatar,
           background: action.payload.background,
-          bio: action.payload.bio,
+          description: action.payload.description,
         };
-        // console.log({
-        //   ...state.user,
-        //   username: action.payload.username,
-        //   avatar: action.payload.avatar,
-        //   background: action.payload.background,
-        //   bio: action.payload.bio,
-        // });
-      })
-      .addCase(editProfile.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
       });
   },
 });
