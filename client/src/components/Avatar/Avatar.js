@@ -18,7 +18,7 @@ function Avatar({
   return (
     <div>
       <Image
-        src={avatar}
+        src={avatar ? avatar : ''}
         className={cx('user-avatar', {
           [className]: className,
           XL,

@@ -227,20 +227,17 @@ export const postSlice = createSlice({
       .addCase(editPost.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        console.log(action.meta.arg);
-        console.log(action.payload.user._id);
-        if (
-          action.payload.privacy === 'Only me' &&
-          action.meta.arg.user !== action.payload.user._id
-        ) {
-          state.posts = state.posts.filter(
-            (post) => post._id !== action.payload._id,
-          );
-        } else {
-          state.posts = state.posts.map((post) =>
-            post._id === action.payload._id ? action.payload : post,
-          );
-        }
+
+        state.posts = state.posts.map((post) =>
+          post._id === action.payload._id
+            ? (post = {
+                ...post,
+                content: action.payload.content,
+                privacy: action.payload.privacy,
+                media: action.payload.media,
+              })
+            : post,
+        );
       })
       .addCase(editPost.rejected, (state, action) => {
         state.isLoading = false;

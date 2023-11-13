@@ -16,8 +16,13 @@ const deleteUser = async (userId, token) => {
 };
 
 // Get one user info
-const getUser = async (userId) => {
-  const response = await httpRequest.get(API_URL + userId);
+const getProfile = async (userId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await httpRequest.get(API_URL + 'profile/' + userId, config);
   return response;
 };
 
@@ -39,11 +44,42 @@ const editProfile = async (token, userData) => {
 
   return response;
 };
+// Follow
+const follow = async (user_id, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await httpRequest.patch(
+    API_URL + 'follow/' + user_id,
+    {},
+    config,
+  );
+  return response;
+};
+const unfollow = async (user_id, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await httpRequest.patch(
+    API_URL + 'unfollow/' + user_id,
+    {},
+    config,
+  );
+
+  return response;
+};
 
 const userService = {
   deleteUser,
-  getUser,
+  getProfile,
   editProfile,
+  follow,
+  unfollow,
 };
 
 export default userService;

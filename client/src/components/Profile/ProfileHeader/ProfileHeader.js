@@ -1,18 +1,25 @@
-import { faMugSaucer, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faMugSaucer,
+  faUserCheck,
+  faUserPlus,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames/bind';
 import { Link, useLocation } from 'react-router-dom';
 
+import { useContext } from 'react';
 import Avatar from '~/components/Avatar';
 import Button from '~/components/Button';
 import Image from '~/components/Image';
 import Modal from '~/components/Modals/Modal';
+import { ProfileContext } from '~/pages/Profile/Profile';
 import styles from './ProfileHeader.module.scss';
 
 const cx = classNames.bind(styles);
 
 function ProfileHeader({ id, isAuth, profile }) {
   const location = useLocation();
+  const { isFollow, handleFollow } = useContext(ProfileContext);
 
   const currentPath = location.pathname; //
 
@@ -36,11 +43,11 @@ function ProfileHeader({ id, isAuth, profile }) {
         <div className={cx('info-user')}>
           <div className={cx('info')}>
             <h1>{profile.username}</h1>
-            {profile?.followers?.length > 0 && (
+            {/* {profile?.followers?.length > 0 && (
               <div className={cx('supporters')}>
                 {profile.followers.length + ' Supporters'}
               </div>
-            )}
+            )} */}
 
             {profile?.followers?.length > 0 && (
               <div className={cx('followers')}>
@@ -59,13 +66,23 @@ function ProfileHeader({ id, isAuth, profile }) {
               </Button>
             )}
             {!isAuth ? (
-              <Button
-                btnType="gray-light"
-                sz="lg"
-                leftIcon={<FontAwesomeIcon icon={faUserPlus} />}
-              >
-                Follow
-              </Button>
+              !isFollow ? (
+                <Button
+                  btnType="gray-light"
+                  sz="lg"
+                  leftIcon={<FontAwesomeIcon icon={faUserPlus} />}
+                  onClick={handleFollow}
+                >
+                  Follow
+                </Button>
+              ) : (
+                <Button
+                  btnType="gray-light"
+                  sz="lg"
+                  leftIcon={<FontAwesomeIcon icon={faUserCheck} />}
+                  onClick={handleFollow}
+                ></Button>
+              )
             ) : (
               <Modal modalType="editProfile" />
             )}
