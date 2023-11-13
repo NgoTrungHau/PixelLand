@@ -42,8 +42,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 150px;
-    height: 150px;
+    width: 150px !important;
+    min-width: 150px !important;
+    height: 150px !important;
     background-color: var(--gray-light);
     border: 5px solid var(--white);
     border-radius: 16px !important;

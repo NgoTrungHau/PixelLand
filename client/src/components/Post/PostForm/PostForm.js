@@ -127,9 +127,9 @@ function PostForm({ post }) {
     media: Yup.mixed()
       .nullable()
       .notRequired()
-      // .test('fileSize', 'File too large', (value) =>
-      //   value ? value.size <= FILE_SIZE_LIMIT : true,
-      // )
+      .test('fileSize', 'File too large', (value) =>
+        value ? value.size <= FILE_SIZE_LIMIT : true,
+      )
       // .test('type', 'Unsupported Format', (value) => {
       //   return value ? SUPPORTED_FORMATS.includes(value.type) : true;
       // })
@@ -182,7 +182,12 @@ function PostForm({ post }) {
     <>
       <div className={mcx('heading')}>{post ? 'Edit' : 'Create'} Post</div>
       <div className={cx('user-info')}>
-        <Avatar className={cx('avatar')} avatar={user.avatar?.url} medium />
+        <Avatar
+          className={cx('avatar')}
+          avatar={user.avatar?.url}
+          to={user._id}
+          medium
+        />
         <div className={cx('info')}>
           <div>{user.username}</div>
           <Menu items={privacyOptions} offset={[32, 0]}>

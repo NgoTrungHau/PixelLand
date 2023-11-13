@@ -16,7 +16,12 @@ function CreatePost() {
 
   return (
     <div className={cx('wrapper')}>
-      <Avatar className={cx('avatar')} avatar={user.avatar?.url} medium />
+      <Avatar
+        className={cx('avatar')}
+        avatar={user.avatar?.url}
+        to={user._id}
+        medium
+      />
       <Modal
         modalType="create-post"
         sz="small"

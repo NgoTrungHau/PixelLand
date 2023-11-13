@@ -123,6 +123,7 @@ function PostDetail({ post }) {
             <Avatar
               className={cx('avt')}
               avatar={post.user.avatar?.url}
+              to={post.user._id}
               medium
             />
             <div className={cx('author-info')}>

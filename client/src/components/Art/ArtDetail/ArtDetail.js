@@ -124,6 +124,7 @@ function ArtDetail({ art }) {
             <Avatar
               className={cx('avt')}
               avatar={art.author.avatar?.url}
+              to={art.author._id}
               medium
             />
             <div className={cx('author-info')}>

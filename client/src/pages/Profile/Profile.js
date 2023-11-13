@@ -58,6 +58,7 @@ function Profile() {
     if (profile) {
       setIsFollow(profile.followed);
     }
+    // eslint-disable-next-line
   }, [profile.followed]);
   useEffect(() => {
     if (hasCheckedUser && !loadingUsersRef.current) {
@@ -94,6 +95,7 @@ function Profile() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+    // eslint-disable-next-line
   }, [isPostsLoading, isArtsLoading]);
   useEffect(() => {
     if (profile) {
@@ -104,6 +106,7 @@ function Profile() {
         dispatch(getUserArts({ profile_id: id, page: pageArt }));
       }
     }
+    // eslint-disable-next-line
   }, [profile, pagePost, pageArt, dispatch]);
 
   const handleFollow = () => {
@@ -161,7 +164,12 @@ function Profile() {
                       </div>
                     </div> */}
                     <div className={cx('creator-content')}>
-                      {id === user?._id && <CreatePost />}
+                      {id === user?._id && (
+                        <div className={cx('create-post')}>
+                          <CreatePost />
+                        </div>
+                      )}
+
                       <PostList />
                     </div>
                   </>

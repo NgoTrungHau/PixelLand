@@ -155,7 +155,7 @@ function EditArt({ art }) {
       <div className={cx('heading')}>Edit Art</div>
       <div className={ecx('wrapper')}>
         <div className={ecx('user')}>
-          <Avatar avatar={user.avatar?.url} medium />
+          <Avatar avatar={user.avatar?.url} to={user._id} medium />
           <div className={ecx('user-info')}>
             <div>{user?.username}</div>
             <Menu items={privacyOptions} offset={[32, 0]}>

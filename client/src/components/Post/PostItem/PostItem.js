@@ -108,7 +108,7 @@ function PostItem({ post }) {
       <div className={cx('wrapper')}>
         <div className={cx('head')}>
           <div className={cx('user')}>
-            <Avatar avatar={post.user?.avatar?.url} medium />
+            <Avatar avatar={post.user?.avatar?.url} to={post.user._id} medium />
             <div className={cx('user-info')}>
               <div>{post.user?.username}</div>
               <p>{moment(post.createdAt).fromNow()}</p>

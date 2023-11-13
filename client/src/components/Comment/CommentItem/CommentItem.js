@@ -147,7 +147,11 @@ function CommentItem({ key, cmt }) {
 
   return (
     <div className={cx('wrapper')} key={cmt._id}>
-      <Avatar avatar={cmt.commentedBy.avatar?.url} medium />
+      <Avatar
+        avatar={cmt.commentedBy.avatar?.url}
+        to={cmt.commentedBy._id}
+        medium
+      />
       <div className={cx('detail')}>
         <div className={cx('detail-head')}>
           <div className={cx('content-menu')}>

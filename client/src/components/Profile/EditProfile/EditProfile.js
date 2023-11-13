@@ -1,24 +1,23 @@
 import classNames from 'classnames/bind';
 // react
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import ReactTextareaAutosize from 'react-textarea-autosize';
 // form validation
 import { Formik, useFormik } from 'formik';
 import * as Yup from 'yup';
 
 // scss
-import styles from './EditProfile.module.scss';
 import mstyles from '~/components/Modals/Modal.module.scss';
+import styles from './EditProfile.module.scss';
 // components
 import Avatar from '~/components/Avatar';
 import Button from '~/components/Button';
 import SpinIcon from '~/components/SpinIcon';
-import { ModalToggleContext } from '../../Modals/Modal';
-// features
-import { editProfile } from '~/features/profile/profileSlice';
 import Image from '~/components/Image';
+// features
+import { ModalToggleContext } from '../../Modals/Modal';
+import { editProfile } from '~/features/profile/profileSlice';
 
 const mcx = classNames.bind(mstyles);
 const cx = classNames.bind(styles);
@@ -123,7 +122,7 @@ function EditProfileForm() {
               <label className="d-flex justify-content-left">Avatar:</label>
               <label htmlFor="avatar" className="d-flex justify-content-center">
                 <div className={cx('avatar')}>
-                  {avt && <Avatar avatar={avt} XL onChange />}
+                  {avt && <Avatar avatar={avt} to={profile._id} XL onChange />}
                 </div>
                 <input
                   type="file"

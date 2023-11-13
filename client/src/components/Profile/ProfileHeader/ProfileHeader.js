@@ -1,19 +1,24 @@
+import classNames from 'classnames/bind';
+// React
+import { useContext } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+// Font awesome
 import {
   faMugSaucer,
   faUserCheck,
   faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import classNames from 'classnames/bind';
-import { Link, useLocation } from 'react-router-dom';
 
-import { useContext } from 'react';
+// scss
+import styles from './ProfileHeader.module.scss';
+// components
 import Avatar from '~/components/Avatar';
 import Button from '~/components/Button';
 import Image from '~/components/Image';
 import Modal from '~/components/Modals/Modal';
+// features
 import { ProfileContext } from '~/pages/Profile/Profile';
-import styles from './ProfileHeader.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -34,11 +39,9 @@ function ProfileHeader({ id, isAuth, profile }) {
       </div>
       <div className={cx('profile-user')} key={profile._id}>
         <div className={cx('avatar')}>
-          <Link to={`/${profile._id}`}>
-            {profile?.avatar?.url && (
-              <Avatar avatar={profile.avatar?.url} profile />
-            )}
-          </Link>
+          {profile?.avatar?.url && (
+            <Avatar avatar={profile.avatar?.url} to={profile._id} profile />
+          )}
         </div>
         <div className={cx('info-user')}>
           <div className={cx('info')}>

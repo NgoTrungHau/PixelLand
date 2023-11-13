@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 
 import styles from './Avatar.module.scss';
 import Image from '~/components/Image';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 function Avatar({
   className,
   avatar,
+  to,
   XL = false,
   large = false,
   medium = false,
@@ -16,25 +18,25 @@ function Avatar({
   profile = false,
 }) {
   return (
-    <div>
-      <Image
-        src={avatar ? avatar : ''}
-        className={cx('user-avatar', {
-          [className]: className,
-          XL,
-          large,
-          medium,
-          small,
-          profile,
-        })}
-        alt="user"
-      />
-    </div>
+    <Link
+      to={`/${to}`}
+      className={cx('user-avatar', {
+        [className]: className,
+        XL,
+        large,
+        medium,
+        small,
+        profile,
+      })}
+    >
+      <Image src={avatar ? avatar : ''} alt="user" />
+    </Link>
   );
 }
 
 Avatar.propTypes = {
   avatar: PropTypes.string,
+  to: PropTypes.string,
   profile: PropTypes.bool,
   XL: PropTypes.bool,
   large: PropTypes.bool,
