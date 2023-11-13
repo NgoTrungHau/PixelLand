@@ -87,7 +87,11 @@ function ArtItem({ key, art }) {
         </div>
         <div className={cx('info-detail')}>
           <div className={cx('info')}>
-            <Avatar avatar={art.author.avatar?.url} medium />
+            <Avatar
+              avatar={art.author.avatar?.url}
+              to={art.author._id}
+              medium
+            />
             <div className={cx('detail')}>
               <div>{art.author?.username}</div>
               <span>{art?.title}</span>

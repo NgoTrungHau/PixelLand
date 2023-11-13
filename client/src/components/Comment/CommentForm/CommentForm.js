@@ -143,7 +143,12 @@ function CommentForm({
           onSubmit={formik.handleSubmit}
         >
           <div className={cx('comment-form')}>
-            <Avatar className={cx('avatar')} avatar={user.avatar?.url} medium />
+            <Avatar
+              className={cx('avatar')}
+              avatar={user.avatar?.url}
+              to={user._id}
+              medium
+            />
             <div>
               <div className={cx('input-comment')}>
                 <ReactTextareaAutosize

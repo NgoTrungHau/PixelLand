@@ -26,9 +26,12 @@ const User = new Schema(
     avatar: {
       public_id: {
         type: String,
+        default: 'profile/default/avatar/wxxdeqkpy9bolxsn7xqh',
       },
       url: {
         type: String,
+        default:
+          'https://res.cloudinary.com/dtxzznqes/image/upload/v1699863939/profile/default/avatar/wxxdeqkpy9bolxsn7xqh.png',
       },
     },
     background: {
