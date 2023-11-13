@@ -7,7 +7,7 @@ import styles from './Gallery.module.scss';
 import Button from '~/components/Button';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getArts, getAuthArts } from '~/features/arts/artSlice';
+import { getArts, getAuthArts, reset } from '~/features/arts/artSlice';
 
 const cx = classNames.bind(styles);
 
@@ -19,7 +19,10 @@ function Gallery() {
 
   const { user, hasCheckedUser } = useSelector((state) => state.auth);
   const { isArtsLoading } = useSelector((state) => state.arts);
-
+  useEffect(() => {
+    // Dispatch the reset action when the component mounts
+    dispatch(reset());
+  }, [dispatch]);
   useEffect(() => {
     const handleScroll = () => {
       if (

@@ -9,11 +9,13 @@ const initialState = {
   message: '',
 };
 
-export const getUser = createAsyncThunk(
-  'users/getUserInfo',
+export const getProfile = createAsyncThunk(
+  'profile/getProfileInfo',
   async (id, thunkAPI) => {
     try {
-      return await profileService.getUser(id);
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
+
+      return await profileService.getProfile(id, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -27,7 +29,7 @@ export const getUser = createAsyncThunk(
 );
 // Edit profile
 export const editProfile = createAsyncThunk(
-  'auth/editProfile',
+  'profile/editProfile',
   async (userData, thunkAPI) => {
     try {
       const state = thunkAPI.getState();
@@ -48,6 +50,45 @@ export const editProfile = createAsyncThunk(
     }
   },
 );
+// follow
+export const follow = createAsyncThunk(
+  'profile/follow',
+  async (user_id, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
+      const response = await profileService.follow(user_id, token);
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+// unfollow
+export const unfollow = createAsyncThunk(
+  'profile/unfollow',
+  async (user_id, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.tokens.access_token;
+      const response = await profileService.unfollow(user_id, token);
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
 
 export const profileSlice = createSlice({
   name: 'profile',
@@ -57,15 +98,15 @@ export const profileSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getUser.pending, (state) => {
+      .addCase(getProfile.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getUser.fulfilled, (state, action) => {
+      .addCase(getProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.profile = action.payload;
       })
-      .addCase(getUser.rejected, (state, action) => {
+      .addCase(getProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
@@ -85,6 +126,40 @@ export const profileSlice = createSlice({
         };
       })
       .addCase(editProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(follow.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(follow.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.profile = {
+          ...state.profile,
+          followers: action.payload.followed.followers,
+          followed: true,
+        };
+      })
+      .addCase(follow.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(unfollow.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(unfollow.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.profile = {
+          ...state.profile,
+          followers: action.payload.unfollowed.followers,
+          followed: false,
+        };
+      })
+      .addCase(unfollow.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

@@ -76,7 +76,9 @@ function PostForm({ post }) {
       },
     },
   ];
-  const [privacy, setPrivacy] = useState(privacyOptions[0]);
+  const [privacy, setPrivacy] = useState(
+    post ? post.privacy : privacyOptions[0],
+  );
 
   const { user } = useSelector((state) => state.auth);
   const { isLoading } = useSelector((state) => state.posts);
@@ -125,9 +127,9 @@ function PostForm({ post }) {
     media: Yup.mixed()
       .nullable()
       .notRequired()
-      .test('fileSize', 'File too large', (value) =>
-        value ? value.size <= FILE_SIZE_LIMIT : true,
-      )
+      // .test('fileSize', 'File too large', (value) =>
+      //   value ? value.size <= FILE_SIZE_LIMIT : true,
+      // )
       // .test('type', 'Unsupported Format', (value) => {
       //   return value ? SUPPORTED_FORMATS.includes(value.type) : true;
       // })
@@ -185,7 +187,9 @@ function PostForm({ post }) {
           <div>{user.username}</div>
           <Menu items={privacyOptions} offset={[32, 0]}>
             <div className={cx('privacy')}>
-              <Button leftIcon={privacy.leftIcon}>{privacy.title}</Button>
+              <Button leftIcon={privacy.leftIcon}>
+                {post ? privacy : privacy.title}
+              </Button>
             </div>
           </Menu>
         </div>
@@ -248,10 +252,10 @@ function PostForm({ post }) {
                   ) : (
                     <Video key={media} src={media} thumbnail />
                   )}
-                  {formik.errors.media && formik.touched.media && (
-                    <p className={mcx('mess-error')}>{formik.errors.media}</p>
-                  )}
                 </div>
+              )}
+              {formik.errors.media && formik.touched.media && (
+                <p className={mcx('mess-error')}>{formik.errors.media}</p>
               )}
             </div>
             <div className={cx('btn')}>

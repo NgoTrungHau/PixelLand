@@ -9,7 +9,7 @@ import styles from './Home.module.scss';
 import CreatePost from '~/components/Post/PostButton/CreatePost';
 import PostList from '~/components/Post/PostList';
 // features
-import { getPosts } from '~/features/posts/postSlice';
+import { getPosts, reset } from '~/features/posts/postSlice';
 
 const cx = classNames.bind(styles);
 
@@ -21,7 +21,10 @@ function Home() {
 
   const { user, hasCheckedUser } = useSelector((state) => state.auth);
   const { isPostsLoading } = useSelector((state) => state.posts);
-
+  useEffect(() => {
+    // Dispatch the reset action when the component mounts
+    dispatch(reset());
+  }, [dispatch]);
   useEffect(() => {
     const handleScroll = () => {
       if (

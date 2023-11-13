@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from './authService';
-import { editProfile } from '../profile/profileSlice';
+import { editProfile, follow, unfollow } from '../profile/profileSlice';
 
 const initialState = {
   user: null,
@@ -203,6 +203,7 @@ export const authSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
+      // profile ref
       .addCase(editProfile.fulfilled, (state, action) => {
         state.user = {
           ...state.user,
@@ -210,6 +211,19 @@ export const authSlice = createSlice({
           avatar: action.payload.avatar,
           background: action.payload.background,
           description: action.payload.description,
+        };
+      })
+      .addCase(follow.fulfilled, (state, action) => {
+        console.log(action.payload);
+        state.user = {
+          ...state.user,
+          followings: action.payload.followings.followings,
+        };
+      })
+      .addCase(unfollow.fulfilled, (state, action) => {
+        state.user = {
+          ...state.user,
+          followings: action.payload.unfollowings.followings,
         };
       });
   },

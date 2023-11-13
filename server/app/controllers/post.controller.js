@@ -2,6 +2,7 @@ const ApiError = require('../api-error');
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const cloudinary = require('../utils/cloudinary');
+const User = require('../models/User');
 
 exports.createPost = async (req, res, next) => {
   try {
@@ -57,49 +58,44 @@ exports.createPost = async (req, res, next) => {
 exports.getPosts = async (req, res, next) => {
   try {
     const { start, newPostOffset, limit = 4 } = req.query;
-    const allPosts = await Post.find()
+
+    const followingUsers = await User.find({ _id: req.user._id }, 'followings');
+    const followingUserIds = followingUsers[0].followings;
+    followingUserIds.push(req.user._id);
+
+    let query = {
+      user: { $in: followingUserIds },
+      $or: [
+        { privacy: { $ne: 'Only me' } }, // Exclude 'Only me' for non-logged-in user
+        { user: req.user._id }, // Include all posts for logged-in user
+      ],
+    };
+    const allPosts = await Post.find(query)
       .sort({ createdAt: -1 })
       .skip(Number(start) * Number(limit) + Number(newPostOffset))
       .limit(Number(limit))
       .populate('user', 'username avatar');
-    const data = allPosts.map((post) => post.toObject()); // convert all posts to JavaScript objects
 
     const modifiedPosts = await Promise.all(
-      data.map(async (post) => {
-        if (post.comments.length > 0) {
+      allPosts.map(async (post) => {
+        // Instead of using post.toObject(), clone the post object
+        const postClone = JSON.parse(JSON.stringify(post));
+
+        if (postClone.comments.length > 0) {
           const lastComment = await Comment.findById(
-            post.comments.slice(-1)[0],
+            postClone.comments.slice(-1)[0],
           ).populate('commentedBy', 'username avatar');
-          post.comments = post.comments.map((comment) => comment.toString());
-          post.comments[post.comments.length - 1] = lastComment;
+          postClone.comments = postClone.comments.map((comment) =>
+            comment.toString(),
+          );
+          postClone.comments[postClone.comments.length - 1] = lastComment;
         }
-        return post;
+        return postClone;
       }),
     );
 
-    // Filter out posts with varied privacy settings except the ones from the request user
-    const posts = modifiedPosts.filter((post) => {
-      const userIsAuthor = post.user._id.toString() === req.user._id.toString();
-      if (userIsAuthor) return true;
-
-      switch (post.privacy) {
-        case 'Public':
-          return true;
-        case 'Only me':
-          return false;
-        // case 'Followers only':
-        //     // You'll replace `checkIfUserIsFollower` function with real implementation
-        //     return checkIfUserIsFollower(post.user._id, req.user._id);
-        // case 'Members only':
-        //     // You'll replace `checkIfUserIsMember` function with real implementation
-        //     return checkIfUserIsMember(post.user._id, req.user._id);
-        default:
-          return false;
-      }
-    });
-
     // Update liked status for posts and comments
-    posts.forEach((post) => {
+    modifiedPosts.forEach((post) => {
       post.liked = post.likes.includes(req.user._id.toString());
       if (post.comments.length > 0) {
         post.comments[post.comments.length - 1]._doc.liked = post.comments[
@@ -108,7 +104,7 @@ exports.getPosts = async (req, res, next) => {
       }
     });
 
-    res.json(posts);
+    res.json(modifiedPosts);
   } catch (error) {
     console.error(error); // Log the error to console for debugging
     return next(new ApiError(500, 'An error occurred while retrieving posts'));
@@ -117,49 +113,49 @@ exports.getPosts = async (req, res, next) => {
 exports.getUserPosts = async (req, res, next) => {
   try {
     const { start, newPostOffset, limit = 4 } = req.query;
-    const allPosts = await Post.find({ user: req.params.id })
+    const userId = req.params.id;
+
+    const loggedUser = req.user; // Get the logged-in user
+
+    let query = { user: userId, $or: [] };
+
+    if (userId !== loggedUser._id.toString()) {
+      query.$or.push({ privacy: 'Public' });
+      query.$or.push({ privacy: 'Members only' });
+      // Determine if the logged-in user is following the user
+      const isFollowing = loggedUser.followings.includes(userId);
+      // Include 'Followers only' posts if the user is following
+      if (isFollowing) {
+        query.$or.push({ privacy: 'Followers only' });
+      }
+    }
+
+    const allPosts = await Post.find(query)
       .sort({ createdAt: -1 })
       .skip(Number(start) * Number(limit) + Number(newPostOffset))
       .limit(Number(limit))
       .populate('user', 'username avatar');
-    const data = allPosts.map((post) => post.toObject()); // convert all posts to JavaScript objects
 
     const modifiedPosts = await Promise.all(
-      data.map(async (post) => {
-        if (post.comments.length > 0) {
+      allPosts.map(async (post) => {
+        // Instead of using post.toObject(), clone the post object
+        const postClone = JSON.parse(JSON.stringify(post));
+
+        if (postClone.comments.length > 0) {
           const lastComment = await Comment.findById(
-            post.comments.slice(-1)[0],
+            postClone.comments.slice(-1)[0],
           ).populate('commentedBy', 'username avatar');
-          post.comments = post.comments.map((comment) => comment.toString());
-          post.comments[post.comments.length - 1] = lastComment;
+          postClone.comments = postClone.comments.map((comment) =>
+            comment.toString(),
+          );
+          postClone.comments[postClone.comments.length - 1] = lastComment;
         }
-        return post;
+        return postClone;
       }),
     );
 
-    // Filter out posts with varied privacy settings except the ones from the request user
-    const posts = modifiedPosts.filter((post) => {
-      const userIsAuthor = post.user._id.toString() === req.user._id.toString();
-      if (userIsAuthor) return true;
-
-      switch (post.privacy) {
-        case 'Public':
-          return true;
-        case 'Only me':
-          return false;
-        // case 'Followers only':
-        //     // You'll replace `checkIfUserIsFollower` function with real implementation
-        //     return checkIfUserIsFollower(post.user._id, req.user._id);
-        // case 'Members only':
-        //     // You'll replace `checkIfUserIsMember` function with real implementation
-        //     return checkIfUserIsMember(post.user._id, req.user._id);
-        default:
-          return false;
-      }
-    });
-
     // Update liked status for posts and comments
-    posts.forEach((post) => {
+    modifiedPosts.forEach((post) => {
       post.liked = post.likes.includes(req.user._id.toString());
       if (post.comments.length > 0) {
         post.comments[post.comments.length - 1]._doc.liked = post.comments[
@@ -168,7 +164,7 @@ exports.getUserPosts = async (req, res, next) => {
       }
     });
 
-    res.json(posts);
+    res.json(modifiedPosts);
   } catch (error) {
     console.error(error); // Log the error to console for debugging
     return next(new ApiError(500, 'An error occurred while retrieving posts'));

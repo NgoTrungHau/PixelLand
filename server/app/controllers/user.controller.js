@@ -75,7 +75,7 @@ exports.login = async (req, res, next) => {
 
     const user = await User.findOne({
       email,
-    }).populate('followers following', 'avatar username followers following');
+    }).populate('followers followings', 'avatar username followers followings');
 
     if (!user) {
       return next(new ApiError(400, 'User does not exist'));
@@ -192,14 +192,16 @@ exports.findAll = async (req, res, next) => {
   }
 };
 
-exports.findOne = async (req, res, next) => {
+exports.getProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
     if (!user) {
       return next(new ApiError(404, 'User not found'));
     }
+    user._doc.followed = user.followers.includes(req.user._id.toString());
     res.json(user);
   } catch (error) {
+    console.log(error);
     return next(
       new ApiError(500, `Error retrieving user with id=${req.params.id}`),
     );
@@ -305,5 +307,61 @@ exports.deleteAll = async (req, res, next) => {
     res.json(deleteAllUsers);
   } catch (error) {
     return next(new ApiError(500, `Error deleting all user `));
+  }
+};
+// Follow
+exports.follow = async (req, res, next) => {
+  try {
+    const followed = await User.findByIdAndUpdate(
+      { _id: req.params.id },
+      {
+        $addToSet: { followers: req.user._id },
+      },
+      { new: true },
+    );
+    const followings = await User.findByIdAndUpdate(
+      { _id: req.user._id },
+      {
+        $addToSet: { followings: req.params.id },
+      },
+      { new: true },
+    );
+
+    if (!followed || !followings)
+      return res.status(400).json({ error: 'This user does not exist.' });
+    return res.status(200).send({ followed, followings });
+  } catch (error) {
+    console.log(error);
+    return next(
+      new ApiError(500, `Error retrieving user with id=${req.params.id}`),
+    );
+  }
+};
+// Unfollow
+exports.unfollow = async (req, res, next) => {
+  try {
+    const unfollowed = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $pull: { followers: req.user._id },
+      },
+      { new: true },
+    );
+    const unfollowings = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        $pull: { followings: req.params.id },
+      },
+      { new: true },
+    );
+
+    if (!unfollowed || !unfollowings)
+      return res.status(400).json({ msg: 'This user does not exist.' });
+
+    return res.status(200).send({ unfollowed, unfollowings });
+  } catch (error) {
+    return next(
+      new ApiError(500, `Error retrieving user with id=${req.params.id}`),
+    );
   }
 };
