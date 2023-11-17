@@ -4,6 +4,7 @@ import postReducer from '~/features/posts/postSlice';
 import artReducer from '~/features/arts/artSlice';
 import commentReducer from '~/features/comments/commentSlice';
 import profileReducer from '~/features/profile/profileSlice';
+import productReducer from '~/features/products/productSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     arts: artReducer,
     comments: commentReducer,
     profile: profileReducer,
+    products: productReducer,
   },
 });

@@ -95,38 +95,41 @@ function ProfileHeader({ id, isAuth, profile }) {
 
       <div className={cx('tab-profile')}>
         <Link
-          to={`/${id}`}
-          className={cx('tab', currentPath === `/${id}` && 'tab-active')}
+          to={`/profile/${id}`}
+          className={cx(
+            'tab',
+            currentPath === `/profile/${id}` && 'tab-active',
+          )}
         >
           About
         </Link>
         {/* <Link
-          to={`/${id}/membership`}
+          to={`/profile/${id}/membership`}
           className={cx(
             'tab',
-            currentPath === `/${id}/membership` && 'tab-active',
+            currentPath === `/profile/${id}/membership` && 'tab-active',
           )}
         >
           Membership
         </Link> */}
         <Link
-          to={`/${id}/gallery`}
+          to={`/profile/${id}/gallery`}
           className={cx(
             'tab',
-            currentPath === `/${id}/gallery` && 'tab-active',
+            currentPath === `/profile/${id}/gallery` && 'tab-active',
           )}
         >
           Gallery
         </Link>
         {/* <Link
-          to={`/${id}/posts`}
-          className={cx('tab', currentPath === `/${id}/posts` && 'tab-active')}
+          to={`/profile/${id}/posts`}
+          className={cx('tab', currentPath === `/profile/${id}/posts` && 'tab-active')}
         >
           Posts
         </Link> */}
         {/* <Link
-          to={`/${id}/shop`}
-          className={cx('tab', currentPath === `/${id}/shop` && 'tab-active')}
+          to={`/profile/${id}/shop`}
+          className={cx('tab', currentPath === `/profile/${id}/shop` && 'tab-active')}
         >
           Shop
         </Link> */}

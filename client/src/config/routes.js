@@ -1,12 +1,10 @@
 const routes = {
   home: '/',
   gallery: '/gallery',
-  digital: '/digitalart',
+  shop: '/shop/*',
   artDetail: '/art/:id',
   search: '/search',
-  profile: '/:id/*',
-  following: '/following',
-  mygallery: '/mygallery',
+  profile: '/profile/:id/*',
   upload: '/upload',
 };
 
