@@ -19,7 +19,7 @@ function Avatar({
 }) {
   return (
     <Link
-      to={`/${to}`}
+      to={`/profile/${to}`}
       className={cx('user-avatar', {
         [className]: className,
         XL,

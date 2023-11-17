@@ -41,17 +41,18 @@ function Header() {
       {
         image: user.avatar?.url,
         title: 'Profile',
-        to: `/${user._id}`,
+        to: `/profile/${user._id}`,
       },
       {
         rightIcon: <FontAwesomeIcon icon={faImage}></FontAwesomeIcon>,
         title: 'My Gallery',
-        to: '/gallery',
+        to: `/profile/${user._id}/gallery`,
         divider: true,
       },
       {
         rightIcon: <FontAwesomeIcon icon={faCamera}></FontAwesomeIcon>,
-        title: 'My Photos',
+        title: 'My Shop',
+        to: `/profile/${user._id}/shop`,
       },
       {
         rightIcon: <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>,
@@ -109,14 +110,15 @@ function Header() {
             </Button>
             <Button
               btnType="white"
-              to={config.routes.gallery}
+              to={config.routes.shop}
               leftIcon={<FontAwesomeIcon icon={faBook} />}
             >
               Courses
             </Button>
             <Button
               btnType="white"
-              to={config.routes.gallery}
+              navlink
+              to="/shop"
               leftIcon={<FontAwesomeIcon icon={faTag} />}
             >
               Shop

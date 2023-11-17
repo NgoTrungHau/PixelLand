@@ -8,7 +8,7 @@ import Home from '~/pages/Home';
 import Gallery from '~/pages/Gallery';
 import Search from '~/pages/Search';
 import Profile from '~/pages/Profile';
-import Following from '~/pages/Following';
+import Shop from '~/pages/Shop';
 
 //Public routes
 const publicRoutes = [
@@ -17,7 +17,7 @@ const publicRoutes = [
   { path: config.routes.digital, component: Gallery },
   { path: config.routes.search, component: Search },
   { path: config.routes.profile, component: Profile, layout: HeaderOnly },
-  { path: config.routes.following, component: Following },
+  { path: config.routes.shop, component: Shop, layout: HeaderOnly },
 ];
 
 const privateRoutes = [];

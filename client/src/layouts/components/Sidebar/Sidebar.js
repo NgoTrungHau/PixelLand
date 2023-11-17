@@ -36,7 +36,7 @@ function Sidebar() {
         />
         <MenuItem
           title={user.username}
-          to={`/${user._id}`}
+          to={`/profile/${user._id}`}
           image={user.avatar?.url}
         />
         <MenuItem
@@ -46,8 +46,8 @@ function Sidebar() {
           icon={<FontAwesomeIcon icon={faImages}></FontAwesomeIcon>}
         />
         <MenuItem
-          title="Digital Art"
-          to={config.routes.digital}
+          title="Shop"
+          to="/shop"
           icon={<FontAwesomeIcon icon={faImage}></FontAwesomeIcon>}
         />
       </Menu>
