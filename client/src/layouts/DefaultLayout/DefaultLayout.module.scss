@@ -4,12 +4,13 @@
   width: 100%;
 }
 .container {
-  display: grid;
-  grid-template-columns: 15% 70% 15%;
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: 100%;
   width: 100%;
+  min-height: 1000px;
   margin-top: var(--default-layout-header-height);
   padding: 0 var(--default-layout-horizontal-spacer - 10);
-  min-height: 940px;
   background-color: #edf1f4;
 }
 
@@ -18,5 +19,4 @@
   width: 100%;
   flex: 1;
   justify-content: center;
-  overflow: auto;
 }

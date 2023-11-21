@@ -5,7 +5,6 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowRightFromBracket,
-  faBook,
   faCamera,
   faGear,
   faHouse,
@@ -15,19 +14,19 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Tippy from '@tippyjs/react';
 import classNames from 'classnames/bind';
-import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import 'tippy.js/dist/tippy.css';
 
 import images from '~/assets/images';
 import Button from '~/components/Button';
 import Image from '~/components/Image';
+import Modal from '~/components/Modals/';
 import Menu from '~/components/Popper/Menu';
 import config from '~/config';
+import { logout, reset } from '~/features/auth/authSlice';
 import Search from '../Search';
 import styles from './Header.module.scss';
-import Modal from '~/components/Modals/';
-import { logout, reset } from '~/features/auth/authSlice';
 
 const cx = classNames.bind(styles);
 
@@ -57,6 +56,7 @@ function Header() {
       {
         rightIcon: <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>,
         title: 'Settings',
+        to: '/settings/profile',
       },
       {
         rightIcon: (
@@ -95,7 +95,7 @@ function Header() {
             <Button
               btnType="white"
               navlink
-              to={config.routes.home}
+              to="/"
               leftIcon={<FontAwesomeIcon icon={faHouse} />}
             >
               Home
@@ -107,13 +107,6 @@ function Header() {
               leftIcon={<FontAwesomeIcon icon={faImages} />}
             >
               Gallery
-            </Button>
-            <Button
-              btnType="white"
-              to={config.routes.shop}
-              leftIcon={<FontAwesomeIcon icon={faBook} />}
-            >
-              Courses
             </Button>
             <Button
               btnType="white"

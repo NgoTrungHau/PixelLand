@@ -11,7 +11,7 @@ function UserItem({ className, user }) {
   return (
     <li className={classNames(className)}>
       <div className={cx('wrapper')}>
-        <Link to={`/${user._id}`}>
+        <Link to={`/profile/${user._id}`}>
           <div className={cx('user')}>
             <Avatar avatar={user.avatar?.url} to={user._id} small />
             <div className={cx('info')}>
