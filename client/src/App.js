@@ -1,20 +1,28 @@
 // React
-import { Fragment, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Fragment, useEffect, useRef } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 
-import DefaultLayout, { HeaderOnly } from '~/layouts';
 import images from '~/assets/images';
-import Gallery from '~/pages/Gallery';
 import { publicRoutes } from '~/routes';
-import { scrollToTop as ScrollToTop } from './hooks';
-import { loadUser, logout, refreshToken } from './features/auth/authSlice';
+// components
 import Image from './components/Image';
-import { useRef } from 'react';
+import DefaultLayout, { HeaderOnly } from '~/layouts';
+import Gallery from '~/pages/Gallery';
+// features
+import { loadUser, logout, refreshToken } from './features/auth/authSlice';
+import { scrollToTop as ScrollToTop } from './hooks';
 
 function App() {
+  const initialOptions = {
+    clientId:
+      'AYq5yDFtkGSDBjqcMpkXg9WXuLgw6FZOLWMbFRle9AI9Ib8sA_J1_K2ALbyhdZNtGnGYaw7yHbpGm6kC',
+    currency: 'USD',
+    intent: 'capture',
+  };
   const dispatch = useDispatch();
   const loadingUserRef = useRef();
 
@@ -58,40 +66,38 @@ function App() {
     );
   }
   return (
-    <div className="App">
-      <Routes>
-        {publicRoutes.map((route, index) => {
-          let Page = route.component;
-
-          let Layout = DefaultLayout;
-
-          if (route.layout) {
-            Layout = route.layout;
-          } else if (route.layout === null) {
-            Layout = Fragment;
-          }
-
-          if (!user) {
-            Layout = HeaderOnly;
-            Page = Gallery;
-          }
-
-          return (
-            <Route
-              key={index}
-              path={route.path}
-              element={
-                <Layout>
-                  <ScrollToTop />
-                  <Page />
-                </Layout>
-              }
-            />
-          );
-        })}
-      </Routes>
-      <ToastContainer />
-    </div>
+    <PayPalScriptProvider options={initialOptions}>
+      <div className="App">
+        <Routes>
+          {publicRoutes.map((route, index) => {
+            let Page = route.component;
+            let Layout = DefaultLayout;
+            if (route.layout) {
+              Layout = route.layout;
+            } else if (route.layout === null) {
+              Layout = Fragment;
+            }
+            if (!user) {
+              Layout = HeaderOnly;
+              Page = Gallery;
+            }
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <Layout>
+                    <ScrollToTop />
+                    <Page />
+                  </Layout>
+                }
+              />
+            );
+          })}
+        </Routes>
+        <ToastContainer />
+      </div>
+    </PayPalScriptProvider>
   );
 }
 

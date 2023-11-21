@@ -22,7 +22,7 @@ import { editProfile } from '~/features/profile/profileSlice';
 const mcx = classNames.bind(mstyles);
 const cx = classNames.bind(styles);
 
-function EditProfileForm() {
+function EditProfileForm({ settings = false }) {
   const toggleModal = useContext(ModalToggleContext);
   const { profile, isLoading } = useSelector((state) => state.profile);
   const [avt, setAvt] = useState(profile.avatar?.url);
@@ -108,10 +108,12 @@ function EditProfileForm() {
 
   return (
     <>
-      <div className={mcx('heading')}>
-        <h2>Edit Profile</h2>
-      </div>
-      <div className={cx('wrapper')}>
+      {!settings && (
+        <div className={mcx('heading')}>
+          <h2>Edit Profile</h2>
+        </div>
+      )}
+      <div className={cx('wrapper', settings && 'settings')}>
         <Formik
           initialValues={formik.initialValues}
           validationSchema={ProfileSchema}
@@ -198,7 +200,7 @@ function EditProfileForm() {
               />
             </div>
 
-            <div className="form-group">
+            <div className={cx('save-btn')}>
               <Button
                 btnType="primary"
                 type="submit"
